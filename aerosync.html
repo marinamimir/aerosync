@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
-    <script>try{var a=JSON.parse(localStorage.getItem('aerosync.appearance')||'{}')||{};var dk=a.mode==='dark'||(a.mode!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(dk)document.documentElement.classList.add('dark');if(a.style==='simple')document.documentElement.setAttribute('data-style','simple');}catch(e){}</script>
+    <script>try{var a=JSON.parse(localStorage.getItem('aerosync.appearance')||'{}')||{};var dk=a.mode==='dark'||(a.mode!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(dk)document.documentElement.classList.add('dark');if(a.style==='simple')document.documentElement.setAttribute('data-style','simple');
+    /* tema salvo: aplica as cores antes de desenhar */var th=JSON.parse(localStorage.getItem('aerosync.theme')||'null');if(th&&th.id){var st=document.documentElement.style,ok=function(c){return typeof c==='string'&&/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c)};[['--theme-icon','icon'],['--theme-icon-2','icon2'],['--surface','surface'],['--page','page']].forEach(function(k){if(ok(th[k[1]]))st.setProperty(k[0],th[k[1]])});}}catch(e){}</script>
     <!-- PWA: app instalável e offline -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -41,10 +42,22 @@
     <style>
         /* ===== Variáveis de Tema (alteradas pelo Onboarding) ===== */
         :root {
-            --accent: #3b82f6;          /* cor principal */
-            --accent-2: #22d3ee;        /* segunda cor do gradiente */
-            --accent-glow: rgba(56, 189, 248, 0.4);
-            --accent-soft: #eff6ff;     /* fundo suave (pílulas) */
+            /* Cores do TEMA (o JS troca pela paleta escolhida): só o fundo e os ícones */
+            --theme-icon: #B85A55;      /* ícones */
+            --theme-icon-2: #D9A7AA;    /* 2ª cor dos ícones (gradientes) */
+            --surface: #FFF8F1;         /* fundo do app */
+            --page: #F3E7DD;            /* fundo atrás do "aparelho" */
+            --icon: var(--theme-icon);
+            /* Interface NEUTRA (botões, pílulas, barras, destaques): grafite em todos os temas */
+            --accent: #3F4651;          /* cor principal */
+            --accent-2: #6B7280;        /* segunda cor do gradiente */
+            --accent-glow: rgba(31, 41, 55, 0.2);
+            --accent-soft: color-mix(in srgb, var(--surface) 84%, #8f96a0); /* fundo suave: o fundo do tema um pouco mais escuro */
+            /* Cores das categorias (tons suaves que combinam com todas as paletas) */
+            --tag-work: #5E958C;
+            --tag-study: #B9708A;
+            --tag-play: #C4824F;
+            --tag-life: #8676B5;
         }
 
         /* Elementos do dashboard que usam a cor de destaque */
@@ -61,7 +74,7 @@
             position: absolute;
             inset: 0;
             z-index: 100;
-            background: #ffffff;
+            background: var(--surface);
             border-radius: 40px;
             transition: opacity 0.7s ease, visibility 0.7s ease;
         }
@@ -145,7 +158,7 @@
         /* Base e Tipografia */
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #f0f4f8;
+            background-color: var(--page);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -162,7 +175,7 @@
             max-width: 414px;
             height: 896px;
             max-height: 100vh;
-            background-color: #ffffff;
+            background-color: var(--surface);
             border-radius: 40px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 0 0 8px #e2e8f0;
             overflow: hidden;
@@ -473,7 +486,7 @@
 
         #focus-mode {
             position: absolute; inset: 0; z-index: 80;
-            background: #ffffff; border-radius: 40px;
+            background: var(--surface); border-radius: 40px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 32px 28px;
             opacity: 0; visibility: hidden;
@@ -665,7 +678,7 @@
 
         /* ===== Modo "app": janela pequena = ocupa a tela toda, sem moldura ===== */
         @media (max-width: 500px), (display-mode: standalone) {
-            body { background: #fff; align-items: stretch; }
+            body { background: var(--surface); align-items: stretch; }
             .mobile-frame {
                 max-width: none; height: 100vh; height: 100dvh; max-height: none;
                 border-radius: 0; box-shadow: none;
@@ -733,10 +746,10 @@
         }
         .cal-dots { display: flex; gap: 2px; height: 5px; }
         .cal-dot, .cal-note { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
-        .cal-dot[data-tag="study"] { background: #ec4899; }
-        .cal-dot[data-tag="work"] { background: #14b8a6; }
-        .cal-dot[data-tag="play"] { background: #f97316; }
-        .cal-dot[data-tag="life"] { background: #8b5cf6; }
+        .cal-dot[data-tag="study"] { background: var(--tag-study); }
+        .cal-dot[data-tag="work"] { background: var(--tag-work); }
+        .cal-dot[data-tag="play"] { background: var(--tag-play); }
+        .cal-dot[data-tag="life"] { background: var(--tag-life); }
         .cal-dot-done { background: #cbd5e1; }
         .cal-note { border-radius: 1.5px; background: #facc15; }
         .cal-day.is-selected .cal-dot, .cal-day.is-selected .cal-note { background: #fff; opacity: 0.9; }
@@ -793,7 +806,7 @@
         /* ================================================
            MODO ESCURO
            ================================================ */
-        html.dark { color-scheme: dark; }
+        html.dark { color-scheme: dark; --accent: #59616E; --accent-2: #7B8494; --accent-glow: rgba(0, 0, 0, 0.35); --accent-soft: #262a3b; --icon: color-mix(in srgb, var(--theme-icon) 62%, white); }
         html.dark body { background-color: #0b0c12; background-image: radial-gradient(#23263a 1px, transparent 1px); }
         html.dark .mobile-frame { background-color: #14161f; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6), inset 0 0 0 8px #232636; }
         html.dark #boot-screen, html.dark #focus-mode { background: #14161f; }
@@ -1053,14 +1066,6 @@
         .modal-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .pick-row { display: flex; gap: 6px; }
         .modal-split .prio-star { font-size: 1.7rem; }
-        .diff-flame {
-            font-size: 1.55rem; color: #e5e7eb; cursor: pointer;
-            transition: color 0.2s, transform 0.15s, filter 0.2s;
-            filter: drop-shadow(0 2px 0 rgba(0,0,0,0.06));
-        }
-        .diff-flame:hover { transform: scale(1.15) rotate(6deg); }
-        .diff-flame.on { color: #f97316; filter: drop-shadow(0 0 6px rgba(249,115,22,0.55)); }
-        .diff-flame.star-pop { animation: starPop 0.4s ease; }
         .est-wrap { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #9ca3af; }
         .est-input { width: 72px; text-align: center; }
         .est-input::-webkit-inner-spin-button { opacity: 0.4; }
@@ -1082,9 +1087,6 @@
         .task-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; margin-top: 3px; font-size: 11px; font-weight: 700; }
         .task-meta > span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
         .task-meta i { font-size: 10px; opacity: 0.75; }
-        .task-meta .flames { gap: 1px; color: #f97316; }
-        .task-meta .flames i { opacity: 1; }
-        .task-item.is-done .task-meta .flames { color: inherit; opacity: 0.6; }
 
         /* --- Botões Lista / Grade / Kanban --- */
         .tasks-head { flex-wrap: wrap; row-gap: 8px; }
@@ -1209,7 +1211,6 @@
         .hub-grid .date-input { width: 100%; }
         .hub-star { font-size: 1.35rem; color: #e5e7eb; transition: color 0.2s, transform 0.15s; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.06)); }
         .hub-star.on { color: #facc15; filter: drop-shadow(0 0 5px rgba(250,204,21,0.6)); }
-        .hub-grid .diff-flame { font-size: 1.35rem; }
         .hub-time { margin-top: 10px; font-size: 12px; font-weight: 700; color: #6b7280; }
         .hub-section-head { display: flex; align-items: center; justify-content: space-between; }
         /* Descrição (rich text) */
@@ -1267,7 +1268,7 @@
         /* --- Modo escuro --- */
         html.dark .preset-select { background: color-mix(in srgb, var(--accent) 16%, #1e2130); color: color-mix(in srgb, var(--accent) 65%, white); border-color: color-mix(in srgb, var(--accent) 40%, #2b2f42); box-shadow: none; }
         html.dark .preset-ico, html.dark .preset-chev, html.dark .preset-hint { color: color-mix(in srgb, var(--accent) 65%, white); }
-        html.dark .diff-flame:not(.on), html.dark .hub-star:not(.on) { color: #3a3f55; }
+        html.dark .hub-star:not(.on) { color: #3a3f55; }
         html.dark .task-thumb { box-shadow: inset 0 2px 4px rgba(255,255,255,0.25), inset 0 -3px 6px rgba(0,0,0,0.25), 0 3px 8px rgba(0,0,0,0.3); }
         html.dark .view-toggle { background: #262a3b; }
         html.dark .view-toggle button.selected { background: #1e2130; color: color-mix(in srgb, var(--accent) 65%, white); box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
@@ -1304,7 +1305,6 @@
         html[data-style="simple"] .task-thumb.thumb-default { background: var(--accent-soft) !important; color: var(--accent); }
         html[data-style="simple"] .task-thumb.thumb-default i { text-shadow: none; }
         html[data-style="simple"] .hub-hero.thumb-default-bg { background: var(--accent-soft) !important; }
-        html[data-style="simple"] .diff-flame.on, html[data-style="simple"] .task-meta .flames { color: var(--accent); filter: none; }
         html[data-style="simple"] .hub-star.on { color: var(--accent); filter: none; }
         html.dark[data-style="simple"] .task-thumb.thumb-default, html.dark[data-style="simple"] .hub-hero.thumb-default-bg { background: #262a3b !important; color: color-mix(in srgb, var(--accent) 65%, white); }
 
@@ -1325,7 +1325,7 @@
         .cal-more { font-size: 8px; font-weight: 800; line-height: 5px; color: var(--accent); }
         .cal-day.is-selected .cal-more { color: #fff; }
         .cal-pill {
-            --pc: #14b8a6;
+            --pc: var(--tag-work);
             position: relative; z-index: 2; display: block; height: 13px; margin: 0 1px; padding: 0;
             border-radius: 999px; overflow: hidden; cursor: pointer;
             box-shadow: 0 2px 5px color-mix(in srgb, var(--pc) 30%, transparent);
@@ -1335,9 +1335,9 @@
         .cal-pill:active { transform: scale(0.96); }
         .cal-pill.cont-l { border-top-left-radius: 3px; border-bottom-left-radius: 3px; margin-left: -2px; }
         .cal-pill.cont-r { border-top-right-radius: 3px; border-bottom-right-radius: 3px; margin-right: -2px; }
-        .cal-pill[data-tag="study"] { --pc: #ec4899; }
-        .cal-pill[data-tag="play"] { --pc: #f97316; }
-        .cal-pill[data-tag="life"] { --pc: #8b5cf6; }
+        .cal-pill[data-tag="study"] { --pc: var(--tag-study); }
+        .cal-pill[data-tag="play"] { --pc: var(--tag-play); }
+        .cal-pill[data-tag="life"] { --pc: var(--tag-life); }
         .pc-row { position: absolute; inset: 0; display: flex; gap: 1px; }
         .pc { flex: 1; display: flex; align-items: center; justify-content: flex-end; padding-right: 3px; font-size: 7px; color: #fff; }
         .pc i { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
@@ -1378,8 +1378,6 @@
 
         /* --- Doca com 6 botões --- */
         .glass-dock.dock-6 { gap: 10px; padding-left: 16px; padding-right: 16px; }
-        .nav-btn.zen-btn-dock { color: color-mix(in srgb, var(--accent) 55%, #9ca3af); }
-        .nav-btn.zen-btn-dock:hover { color: var(--accent); }
 
         /* --- Zen Mode (aurora boreal) --- */
         .mobile-frame.zen-on > *:not(#zen-mode):not(#boot-screen):not(#toast) { opacity: 0; transform: scale(0.94); filter: blur(6px); pointer-events: none; }
@@ -1534,11 +1532,346 @@
         html.dark .rec-spark i:not(.last) { background: #3a3f55; }
         html[data-style="simple"] .dot-zen, html[data-style="simple"] .sp-zen, html[data-style="simple"] .b-zen { background: color-mix(in srgb, var(--accent) 40%, #94a3b8); }
 
+        /* ================================================
+           TEMAS NOMEADOS, AVATAR E DIFICULDADE EM 5 BOLINHAS
+           ================================================ */
+        /* Fundo da doca acompanha a cor de fundo do tema */
+        .dock-fade { background: linear-gradient(to top, var(--surface) 40%, color-mix(in srgb, var(--surface) 90%, transparent), transparent) !important; }
+        /* Modo escuro: preto puro (sem tom da paleta) */
+        html.dark .dock-fade { background: linear-gradient(to top, #14161f 40%, rgba(20,22,31,0.85), transparent) !important; }
+
+        /* --- Boot Screen: escolha da paleta --- */
+        .theme-choices { display: grid; grid-template-columns: repeat(4, 76px); gap: 12px; justify-content: center; }
+        .theme-choice { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .theme-choice span { font-size: 11px; font-weight: 800; line-height: 1.25; color: #6b7280; text-align: center; }
+        html.dark .theme-choice span { color: #a3a9bb; }
+
+        /* --- Ajustes: menu de paletas --- */
+        .palette-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .palette-opt {
+            position: relative; display: flex; align-items: center; gap: 10px; min-width: 0;
+            padding: 10px 12px; border-radius: 16px; text-align: left;
+            background: var(--p-surface); border: 2px solid transparent;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+        }
+        .palette-opt:active { transform: scale(0.97); }
+        .palette-opt.selected { border-color: var(--p-accent); box-shadow: 0 4px 12px color-mix(in srgb, var(--p-accent) 30%, transparent); }
+        .palette-dots { display: flex; flex-shrink: 0; }
+        .palette-dots i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .palette-dots i + i { margin-left: -6px; }
+        .palette-name { min-width: 0; font-size: 12px; font-weight: 800; line-height: 1.2; color: #374151; }
+        .palette-check { margin-left: auto; font-size: 11px; color: var(--p-accent); }
+        html.dark .palette-opt { background: color-mix(in srgb, var(--p-accent) 14%, #1e2130); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+        html.dark .palette-opt.selected { border-color: color-mix(in srgb, var(--p-accent) 70%, white); }
+        html.dark .palette-name { color: #d9dce6; }
+        html.dark .palette-dots i { border-color: #1e2130; }
+        html.dark .palette-check { color: color-mix(in srgb, var(--p-accent) 65%, white); }
+
+        /* --- Avatar --- */
+        .avatar-btn {
+            position: relative; width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; font-size: 17px;
+            color: var(--accent); background: var(--accent-soft);
+            box-shadow: 0 0 0 3px #fff, 0 0 0 5px color-mix(in srgb, var(--accent) 35%, transparent), 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.15s;
+        }
+        .avatar-btn:active { transform: scale(0.92); }
+        .avatar-btn img, .avatar-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .avatar-btn::after, .avatar-preview::after { /* brilho glossy */
+            content: ''; position: absolute; top: 2px; left: 15%; width: 70%; height: 40%; border-radius: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0)); pointer-events: none;
+        }
+        .avatar-row { display: flex; align-items: center; gap: 14px; }
+        .avatar-preview {
+            position: relative; width: 76px; height: 76px; flex-shrink: 0; border-radius: 50%; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; font-size: 28px;
+            color: var(--accent); background: var(--accent-soft);
+            box-shadow: 0 0 0 4px #fff, 0 0 0 6px color-mix(in srgb, var(--accent) 35%, transparent), 0 8px 18px var(--accent-glow);
+        }
+        .avatar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pill-btn.sm { padding: 9px 16px; font-size: 13px; }
+        html.dark .avatar-btn, html.dark .avatar-preview { background: color-mix(in srgb, var(--accent) 22%, #1e2130); color: color-mix(in srgb, var(--accent) 65%, white); box-shadow: 0 0 0 3px #1e2130, 0 0 0 5px color-mix(in srgb, var(--accent) 45%, transparent); }
+
+        /* --- Dificuldade: 5 bolinhas (1 verde ... 5 vermelho) --- */
+        .diff-scale { --dc: #9ca3af; display: flex; align-items: center; gap: 6px; min-height: 34px; }
+        .diff-dot {
+            width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; cursor: pointer;
+            background: #e5e7eb; box-shadow: inset 0 -2px 3px rgba(0,0,0,0.08), inset 0 2px 2px rgba(255,255,255,0.6);
+            transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+        }
+        .diff-dot:hover { transform: scale(1.15); }
+        .diff-dot.on {
+            background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--dc) 45%, white), var(--dc) 65%);
+            box-shadow: inset 0 -2px 3px rgba(0,0,0,0.12), 0 0 8px color-mix(in srgb, var(--dc) 55%, transparent);
+        }
+        .diff-dot.star-pop { animation: starPop 0.4s ease; }
+        .hub-grid .diff-dot { width: 20px; height: 20px; }
+        #diff-label { color: color-mix(in srgb, var(--dc, #9ca3af) 65%, #374151); transition: color 0.25s; }
+        html.dark #diff-label { color: color-mix(in srgb, var(--dc, #9ca3af) 80%, white); }
+        .diff-text { color: color-mix(in srgb, var(--dc) 65%, #374151); }
+        html.dark .diff-text { color: color-mix(in srgb, var(--dc) 80%, white); }
+        .diff-mini { --dc: #9ca3af; display: inline-flex; align-items: center; gap: 2px; }
+        .diff-mini i { width: 6px; height: 6px; border-radius: 50%; background: #e5e7eb; opacity: 1 !important; }
+        .diff-mini i.on { background: var(--dc); box-shadow: 0 0 3px color-mix(in srgb, var(--dc) 60%, transparent); }
+        .task-item.is-done .diff-mini { opacity: 0.55; }
+        html.dark .diff-dot:not(.on), html.dark .diff-mini i:not(.on) { background: #3a3f55; box-shadow: none; }
+
+        /* ================================================
+           ÍCONES NA COR DO TEMA (o resto da interface fica neutro)
+           "html:root" na frente = vence as regras antigas de cor
+           ================================================ */
+        html:root i.accent-text,
+        html:root .accent-pill i,
+        html:root .nav-btn i,
+        html:root .row-btn:not(.is-on):not(.row-danger) i,
+        html:root .task-timer:not([data-running="true"]) .tt-btn i,
+        html:root .tt-btn[data-tt="stop"] i,
+        html:root .st-btn:not(.is-on) i,
+        html:root .theme-toggle i,
+        html:root .kb-move button i,
+        html:root .view-toggle button i,
+        html:root .date-chip:not(.selected) i,
+        html:root .link-row > i,
+        html:root .preset-ico, html:root .preset-chev,
+        html:root .note-pin, html:root .note-flags i, html:root .note-home-flag,
+        html:root .avatar-btn > i, html:root .avatar-preview > i,
+        html:root .hub-chip-btn i, html:root .note-tool i,
+        html:root .search-box > i, html:root .card-focus-btn i,
+        html:root .edit-bar > span i, html:root .palette-check,
+        html:root .hub-time i, html:root .st-head i { color: var(--icon) !important; }
+        /* doca: ícones sempre coloridos; o ativo um pouco mais forte */
+        html:root .nav-btn:not(.active) i { color: color-mix(in srgb, var(--icon) 72%, #9ca3af) !important; }
+        /* sol do modo escuro continua amarelinho */
+        html.dark:root .theme-toggle i { color: #fcd34d !important; }
+        /* Ícones "grandes" (estado vazio, lótus do Relaxar e aurora) usam as cores do tema */
+        .empty-icon, #zen-mode { --accent: var(--theme-icon); --accent-2: var(--theme-icon-2); --accent-glow: color-mix(in srgb, var(--theme-icon) 40%, transparent); }
+        html[data-style="simple"] .banner-icon { color: var(--icon); }
+        html[data-style="simple"] .zen-aurora span:nth-child(3) { background: radial-gradient(closest-side, var(--theme-icon), transparent); }
+
+        /* ================================================
+           ORGANIZAÇÃO (presets) E ÍCONES ESTILO NOTION
+           ================================================ */
+        /* Doca com 7 botões */
+        .glass-dock.dock-7 { gap: 4px; padding: 10px 12px; }
+        .dock-7 .nav-btn { width: 39px; height: 39px; font-size: 1.05rem; }
+        .dock-7 #add-btn { margin: 0 4px; }
+
+        /* Ícone ao lado do nome */
+        .task-icon { margin-right: 6px; font-size: 0.95em; }
+        h4 .task-icon { font-size: 13px; }
+        html.dark .task-icon, html.dark .lib-pic i[style], html.dark .icon-pick-btn .pick-ic:not(.pick-empty) { filter: brightness(1.45) saturate(0.9); }
+
+        /* Botão que abre o seletor (fica à esquerda do campo de nome) */
+        .name-row { display: flex; align-items: center; gap: 8px; }
+        .name-row .task-input { flex: 1; min-width: 0; }
+        .icon-pick-btn {
+            width: 50px; height: 50px; flex-shrink: 0; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+            background: rgba(241,245,249,0.85); border: 2px dashed #d1d5db;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.04); transition: transform 0.15s, border-color 0.2s, background 0.2s;
+        }
+        .icon-pick-btn:hover { border-color: var(--accent-2); }
+        .icon-pick-btn:active { transform: scale(0.92); }
+        .icon-pick-btn.has-icon { border-style: solid; border-color: transparent; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.05); }
+        .icon-pick-btn .pick-empty { color: #c0c4cc; }
+        .icon-pick-btn.lg { width: 44px; height: 44px; font-size: 22px; }
+        .hub-title-row .hub-title { flex: 1; min-width: 0; }
+        html.dark .icon-pick-btn { background: #262a3b; border-color: #3a3f55; }
+        html.dark .icon-pick-btn.has-icon { background: #1e2130; box-shadow: inset 0 0 0 1px #2b2f42; }
+        html.dark .icon-pick-btn .pick-empty { color: #4a5068; }
+        .link-btn { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; color: inherit; }
+
+        /* Seletor de ícones */
+        #icon-picker {
+            position: absolute; inset: 0; z-index: 93; display: flex; align-items: flex-end; justify-content: center;
+            background: rgba(15, 23, 42, 0.18); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s;
+        }
+        #icon-picker.open { opacity: 1; visibility: visible; }
+        .ip-panel {
+            width: 100%; max-height: 78%; display: flex; flex-direction: column; padding: 18px 18px 22px;
+            border-radius: 28px 28px 0 0; background: linear-gradient(160deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
+            box-shadow: inset 0 2px 0 #fff, 0 -20px 40px -10px rgba(0,0,0,0.25);
+            transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.34, 1.25, 0.64, 1);
+        }
+        #icon-picker.open .ip-panel { transform: none; }
+        .ip-colors { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .ip-color { width: 26px; height: 26px; border-radius: 50%; background: var(--ipc); border: 3px solid #fff; box-shadow: 0 0 0 1px #e5e7eb; transition: transform 0.15s, box-shadow 0.2s; }
+        .ip-color:active { transform: scale(0.88); }
+        .ip-color.selected { box-shadow: 0 0 0 2px var(--ipc); transform: scale(1.1); }
+        .ip-search { margin-bottom: 10px; }
+        .ip-grid { --ipc: #37352F; flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; padding: 2px; }
+        .ip-icon { height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--ipc); transition: background 0.15s, transform 0.1s; }
+        .ip-icon:hover { background: rgba(0,0,0,0.05); }
+        .ip-icon:active { transform: scale(0.88); }
+        .ip-icon.selected { background: color-mix(in srgb, var(--ipc) 14%, transparent); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ipc) 45%, transparent); }
+        html.dark .ip-panel { background: linear-gradient(160deg, rgba(32,35,51,0.99), rgba(24,27,40,0.99)); box-shadow: 0 -20px 40px -10px rgba(0,0,0,0.55); }
+        html.dark .ip-color { border-color: #1e2130; box-shadow: 0 0 0 1px #3a3f55; }
+        html.dark .ip-icon { filter: brightness(1.45) saturate(0.9); }
+        html.dark .ip-icon:hover { background: rgba(255,255,255,0.06); }
+        @media (max-width: 500px), (display-mode: standalone) { #icon-picker { border-radius: 0; } }
+
+        /* Painel Organização */
+        .lib-intro { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 14px; padding: 10px 12px; border-radius: 14px; font-size: 12px; font-weight: 600; line-height: 1.45; color: #6b7280; background: var(--accent-soft); }
+        .lib-intro > i { margin-top: 2px; }
+        .lib-intro b { font-weight: 800; color: #374151; }
+        .lib-group { margin-bottom: 12px; padding: 12px; border-radius: 20px; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .lib-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .lib-fold { font-size: 15px; }
+        .lib-name { flex: 1; min-width: 0; font-size: 15px; font-weight: 800; color: #1f2937; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .lib-count { font-size: 11px; font-weight: 700; color: #9ca3af; white-space: nowrap; }
+        .lib-sub { margin: 8px 0 0 10px; padding: 4px 0 6px 12px; border-left: 2px solid color-mix(in srgb, var(--accent-soft) 60%, #e5e7eb); }
+        .lib-sub-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .lib-sub-head > i { font-size: 12px; }
+        .lib-sub-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 800; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mini-btn { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; font-size: 10px; color: #9ca3af; transition: background 0.15s, color 0.15s, transform 0.15s; }
+        .mini-btn:hover { background: rgba(0,0,0,0.05); color: #4b5563; }
+        .mini-btn.danger:hover { color: #dc2626; background: #fef2f2; }
+        .mini-btn:active { transform: scale(0.88); }
+        .lib-preset { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .lib-preset-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 12px; text-align: left; transition: background 0.15s; }
+        .lib-preset-main:hover { background: rgba(0,0,0,0.035); }
+        .lib-pic { width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; background: #f8fafc; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
+        .lib-ptext { min-width: 0; display: flex; flex-direction: column; }
+        .lib-ptext b { font-size: 13px; font-weight: 800; color: #1f2937; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .lib-ptext small { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-size: 11px; font-weight: 700; color: #9ca3af; }
+        .lib-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #4b5563; background: var(--accent-soft); transition: transform 0.15s; }
+        .lib-add:active { transform: scale(0.95); }
+        .lib-add.sm { margin-top: 2px; padding: 5px 10px; font-size: 11px; background: transparent; border: 1.5px dashed #d1d5db; }
+        .lib-hint { margin: 2px 0 4px; font-size: 12px; font-weight: 600; color: #9ca3af; }
+        .lib-inline { flex: 1; display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+        .lib-inline .task-input { padding: 9px 12px; font-size: 14px; }
+        .lib-inline .add-btn-sm { height: 40px; }
+        .lib-select { width: 100%; padding: 10px 12px; }
+        .lib-text { resize: vertical; min-height: 70px; font-size: 14px; font-family: inherit; line-height: 1.5; }
+        html:root .lib-fold, html:root .lib-sub-head > i, html:root .lib-intro > i, html:root .lib-add i { color: var(--icon) !important; }
+        html.dark .lib-group { background: #1e2130; border-color: #2b2f42; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        html.dark .lib-name, html.dark .lib-ptext b, html.dark .lib-intro b { color: #eef0f6; }
+        html.dark .lib-sub-name { color: #d9dce6; }
+        html.dark .lib-intro { color: #a3a9bb; }
+        html.dark .lib-sub { border-left-color: #2b2f42; }
+        html.dark .lib-pic { background: #262a3b; box-shadow: none; }
+        html.dark .lib-add { color: #d9dce6; }
+        html.dark .lib-add.sm { border-color: #3a3f55; }
+        html.dark .lib-preset-main:hover, html.dark .mini-btn:hover { background: rgba(255,255,255,0.05); }
+
+        /* ================================================
+           HORÁRIOS, TIMELINE E MUNDO PESSOAL
+           ================================================ */
+        /* Doca com 8 botões (mais compacta) */
+        .dock-fade { padding-left: 10px !important; padding-right: 10px !important; }
+        .glass-dock.dock-8 { gap: 2px; padding: 8px 9px; }
+        .dock-8 .nav-btn { width: 36px; height: 36px; font-size: 1rem; }
+        .dock-8 #add-btn { width: 60px; height: 60px; margin: 0 3px; font-size: 1.6rem; }
+
+        /* Campos de horário */
+        .time-row { display: flex; align-items: flex-end; gap: 8px; }
+        .time-field { display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 700; color: #9ca3af; }
+        .time-field .date-input { width: 116px; }
+        .time-arrow { margin-bottom: 10px; font-size: 11px; color: #9ca3af; }
+        .time-row .mini-x { margin-bottom: 4px; }
+        .time-hint { margin-top: 6px; font-size: 12px; font-weight: 700; color: #6b7280; }
+        .time-hint.is-warn { color: #dc2626; }
+        .hub-grid input[type="time"] { width: 100%; }
+        .hub-grid input:disabled { opacity: 0.45; }
+        html.dark .time-hint { color: #a3a9bb; }
+        html.dark .time-hint.is-warn { color: #fca5a5; }
+
+        /* Timeline do dia (Calendário) */
+        .tl { position: relative; margin: 6px 0 14px; padding-left: 46px; }
+        .tl-hour { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed #e5e7eb; }
+        .tl-hour span { position: absolute; left: 0; top: -8px; width: 40px; font-size: 10px; font-weight: 800; color: #9ca3af; font-variant-numeric: tabular-nums; }
+        .tl-track { position: absolute; left: 46px; right: 0; top: 0; bottom: 0; }
+        .tl-block {
+            position: absolute; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; gap: 1px;
+            padding: 5px 8px; border-radius: 10px; text-align: left; cursor: pointer;
+            background: color-mix(in srgb, var(--pc) 16%, #fff); border-left: 4px solid var(--pc);
+            box-shadow: 0 2px 6px color-mix(in srgb, var(--pc) 18%, transparent), inset 0 1px 0 rgba(255,255,255,0.7);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .tl-block:hover { transform: translateX(2px); box-shadow: 0 4px 12px color-mix(in srgb, var(--pc) 28%, transparent); }
+        .tl-block .tl-time { font-size: 10px; font-weight: 800; color: color-mix(in srgb, var(--pc) 70%, #1f2937); font-variant-numeric: tabular-nums; }
+        .tl-block b { font-size: 12px; font-weight: 800; color: #1f2937; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .tl-block.is-short { flex-direction: row; align-items: center; gap: 6px; padding: 3px 8px; }
+        .tl-block.is-short b { -webkit-line-clamp: 1; white-space: nowrap; display: block; }
+        .tl-block.is-done { opacity: 0.55; }
+        .tl-block.is-done b { text-decoration: line-through; }
+        .tl-now { position: absolute; left: 40px; right: 0; height: 0; border-top: 2px solid #ef4444; z-index: 3; pointer-events: none; }
+        .tl-now::before { content: ''; position: absolute; left: -5px; top: -6px; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+        .tl-sub { display: block; margin: 4px 0 6px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #9ca3af; }
+        html.dark .tl-hour { border-top-color: #2b2f42; }
+        html.dark .tl-block { background: color-mix(in srgb, var(--pc) 22%, #1e2130); box-shadow: none; }
+        html.dark .tl-block b { color: #eef0f6; }
+        html.dark .tl-block .tl-time { color: color-mix(in srgb, var(--pc) 60%, white); }
+
+        /* Mundo Pessoal: abas de listas */
+        .life-tabs { display: flex; gap: 6px; overflow-x: auto; margin: 0 -22px 12px; padding: 2px 22px 4px; }
+        .life-tab {
+            flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: 999px;
+            font-size: 13px; font-weight: 800; color: #4b5563; background: rgba(241,245,249,0.9);
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.04); transition: background 0.2s, color 0.2s, transform 0.15s;
+        }
+        .life-tab:active { transform: scale(0.95); }
+        .life-tab b { min-width: 18px; padding: 0 5px; border-radius: 999px; font-size: 11px; color: #6b7280; background: rgba(255,255,255,0.9); text-align: center; }
+        .life-tab.selected { color: #fff; background: var(--accent); box-shadow: 0 4px 12px var(--accent-glow); }
+        .life-tab.selected i { filter: brightness(1.8) saturate(0.6); }
+        .life-tab.selected b { color: var(--accent); }
+        .life-tab-add { padding: 8px 11px; }
+        html:root .life-tab-add i { color: var(--icon) !important; }
+        .life-listedit { margin-bottom: 12px; }
+        .life-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .life-filter { flex: 1; min-width: 0; }
+        .life-filter button { padding: 7px 2px; font-size: 11px; white-space: nowrap; }
+        .life-filter button b { font-weight: 800; opacity: 0.6; }
+        /* cards */
+        .life-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .life-card { display: flex; flex-direction: column; text-align: left; border-radius: 20px; overflow: hidden; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.15s, box-shadow 0.15s; }
+        .life-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .life-card:active { transform: scale(0.97); }
+        .life-cover { position: relative; aspect-ratio: 3 / 4; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--accent-soft); font-size: 34px; }
+        .life-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .life-cover.is-empty { background: linear-gradient(160deg, color-mix(in srgb, var(--accent-soft) 70%, #fff), var(--accent-soft)); }
+        .life-cover::after { content: ''; position: absolute; inset: 0 0 60% 0; background: linear-gradient(to bottom, rgba(255,255,255,0.35), transparent); pointer-events: none; }
+        .life-status { position: absolute; left: 8px; bottom: 8px; z-index: 1; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; color: #fff; background: rgba(31,35,40,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .life-status.st-done { background: rgba(22,163,74,0.85); }
+        .life-status.st-doing { background: rgba(217,119,6,0.85); }
+        .life-info { display: flex; flex-direction: column; gap: 3px; padding: 10px 12px 12px; min-width: 0; }
+        .life-info b { font-size: 13px; font-weight: 800; color: #1f2937; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .life-info small { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #9ca3af; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .life-info small i { font-size: 9px; }
+        .life-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+        .life-tags i { font-style: normal; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; color: #4b5563; background: var(--accent-soft); }
+        /* card aberto */
+        .life-hero { position: relative; height: 220px; margin-bottom: 14px; border-radius: 24px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #0f1115; box-shadow: 0 12px 26px -12px rgba(0,0,0,0.35); }
+        .life-hero img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35)); }
+        .life-hero-bg { position: absolute; inset: -30px; background-size: cover; background-position: center; filter: blur(22px) saturate(1.3) brightness(0.85); }
+        .life-hero .hub-hero-btns { z-index: 2; }
+        .life-hero.is-empty { background: linear-gradient(160deg, color-mix(in srgb, var(--accent-soft) 70%, #fff), var(--accent-soft)); border: 2px dashed color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: none; }
+        .life-hero-ph { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 40px; }
+        .life-hero-ph small { font-size: 12px; font-weight: 800; color: #9ca3af; }
+        .span-2 { grid-column: span 2; }
+        .life-place { margin-bottom: 0; }
+        .life-tagbox { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 14px; background: rgba(241,245,249,0.85); }
+        .life-tagbox input { flex: 1; min-width: 120px; background: transparent; border: none; outline: none; font-family: inherit; font-size: 13px; font-weight: 700; color: #1f2937; padding: 4px 2px; }
+        .life-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 4px 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; background: var(--accent); }
+        .life-chip button { width: 18px; height: 18px; border-radius: 50%; font-size: 9px; color: #fff; background: rgba(255,255,255,0.2); }
+        html.dark .life-tab { background: #262a3b; color: #d9dce6; }
+        html.dark .life-tab b { background: rgba(255,255,255,0.08); color: #a3a9bb; }
+        html.dark .life-tab.selected { background: var(--accent); color: #fff; }
+        html.dark .life-tab.selected b { background: #fff; color: #1e2130; }
+        html.dark .life-card { background: #1e2130; border-color: #2b2f42; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        html.dark .life-info b { color: #eef0f6; }
+        html.dark .life-tags i { color: #d9dce6; }
+        html.dark .life-cover.is-empty, html.dark .life-hero.is-empty { background: #262a3b; border-color: #3a3f55; }
+        html.dark .life-tagbox { background: #262a3b; }
+        html.dark .life-tagbox input { color: #eef0f6; }
+
         /* Animação de background para os banners */
-        .bg-gradient-study { background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%); }
-        .bg-gradient-work { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); }
-        .bg-gradient-play { background: linear-gradient(to right, #fa709a 0%, #fee140 100%); }
-        .bg-gradient-life { background: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%); }
+        .bg-gradient-study { background: linear-gradient(135deg, #D79AAE 0%, #EFC9CF 100%); }
+        .bg-gradient-work { background: linear-gradient(120deg, #8FC1B4 0%, #9DBFD0 100%); }
+        .bg-gradient-play { background: linear-gradient(to right, #DB9F86 0%, #E9CB8D 100%); }
+        .bg-gradient-life { background: linear-gradient(to top, #A598CC 0%, #E3C2D6 100%); }
     </style>
 </head>
 <body>
@@ -1556,28 +1889,10 @@
             <!-- Etapa 2: onboarding de cor -->
             <div class="boot-stage stage-wait" id="boot-theme-stage">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bem-vinda!</p>
-                <h2 class="text-2xl font-extrabold text-gray-800 mb-1">Escolha sua cor</h2>
-                <p class="text-sm text-gray-500 font-semibold mb-10">Ela vai colorir todo o seu console</p>
-                <div class="flex gap-4">
-                    <button class="theme-btn" aria-label="Tema Rosa"
-                        style="background: linear-gradient(135deg,#f472b6,#f9a8d4)"
-                        data-accent="#ec4899" data-accent2="#f9a8d4" data-glow="rgba(236,72,153,0.4)" data-soft="#fdf2f8"></button>
-                    <button class="theme-btn" aria-label="Tema Lilás"
-                        style="background: linear-gradient(135deg,#8b5cf6,#c4b5fd)"
-                        data-accent="#8b5cf6" data-accent2="#c4b5fd" data-glow="rgba(139,92,246,0.4)" data-soft="#f5f3ff"></button>
-                    <button class="theme-btn" aria-label="Tema Ciano"
-                        style="background: linear-gradient(135deg,#3b82f6,#22d3ee)"
-                        data-accent="#3b82f6" data-accent2="#22d3ee" data-glow="rgba(56,189,248,0.4)" data-soft="#eff6ff"></button>
-                    <button class="theme-btn" aria-label="Tema Grafite"
-                        style="background: linear-gradient(135deg,#475569,#94a3b8)"
-                        data-accent="#475569" data-accent2="#94a3b8" data-glow="rgba(71,85,105,0.35)" data-soft="#f1f5f9"></button>
-                </div>
-                <div class="flex gap-4 mt-3 text-xs font-bold text-gray-400">
-                    <span class="w-[72px] text-center">Rosa</span>
-                    <span class="w-[72px] text-center">Lilás</span>
-                    <span class="w-[72px] text-center">Ciano</span>
-                    <span class="w-[72px] text-center">Grafite</span>
-                </div>
+                <h2 class="text-2xl font-extrabold text-gray-800 mb-1">Escolha seu tema</h2>
+                <p class="text-sm text-gray-500 font-semibold mb-10">Ele vai colorir todo o seu console</p>
+                <!-- Botões criados pelo JS a partir do THEME_PALETTES -->
+                <div id="theme-choices" class="theme-choices"></div>
             </div>
         </div>
 
@@ -1606,6 +1921,23 @@
                 </div>
                 <h3 id="focus-name" class="text-xl font-extrabold text-gray-800 leading-snug">Tarefa</h3>
                 <div class="focus-stamp"><i class="fas fa-circle-check mr-2"></i>Missão completa!</div>
+            </div>
+        </div>
+
+        <!-- ===== SELETOR DE ÍCONES (estilo Notion): ícone + cor ===== -->
+        <div id="icon-picker" aria-hidden="true">
+            <div class="ip-panel" role="dialog" aria-modal="true" aria-labelledby="ip-title">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 id="ip-title" class="text-lg font-extrabold text-gray-800">Escolher ícone</h2>
+                    <button data-ip="close" class="modal-x" aria-label="Fechar"><i class="fas fa-times"></i></button>
+                </div>
+                <span class="modal-label">Cor</span>
+                <div id="ip-colors" class="ip-colors" role="radiogroup" aria-label="Cor do ícone"></div>
+                <label class="search-box ip-search"><i class="fas fa-magnifying-glass"></i>
+                    <input id="ip-search" type="search" placeholder="Buscar (ex.: bug, livro, café)" autocomplete="off" aria-label="Buscar ícone"></label>
+                <div id="ip-grid" class="ip-grid no-scrollbar" role="listbox" aria-label="Ícones"></div>
+                <p id="ip-none" class="hidden text-sm text-gray-400 font-semibold text-center py-4">Nenhum ícone encontrado.</p>
+                <button data-ip="remove" class="pill-btn ghost w-full mt-3"><i class="fas fa-ban mr-2"></i>Sem ícone</button>
             </div>
         </div>
 
@@ -1655,7 +1987,7 @@
                     <button id="modal-close" class="modal-x" aria-label="Fechar"><i class="fas fa-times"></i></button>
                 </div>
 
-                <!-- Presets: modelos prontos (edite a lista TASK_PRESETS no começo do <script>) -->
+                <!-- Presets: criados na aba Organização -->
                 <div id="preset-block" class="mb-4">
                     <div class="preset-wrap">
                         <i class="fas fa-wand-magic-sparkles preset-ico" aria-hidden="true"></i>
@@ -1665,11 +1997,15 @@
                         <i class="fas fa-chevron-down preset-chev" aria-hidden="true"></i>
                     </div>
                     <p id="preset-hint" class="preset-hint hidden"></p>
+                    <p id="preset-empty" class="preset-hint hidden">Crie seus presets na aba <button id="preset-empty-link" class="link-btn">Organização</button>.</p>
                 </div>
 
                 <label for="task-name" class="modal-label">Nome da tarefa</label>
-                <input id="task-name" type="text" maxlength="60" autocomplete="off"
-                       placeholder="Ex: Estudar Web Audio API" class="task-input">
+                <div class="name-row">
+                    <button id="task-icon-btn" class="icon-pick-btn" aria-label="Escolher ícone da missão" title="Ícone"><i class="fas fa-face-smile pick-ic pick-empty" aria-hidden="true"></i></button>
+                    <input id="task-name" type="text" maxlength="60" autocomplete="off"
+                           placeholder="Ex: Estudar Web Audio API" class="task-input">
+                </div>
 
                 <div class="modal-split mt-5">
                     <div>
@@ -1688,20 +2024,22 @@
                             <span class="modal-label">Dificuldade</span>
                             <span id="diff-label" class="text-xs font-bold text-gray-400 mb-2">—</span>
                         </div>
-                        <div class="pick-row" role="radiogroup" aria-label="Dificuldade">
-                            <button class="diff-flame" data-value="1" role="radio" aria-label="Dificuldade fácil"><i class="fas fa-fire"></i></button>
-                            <button class="diff-flame" data-value="2" role="radio" aria-label="Dificuldade média"><i class="fas fa-fire"></i></button>
-                            <button class="diff-flame" data-value="3" role="radio" aria-label="Dificuldade difícil"><i class="fas fa-fire"></i></button>
+                        <div id="diff-scale" class="diff-scale" role="radiogroup" aria-label="Dificuldade (1 a 5)">
+                            <button class="diff-dot" data-value="1" role="radio" aria-label="Dificuldade 1: muito fácil"></button>
+                            <button class="diff-dot" data-value="2" role="radio" aria-label="Dificuldade 2: fácil"></button>
+                            <button class="diff-dot" data-value="3" role="radio" aria-label="Dificuldade 3: média"></button>
+                            <button class="diff-dot" data-value="4" role="radio" aria-label="Dificuldade 4: difícil"></button>
+                            <button class="diff-dot" data-value="5" role="radio" aria-label="Dificuldade 5: muito difícil"></button>
                         </div>
                     </div>
                 </div>
 
                 <span class="modal-label mt-5">Tag</span>
                 <div class="flex gap-2 flex-wrap">
-                    <button class="tag-pill" data-tag="study" style="--pill:#ec4899"><i class="fas fa-book mr-1"></i>Estudo</button>
-                    <button class="tag-pill selected" data-tag="work" style="--pill:#14b8a6"><i class="fas fa-briefcase mr-1"></i>Trabalho</button>
-                    <button class="tag-pill" data-tag="play" style="--pill:#f97316"><i class="fas fa-gamepad mr-1"></i>Lazer</button>
-                    <button class="tag-pill" data-tag="life" style="--pill:#8b5cf6"><i class="fas fa-leaf mr-1"></i>Rotina</button>
+                    <button class="tag-pill" data-tag="study" style="--pill:var(--tag-study)"><i class="fas fa-book mr-1"></i>Estudo</button>
+                    <button class="tag-pill selected" data-tag="work" style="--pill:var(--tag-work)"><i class="fas fa-briefcase mr-1"></i>Trabalho</button>
+                    <button class="tag-pill" data-tag="play" style="--pill:var(--tag-play)"><i class="fas fa-gamepad mr-1"></i>Lazer</button>
+                    <button class="tag-pill" data-tag="life" style="--pill:var(--tag-life)"><i class="fas fa-leaf mr-1"></i>Rotina</button>
                 </div>
 
                 <span class="modal-label mt-5">Tempo estimado</span>
@@ -1724,6 +2062,15 @@
                     <button id="multi-toggle" class="date-chip" aria-pressed="false"><i class="fas fa-arrows-left-right mr-1"></i>Vários dias</button>
                     <span id="start-wrap" class="hidden"><span class="est-wrap">começa em <input id="task-start" type="date" class="date-input" aria-label="Primeiro dia da missão"></span></span>
                 </div>
+
+                <span class="modal-label mt-5">Horário <span class="opt-hint">(opcional)</span></span>
+                <div class="time-row">
+                    <label class="time-field"><span>Início</span><input id="task-time-start" type="time" class="date-input" aria-label="Horário de início"></label>
+                    <i class="fas fa-arrow-right time-arrow" aria-hidden="true"></i>
+                    <label class="time-field"><span>Término</span><input id="task-time-end" type="time" class="date-input" aria-label="Horário de término"></label>
+                    <button id="time-clear" class="mini-x hidden" aria-label="Limpar horário" title="Limpar horário"><i class="fas fa-xmark"></i></button>
+                </div>
+                <p id="time-hint" class="time-hint hidden"></p>
                 <p id="modal-time" class="hidden text-xs font-bold text-gray-400 mt-3"><i class="fas fa-clock mr-1"></i><span></span></p>
 
                 <div class="flex gap-3 mt-7">
@@ -1764,7 +2111,11 @@
         <!-- Header -->
         <div class="px-6 pt-4 pb-2">
             <div class="flex justify-between items-center gap-3">
-                <h1 id="app-title" class="text-2xl font-extrabold text-gray-800 tracking-tight truncate">Organização</h1>
+                <div class="flex items-center gap-3 min-w-0">
+                    <!-- Avatar (escolhido nos Ajustes); sem imagem mostra um ícone -->
+                    <button id="user-avatar" class="avatar-btn" aria-label="Seu avatar: abrir Ajustes" title="Trocar avatar nos Ajustes"><i class="fas fa-user"></i></button>
+                    <h1 id="app-title" class="text-2xl font-extrabold text-gray-800 tracking-tight truncate">Organização</h1>
+                </div>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar para modo escuro" aria-pressed="false"><i class="fas fa-moon"></i></button>
             </div>
         </div>
@@ -1942,16 +2293,18 @@
 
         <!-- Bottom Navigation / Floating Action Area -->
         <div class="dock-fade absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none flex justify-center">
-            <div class="glass-dock dock-6 pointer-events-auto flex items-center gap-4 px-5 py-3 rounded-full">
+            <div class="glass-dock dock-8 pointer-events-auto flex items-center gap-4 px-5 py-3 rounded-full">
                 <button class="nav-btn active" data-view="home" aria-label="Início" aria-current="page"><i class="fas fa-home"></i></button>
                 <button class="nav-btn" data-view="calendar" aria-label="Calendário"><i class="fas fa-calendar-alt"></i></button>
                 <button id="zen-open" class="nav-btn zen-btn-dock" aria-label="Relaxar" title="Relaxar"><i class="fas fa-spa"></i></button>
+                <button class="nav-btn" data-view="life" aria-label="Mundo Pessoal" title="Mundo Pessoal"><i class="fas fa-heart"></i></button>
 
                 <!-- Botão Add de acrílico (usa a cor do tema) -->
                 <button id="add-btn" aria-label="Adicionar tarefa" class="acrylic-fab rounded-full flex items-center justify-center text-white text-3xl border-[3px] border-white -translate-y-5 relative overflow-hidden">
                     <i class="fas fa-plus relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]"></i>
                 </button>
 
+                <button class="nav-btn" data-view="library" aria-label="Organização" title="Organização"><i class="fas fa-folder-tree"></i></button>
                 <button class="nav-btn" data-view="notes" aria-label="Anotações"><i class="fas fa-note-sticky"></i></button>
                 <button class="nav-btn" data-view="profile" aria-label="Ajustes"><i class="fas fa-cog"></i></button>
             </div>
@@ -1968,77 +2321,65 @@
         };
 
         // ================================================
-        //  PRESETS DE MISSÃO — modelos prontos do botão "Carregar Preset"
-        //  Formato em cascata:  'Categoria': { 'Grupo': [ preset, preset, ... ] }
-        //
-        //  Cada preset aceita:
-        //    nome:        texto da missão (obrigatório)
-        //    tag:         'trabalho' | 'estudo' | 'lazer' | 'rotina'
-        //                 (se faltar, usa o nome da Categoria)
-        //    dificuldade: 1 = fácil, 2 = média, 3 = difícil
-        //    tempo:       tempo estimado, em minutos
-        //    prioridade:  1 = baixa, 2 = média, 3 = alta   (opcional)
-        //    passos:      [ 'passo 1', 'passo 2' ]  sub-steps prontos (opcional)
-        //    descricao:   texto que já vem na descrição (opcional)
-        //    dias:        quantos dias a missão dura (opcional; vira uma pílula no calendário)
-        //
-        //  Dica: copie uma linha inteira { ... }, cole embaixo e troque os textos.
-        //  Não esqueça a vírgula entre um preset e outro!
+        //  TEMAS — paletas nomeadas (aparecem na Boot Screen e nos Ajustes)
+        //  O tema pinta SÓ o fundo e os ícones; botões, pílulas e barras ficam em grafite neutro.
+        //    icon    = cor dos ícones              icon2 = 2ª cor dos ícones (gradientes)
+        //    surface = fundo do app                page  = fundo atrás do "aparelho"
+        //  Dá pra criar uma nova: copie um bloco { ... }, troque o id, o nome e as cores.
         // ================================================
-        const TASK_PRESETS = {
-            'Trabalho': {
-                'Testes Diários': [
-                    { nome: 'Smoke test do build do dia', tag: 'trabalho', dificuldade: 1, tempo: 30,
-                      passos: ['Baixar o build mais recente', 'Abrir o jogo e entrar numa partida', 'Conferir menus principais', 'Reportar bloqueadores'] },
-                    { nome: 'Regressão dos bugs corrigidos', tag: 'trabalho', dificuldade: 2, tempo: 60,
-                      passos: ['Filtrar os bugs resolvidos', 'Reproduzir cada um no build novo', 'Fechar ou reabrir com evidência'] },
-                    { nome: 'Teste exploratório', tag: 'trabalho', dificuldade: 3, tempo: 90,
-                      descricao: 'Área a explorar:\nO que observar:' }
-                ],
-                'Bugs': [
-                    { nome: 'Reportar bug novo', tag: 'trabalho', dificuldade: 2, tempo: 20,
-                      passos: ['Achar os passos de reprodução', 'Gravar vídeo ou print', 'Preencher o ticket'] },
-                    { nome: 'Verificar correção', tag: 'trabalho', dificuldade: 1, tempo: 15 }
-                ],
-                'Ciclos longos': [
-                    { nome: 'Passe de regressão completo', tag: 'trabalho', dificuldade: 3, tempo: 240, dias: 5,
-                      passos: ['Dia 1: menus e fluxo de entrada', 'Dia 2: partidas e modos', 'Dia 3: loja e itens', 'Dia 4: áudio e acessibilidade', 'Dia 5: relatório final'] }
-                ],
-                'Reuniões': [
-                    { nome: 'Daily do time', tag: 'trabalho', dificuldade: 1, tempo: 15 },
-                    { nome: 'Preparar status da semana', tag: 'trabalho', dificuldade: 2, tempo: 30 }
-                ]
-            },
-            'Estudo': {
-                'Cursos': [
-                    { nome: 'Aula do curso online', tag: 'estudo', dificuldade: 2, tempo: 45 },
-                    { nome: 'Revisar anotações', tag: 'estudo', dificuldade: 1, tempo: 20 }
-                ],
-                'Leitura': [
-                    { nome: 'Ler um capítulo', tag: 'estudo', dificuldade: 1, tempo: 30 }
-                ]
-            },
-            'Lazer': {
-                'Games': [
-                    { nome: 'Jogar com a galera', tag: 'lazer', dificuldade: 1, tempo: 60 }
-                ],
-                'Artesanato': [
-                    { nome: 'Projeto de crochê', tag: 'lazer', dificuldade: 2, tempo: 60,
-                      passos: ['Separar linha e agulha', 'Seguir o gráfico', 'Arrematar'] },
-                    { nome: 'Ponto-cruz', tag: 'lazer', dificuldade: 2, tempo: 45 }
-                ]
-            },
-            'Rotina': {
-                'Casa': [
-                    { nome: 'Organizar a mesa', tag: 'rotina', dificuldade: 1, tempo: 15 },
-                    { nome: 'Lavar a roupa', tag: 'rotina', dificuldade: 1, tempo: 30 }
-                ],
-                'Saúde': [
-                    { nome: 'Caminhada', tag: 'rotina', dificuldade: 1, tempo: 30 },
-                    { nome: 'Beber água (8 copos)', tag: 'rotina', dificuldade: 1, tempo: 5 }
-                ]
-            }
-        };
+        const THEME_PALETTES = [
+            { id: 'strawberry', name: 'Strawberry Shortcake', icon: '#B85A55', icon2: '#D9A7AA', surface: '#FFF8F1', page: '#F3E7DD' },
+            { id: 'pudding',    name: 'Pudding',              icon: '#94704B', icon2: '#E9C987', surface: '#FFFAE8', page: '#F3EAD0' },
+            { id: 'matcha',     name: 'Matcha',               icon: '#5F8256', icon2: '#B3CF9E', surface: '#FBF8EE', page: '#E9EEDC' },
+            { id: 'ocean',      name: 'Ocean',                icon: '#5B7A92', icon2: '#AFC4D3', surface: '#FAF5EB', page: '#E9E3D6' },
+            { id: 'preto',      name: 'Preto',                icon: '#1F2328', icon2: '#8A919C', surface: '#FFFFFF', page: '#EEEFF1' }
+        ];
+
+        // ================================================
+        //  ÍCONES (estilo Notion) para missões e presets — escolhidos no seletor de ícones
+        //  [ classe do Font Awesome, palavras para a busca ]
+        // ================================================
+        const ICON_CHOICES = [
+            ['fa-briefcase', 'trabalho maleta'], ['fa-bug', 'bug erro inseto'], ['fa-flask', 'teste experimento'],
+            ['fa-vial', 'teste amostra'], ['fa-clipboard-check', 'checklist revisao'], ['fa-list-check', 'lista tarefas'],
+            ['fa-check-double', 'feito verificado'], ['fa-code', 'codigo programar'], ['fa-terminal', 'terminal console'],
+            ['fa-laptop', 'computador notebook'], ['fa-gamepad', 'jogo game controle'], ['fa-vr-cardboard', 'vr realidade virtual'],
+            ['fa-puzzle-piece', 'quebra-cabeca peca'], ['fa-robot', 'robo bot'], ['fa-rocket', 'lancamento foguete'],
+            ['fa-chart-line', 'grafico relatorio'], ['fa-magnifying-glass', 'buscar investigar'], ['fa-wrench', 'ferramenta consertar'],
+            ['fa-gear', 'config engrenagem'], ['fa-shield-halved', 'seguranca escudo'], ['fa-folder', 'pasta arquivo'],
+            ['fa-file-lines', 'documento texto'], ['fa-comments', 'conversa reuniao'], ['fa-users', 'time pessoas'],
+            ['fa-envelope', 'email mensagem'], ['fa-phone', 'telefone ligar'], ['fa-calendar-day', 'dia agenda'],
+            ['fa-clock', 'hora tempo'], ['fa-bell', 'lembrete aviso'], ['fa-flag', 'meta bandeira'],
+            ['fa-bookmark', 'marcador salvar'], ['fa-trophy', 'conquista trofeu'], ['fa-crown', 'coroa vip'],
+            ['fa-book', 'livro leitura estudo'], ['fa-graduation-cap', 'curso estudo aula'], ['fa-pen', 'escrever caneta'],
+            ['fa-lightbulb', 'ideia'], ['fa-star', 'estrela favorito'], ['fa-heart', 'coracao amor'],
+            ['fa-face-smile', 'feliz sorriso'], ['fa-ghost', 'fantasma'], ['fa-dragon', 'dragao'],
+            ['fa-palette', 'arte pintura cor'], ['fa-paintbrush', 'pincel desenho'], ['fa-scissors', 'tesoura artesanato costura'],
+            ['fa-camera', 'foto camera'], ['fa-film', 'filme video'], ['fa-music', 'musica'],
+            ['fa-headphones', 'fone audio'], ['fa-gift', 'presente'], ['fa-cake-candles', 'aniversario bolo'],
+            ['fa-leaf', 'folha natureza'], ['fa-seedling', 'planta broto'], ['fa-tree', 'arvore'],
+            ['fa-sun', 'sol dia'], ['fa-moon', 'lua noite'], ['fa-spa', 'relaxar lotus'],
+            ['fa-mug-hot', 'cafe cha'], ['fa-utensils', 'comida cozinhar'], ['fa-pizza-slice', 'pizza lanche'],
+            ['fa-ice-cream', 'sorvete doce'], ['fa-cart-shopping', 'compras mercado'], ['fa-house', 'casa'],
+            ['fa-broom', 'limpeza faxina'], ['fa-shirt', 'roupa lavar'], ['fa-dumbbell', 'treino academia'],
+            ['fa-person-walking', 'caminhada andar'], ['fa-bicycle', 'bike bicicleta'], ['fa-pills', 'remedio saude'],
+            ['fa-tooth', 'dentista dente'], ['fa-droplet', 'agua gota'], ['fa-paw', 'pet animal'],
+            ['fa-cat', 'gato'], ['fa-dog', 'cachorro'], ['fa-fish', 'peixe'],
+            ['fa-plane', 'viagem aviao'], ['fa-car', 'carro'], ['fa-globe', 'mundo internet'],
+            ['fa-mountain', 'montanha'], ['fa-umbrella', 'chuva guarda-chuva'], ['fa-bolt', 'energia rapido'],
+            ['fa-fire', 'urgente fogo'], ['fa-wand-magic-sparkles', 'magia'], ['fa-baby', 'bebe'],
+            ['fa-location-dot', 'lugar local mapa'], ['fa-map', 'mapa roteiro'], ['fa-tv', 'serie tv assistir'],
+            ['fa-book-open', 'leitura livro aberto'], ['fa-ticket', 'ingresso evento show'], ['fa-earth-americas', 'mundo viagem']
+        ];
+        // Cores dos ícones (tons suaves no estilo Notion)
+        const ICON_COLORS = [
+            ['#37352F', 'Padrão'], ['#787774', 'Cinza'], ['#9F6B53', 'Marrom'], ['#D9730D', 'Laranja'], ['#CB912F', 'Amarelo'],
+            ['#448361', 'Verde'], ['#337EA9', 'Azul'], ['#9065B0', 'Roxo'], ['#C14C8A', 'Rosa'], ['#D44C47', 'Vermelho']
+        ];
+        const ICON_NAMES = ICON_CHOICES.map(x => x[0]);
+        // Ícone salvo = { n: 'fa-bug', c: '#D44C47' } (ou null = sem ícone)
+        const normIcon = (o) => (o && typeof o === 'object' && ICON_NAMES.includes(o.n) && /^#[0-9a-f]{6}$/i.test(String(o.c)) ? { n: o.n, c: o.c } : null);
+        const iconHTML = (ic, cls = 'task-icon') => (ic ? `<i class="fas ${ic.n} ${cls}" style="color:${ic.c}" aria-hidden="true"></i>` : '');
 
         // ================================================
         //  SALVAMENTO LOCAL (localStorage)
@@ -2048,7 +2389,10 @@
             profile: 'aerosync.profile', stats: 'aerosync.stats',
             notes: 'aerosync.notes', dayNotes: 'aerosync.daynotes',
             appearance: 'aerosync.appearance', sound: 'aerosync.sound', focus: 'aerosync.focus',
-            layout: 'aerosync.layout', hideDone: 'aerosync.hidedone', view: 'aerosync.view'
+            layout: 'aerosync.layout', hideDone: 'aerosync.hidedone', view: 'aerosync.view',
+            avatar: 'aerosync.avatar', // imagem do avatar em base64 (data:image/jpeg;base64,...)
+            library: 'aerosync.library', // aba Organização: Grupos > Sub-grupos > Presets
+            life: 'aerosync.life' // Mundo Pessoal (hobbies) — separado das tarefas
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
         const store = {
@@ -2070,7 +2414,14 @@
         const todayISO = () => toISO(new Date());
         const addDaysISO = (s, n) => { const d = parseISO(s); d.setDate(d.getDate() + n); return toISO(d); };
         const isISO = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(parseISO(s));
-        const byDate = (a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+        // Horários 'HH:MM' (24h)
+        const isHM = (v) => typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+        const hmToMin = (v) => +v.slice(0, 2) * 60 + +v.slice(3, 5);
+        const minToHM = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+        const timeLabel = (t) => (t.timeStart ? t.timeStart + (t.timeEnd ? '–' + t.timeEnd : '') : '');
+        // Ordena por data e, no mesmo dia, pelo horário de início (sem horário vai por último)
+        const byDate = (a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)
+            || ((a.timeStart || '99') < (b.timeStart || '99') ? -1 : (a.timeStart || '99') > (b.timeStart || '99') ? 1 : 0);
         function relLabel(s) {
             const t = todayISO();
             if (s === t) return 'Hoje';
@@ -2109,6 +2460,7 @@
             }
             if (appearance.style === 'simple') root.setAttribute('data-style', 'simple');
             else root.removeAttribute('data-style');
+            syncMetaTheme();
         }
         if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', () => { if (appearance.mode === 'auto') applyAppearance(); });
         applyAppearance();
@@ -2118,7 +2470,7 @@
         // ================================================
         //  CAMPOS NOVOS DAS MISSÕES (Task Hub) — tudo opcional e retrocompatível
         //  status: 'todo' | 'doing' | 'done'   (o antigo "done" continua valendo)
-        //  difficulty 0-3 (0 = sem) | estimate (min) | description (HTML simples)
+        //  difficulty 0-5 (0 = sem; dscale: 5 marca a escala nova) | estimate (min) | description (HTML simples)
         //  links [{ id, label, url }] | steps [{ id, text, done }] | thumb (imagem data:)
         // ================================================
         const STATUSES = ['todo', 'doing', 'done'];
@@ -2165,7 +2517,9 @@
         tasks = tasks
             .filter(t => t && typeof t.name === 'string' && t.name.trim())
             .map((t, i) => ({
-                difficulty: [0, 1, 2, 3].includes(t.difficulty) ? t.difficulty : 0,
+                // Escala antiga (3 chamas) vira a nova de 5 bolinhas: 1 -> 1, 2 -> 3, 3 -> 5
+                difficulty: t.dscale === 5 ? ([0, 1, 2, 3, 4, 5].includes(t.difficulty) ? t.difficulty : 0) : ({ 1: 1, 2: 3, 3: 5 }[t.difficulty] || 0),
+                dscale: 5,
                 estimate: Number.isFinite(t.estimate) && t.estimate > 0 ? Math.min(Math.round(t.estimate), 999) : 0,
                 // "done" (versões antigas) manda; "status" só diferencia A Fazer de Em Andamento
                 status: t.done ? 'done' : (STATUSES.includes(t.status) && t.status !== 'done' ? t.status : 'todo'),
@@ -2177,7 +2531,11 @@
                     id: String(s.id || `s${i}_${j}`), text: s.text.slice(0, 120), done: !!s.done
                 })) : [],
                 thumb: isThumb(t.thumb) ? t.thumb : '',
+                icon: normIcon(t.icon), // ícone estilo Notion ao lado do nome (ou null)
                 start: t.start, doneAt: t.doneAt, // conferidos logo abaixo (dependem da data)
+                // Horário de início e de término (opcionais; o término precisa ser depois do início)
+                timeStart: isHM(t.timeStart) ? t.timeStart : '',
+                timeEnd: isHM(t.timeStart) && isHM(t.timeEnd) && t.timeEnd > t.timeStart ? t.timeEnd : '',
                 id: String(t.id || `t${Date.now()}${i}`),
                 name: t.name.slice(0, 60),
                 tag: ['study', 'work', 'play', 'life'].includes(t.tag) ? t.tag : 'work',
@@ -2196,6 +2554,101 @@
         tasks.forEach(t => { t.doneAt = t.done && isISO(t.doneAt) ? t.doneAt : ''; });
         function fixSpan(t) { if (!(isISO(t.start) && t.start < t.date)) t.start = ''; }
         function saveTasks() { return store.set(STORAGE_KEYS.tasks, tasks); }
+
+        // ================================================
+        //  ORGANIZAÇÃO (biblioteca de presets) — começa vazia
+        //  library = { groups: [ { id, name, subs: [ { id, name, presets: [ preset ] } ] } ] }
+        //  preset  = { id, name, icon, tag, difficulty (0-5), priority (1-3), estimate (min),
+        //              days (1-60), steps: [texto], description (texto) }
+        // ================================================
+        const LIB_TAGS = ['study', 'work', 'play', 'life'];
+        const libText = (v, max) => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, max) : '');
+        function normPreset(p) {
+            const name = p && libText(p.name, 60);
+            if (!name) return null;
+            const est = Math.round(Number(p.estimate));
+            return {
+                id: typeof p.id === 'string' && p.id ? p.id.slice(0, 40) : uid('p'),
+                name,
+                icon: normIcon(p.icon),
+                tag: LIB_TAGS.includes(p.tag) ? p.tag : 'work',
+                difficulty: [0, 1, 2, 3, 4, 5].includes(p.difficulty) ? p.difficulty : 0,
+                priority: [1, 2, 3].includes(p.priority) ? p.priority : 1,
+                estimate: Number.isFinite(est) && est > 0 ? Math.min(est, 999) : 0,
+                days: Math.min(60, Math.max(1, Math.round(Number(p.days)) || 1)),
+                steps: (Array.isArray(p.steps) ? p.steps : []).map(x => libText(x, 120)).filter(Boolean).slice(0, 50),
+                description: typeof p.description === 'string' ? p.description.slice(0, 5000) : ''
+            };
+        }
+        function normLibrary(raw) {
+            const groups = raw && Array.isArray(raw.groups) ? raw.groups : [];
+            return {
+                groups: groups.map(g => {
+                    const name = g && libText(g.name, 40);
+                    if (!name) return null;
+                    return {
+                        id: typeof g.id === 'string' && g.id ? g.id.slice(0, 40) : uid('g'), name,
+                        subs: (Array.isArray(g.subs) ? g.subs : []).map(sg => {
+                            const sname = sg && libText(sg.name, 40);
+                            if (!sname) return null;
+                            return {
+                                id: typeof sg.id === 'string' && sg.id ? sg.id.slice(0, 40) : uid('s'), name: sname,
+                                presets: (Array.isArray(sg.presets) ? sg.presets : []).map(normPreset).filter(Boolean).slice(0, 200)
+                            };
+                        }).filter(Boolean).slice(0, 50)
+                    };
+                }).filter(Boolean).slice(0, 50)
+            };
+        }
+        let library = normLibrary(store.get(STORAGE_KEYS.library, null));
+        const saveLibrary = () => store.set(STORAGE_KEYS.library, library);
+        const libGroup = (gid) => library.groups.find(g => g.id === gid);
+        const libSub = (gid, sid) => { const g = libGroup(gid); return g ? g.subs.find(x => x.id === sid) : null; };
+        const libCount = (g) => g.subs.reduce((n, x) => n + x.presets.length, 0);
+
+        // ================================================
+        //  MUNDO PESSOAL (Life OS) — hobbies, totalmente separado das tarefas
+        //  life = { lists: [ { id, name, icon } ], items: [ item ] }
+        //  item = { id, list, title, cover (imagem data:), place, description (HTML simples),
+        //           duration (texto livre: "2h", "320 páginas"), tags: [texto], status, updated }
+        // ================================================
+        const LIFE_DEFAULT_LISTS = [
+            { id: 'watch', name: 'Assistir', icon: { n: 'fa-film', c: '#9065B0' } },
+            { id: 'play', name: 'Jogar', icon: { n: 'fa-gamepad', c: '#337EA9' } },
+            { id: 'read', name: 'Ler', icon: { n: 'fa-book', c: '#9F6B53' } },
+            { id: 'places', name: 'Lugares', icon: { n: 'fa-location-dot', c: '#448361' } }
+        ];
+        const LIFE_STATUS = { want: 'Quero', doing: 'Em andamento', done: 'Concluído' };
+        const LIFE_STATUS_ICON = { want: 'fa-bookmark', doing: 'fa-hourglass-half', done: 'fa-circle-check' };
+        function normLife(raw) {
+            const src = raw && typeof raw === 'object' ? raw : null;
+            let lists = src && Array.isArray(src.lists) ? src.lists.map(l => {
+                const name = l && libText(l.name, 30);
+                return name ? { id: typeof l.id === 'string' && l.id ? l.id.slice(0, 40) : uid('L'), name, icon: normIcon(l.icon) } : null;
+            }).filter(Boolean).slice(0, 20) : null;
+            if (!lists || !lists.length) lists = LIFE_DEFAULT_LISTS.map(l => ({ ...l, icon: { ...l.icon } }));
+            const ids = lists.map(l => l.id);
+            const items = src && Array.isArray(src.items) ? src.items.map(it => {
+                if (!it || !ids.includes(it.list)) return null;
+                return {
+                    id: typeof it.id === 'string' && it.id ? it.id.slice(0, 40) : uid('h'),
+                    list: it.list,
+                    title: typeof it.title === 'string' ? it.title.slice(0, 80) : '',
+                    cover: isThumb(it.cover) ? it.cover : '',
+                    place: libText(it.place, 80),
+                    description: sanitizeRich(it.description),
+                    duration: libText(it.duration, 40),
+                    tags: [...new Set((Array.isArray(it.tags) ? it.tags : []).map(x => libText(x, 24)).filter(Boolean))].slice(0, 12),
+                    status: LIFE_STATUS[it.status] ? it.status : 'want',
+                    updated: Number.isFinite(it.updated) ? it.updated : Date.now()
+                };
+            }).filter(x => x && x.title.trim()).slice(0, 1000) : [];
+            return { lists, items };
+        }
+        let life = normLife(store.get(STORAGE_KEYS.life, null));
+        const saveLife = () => store.set(STORAGE_KEYS.life, life);
+        const lifeList = (id) => life.lists.find(l => l.id === id);
+        const lifeItem = (id) => life.items.find(x => x.id === id);
 
         // ---------- Planejado vs Executado (missões de vários dias) ----------
         const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
@@ -2376,8 +2829,72 @@
         }
         const saveDayNotes = () => store.set(STORAGE_KEYS.dayNotes, dayNotes);
 
+        // Avatar: imagem quadrada em base64 salva no localStorage
+        let avatar = store.get(STORAGE_KEYS.avatar, '');
+        if (!isThumb(avatar)) avatar = '';
+        // Corta qualquer imagem num quadrado (centro) e devolve um JPEG leve em base64
+        function fileToSquareJpeg(file, S = 256) {
+            return new Promise((resolve, reject) => {
+                if (!file || !/^image\//.test(file.type)) { reject(new Error('tipo')); return; }
+                const r = new FileReader();
+                r.onerror = () => reject(new Error('leitura'));
+                r.onload = () => {
+                    const img = new Image();
+                    img.onerror = () => reject(new Error('imagem'));
+                    img.onload = () => {
+                        const c = document.createElement('canvas');
+                        c.width = c.height = S;
+                        const g = c.getContext && c.getContext('2d');
+                        if (!g) { reject(new Error('canvas')); return; }
+                        const k = Math.max(S / img.width, S / img.height), w = img.width * k, h = img.height * k;
+                        g.fillStyle = '#ffffff'; g.fillRect(0, 0, S, S); // PNG transparente fica com fundo branco
+                        g.drawImage(img, (S - w) / 2, (S - h) / 2, w, h);
+                        let url = '';
+                        try { url = c.toDataURL('image/jpeg', 0.85); } catch (err) {}
+                        isThumb(url) ? resolve(url) : reject(new Error('converter'));
+                    };
+                    img.src = r.result;
+                };
+                r.readAsDataURL(file);
+            });
+        }
+        // Capa do Mundo Pessoal: mantém a proporção (lado maior com até maxSide px)
+        function fileToJpeg(file, maxSide = 600) {
+            return new Promise((resolve, reject) => {
+                if (!file || !/^image\//.test(file.type)) { reject(new Error('tipo')); return; }
+                const r = new FileReader();
+                r.onerror = () => reject(new Error('leitura'));
+                r.onload = () => {
+                    const img = new Image();
+                    img.onerror = () => reject(new Error('imagem'));
+                    img.onload = () => {
+                        const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+                        const c = document.createElement('canvas');
+                        c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+                        const g = c.getContext && c.getContext('2d');
+                        if (!g) { reject(new Error('canvas')); return; }
+                        g.fillStyle = '#ffffff'; g.fillRect(0, 0, c.width, c.height);
+                        g.drawImage(img, 0, 0, c.width, c.height);
+                        let url = '';
+                        try { url = c.toDataURL('image/jpeg', 0.8); } catch (err) {}
+                        isThumb(url) ? resolve(url) : reject(new Error('converter'));
+                    };
+                    img.src = r.result;
+                };
+                r.readAsDataURL(file);
+            });
+        }
+        function avatarInner(sizeIcon = '') {
+            return avatar ? `<img src="${avatar}" alt="">` : `<i class="fas fa-user${sizeIcon}"></i>`;
+        }
+        function applyAvatar() {
+            const b = document.getElementById('user-avatar');
+            if (b) b.innerHTML = avatarInner();
+        }
+
         function applyProfile() {
             document.getElementById('app-title').textContent = appTitle();
+            applyAvatar();
         }
         applyProfile();
 
@@ -2563,25 +3080,61 @@
             document.addEventListener('pointerdown', tryChime, { once: true });
         }
 
-        // Aplica a cor escolhida nas variáveis do :root
-        let currentTheme = null;
-        // Guarda as 3 opções de tema antes da Boot Screen sair do DOM (usadas no Perfil)
-        const THEMES = [...document.querySelectorAll('.theme-btn')].map(b => ({
-            accent: b.dataset.accent, accent2: b.dataset.accent2, glow: b.dataset.glow, soft: b.dataset.soft,
-            label: b.getAttribute('aria-label').replace('Tema ', ''), bg: b.style.background
-        }));
-        function applyTheme(t) {
-            currentTheme = { accent: t.accent, accent2: t.accent2, glow: t.glow, soft: t.soft };
-            const root = document.documentElement.style;
-            root.setProperty('--accent', t.accent);
-            root.setProperty('--accent-2', t.accent2);
-            root.setProperty('--accent-glow', t.glow);
-            root.setProperty('--accent-soft', t.soft);
+        // ---------- TEMAS (paletas do THEME_PALETTES, lá no começo) ----------
+        const isHex = (c) => typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c.trim());
+        const isColor = (c) => isHex(c) || (typeof c === 'string' && /^rgba?\([\d\s.,%]+\)$/i.test(c.trim()));
+        // Paletas válidas (se alguém digitar uma cor errada no config, aquela paleta é ignorada)
+        const THEMES = (Array.isArray(THEME_PALETTES) ? THEME_PALETTES : []).filter(p => p && typeof p.id === 'string'
+            && ['icon', 'icon2', 'surface', 'page'].every(k => isColor(p[k])))
+            .map(p => ({ ...p, name: String(p.name || p.id).slice(0, 30) }));
+        if (!THEMES.length) THEMES.push({ id: 'strawberry', name: 'Strawberry Shortcake', icon: '#B85A55', icon2: '#D9A7AA', surface: '#FFF8F1', page: '#F3E7DD' });
+        // Cores das versões antigas (Rosa / Lilás / Ciano / Grafite) viram a paleta mais parecida
+        const OLD_THEME_MAP = { '#ec4899': 'strawberry', '#8b5cf6': 'ocean', '#3b82f6': 'ocean', '#475569': 'preto' };
+        function themeFrom(saved) {
+            if (!saved || typeof saved !== 'object') return null;
+            const byId = THEMES.find(p => p.id === saved.id);
+            if (byId) return byId;
+            if (typeof saved.accent === 'string') {
+                const id = OLD_THEME_MAP[saved.accent.toLowerCase()];
+                return THEMES.find(p => p.id === id) || THEMES[0];
+            }
+            return null;
         }
+        // Barra do navegador/celular na cor do fundo do app
+        function syncMetaTheme() {
+            const m = document.querySelector('meta[name="theme-color"]');
+            if (!m) return;
+            m.setAttribute('content', document.documentElement.classList.contains('dark') ? '#14161f' : (currentTheme ? currentTheme.surface : '#ffffff'));
+        }
+        // Aplica a paleta nas variáveis do :root
+        var currentTheme = null; // "var": o modo escuro (lá em cima) já consulta isso antes desta linha
+        // Só fundo e ícones mudam; a interface neutra (--accent) fica no CSS
+        function applyTheme(t) {
+            currentTheme = { ...t };
+            const root = document.documentElement.style;
+            root.setProperty('--theme-icon', t.icon);
+            root.setProperty('--theme-icon-2', t.icon2);
+            root.setProperty('--surface', t.surface);
+            root.setProperty('--page', t.page);
+            syncMetaTheme();
+        }
+        const saveTheme = () => store.set(STORAGE_KEYS.theme, {
+            id: currentTheme.id, icon: currentTheme.icon, icon2: currentTheme.icon2, surface: currentTheme.surface, page: currentTheme.page
+        });
+        // Bolinha de amostra de uma paleta (fundo + 2 cores)
+        const paletteDot = (p) => `background: radial-gradient(circle at 50% 50%, ${p.surface} 0 34%, transparent 35%), linear-gradient(135deg, ${p.icon2} 0 50%, ${p.icon} 50% 100%)`;
 
         const bootScreen = document.getElementById('boot-screen');
         const logoStage = document.getElementById('boot-logo-stage');
         const themeStage = document.getElementById('boot-theme-stage');
+
+        // Botões da Boot Screen montados a partir das paletas
+        const themeChoices = document.getElementById('theme-choices');
+        themeChoices.innerHTML = THEMES.map(p => `
+            <div class="theme-choice">
+                <button class="theme-btn" data-id="${p.id}" aria-label="Tema ${p.name.replace(/"/g, '')}" style="${paletteDot(p)}"></button>
+                <span>${p.name.replace(/[<>&"]/g, '')}</span>
+            </div>`).join('');
 
         // Após 2s: logo sai, onboarding entra
         setTimeout(() => {
@@ -2595,9 +3148,8 @@
                 if (themePicked) return;
                 themePicked = true;
                 if (audio) audio.resume().then(playClick).catch(() => {});
-                const theme = { ...btn.dataset };
-                applyTheme(theme);
-                store.set(STORAGE_KEYS.theme, currentTheme); // próxima visita pula a Boot Screen
+                applyTheme(THEMES.find(p => p.id === btn.dataset.id) || THEMES[0]);
+                saveTheme(); // próxima visita pula a Boot Screen
                 btn.classList.add('picked');
                 // Pequena pausa para ver o feedback, depois fade-out revelando o dashboard
                 setTimeout(() => bootScreen.classList.add('boot-hide'), 350);
@@ -2606,10 +3158,15 @@
         });
 
         // Já escolheu a cor antes? Aplica e pula direto para o dashboard
-        if (savedTheme && savedTheme.accent) {
-            applyTheme(savedTheme);
+        const restoredTheme = themeFrom(savedTheme);
+        if (restoredTheme) {
+            applyTheme(restoredTheme);
+            if (savedTheme.id !== restoredTheme.id || !savedTheme.icon) saveTheme(); // tema de versão antiga: grava no formato novo
             themePicked = true;
             bootScreen.remove();
+        } else {
+            applyTheme(THEMES[0]); // a Boot Screen já aparece com a 1ª paleta
+            currentTheme = null;   // ...mas ainda não foi escolhida
         }
 
         // 1. Relógio do Sistema
@@ -2755,23 +3312,27 @@
         }
 
         // Dificuldade (chamas): tocar na chama acesa de novo apaga (= sem dificuldade)
-        const DIFF_NAME = { 0: '—', 1: 'Fácil', 2: 'Média', 3: 'Difícil' };
-        const flamesEls = document.querySelectorAll('#task-modal .diff-flame');
+        // Dificuldade neutra: 5 bolinhas que mudam de cor (1 verde ... 3 amarelo ... 5 vermelho)
+        const DIFF_NAME = { 0: '—', 1: 'Muito fácil', 2: 'Fácil', 3: 'Média', 4: 'Difícil', 5: 'Muito difícil' };
+        const DIFF_COLOR = { 0: '#9ca3af', 1: '#6DBB7A', 2: '#A8C76A', 3: '#E8C25A', 4: '#E69A5C', 5: '#D9665F' };
+        const diffDots = document.querySelectorAll('#task-modal .diff-dot');
         let difficulty = 0;
         function setDifficulty(n, withSound) {
-            difficulty = [0, 1, 2, 3].includes(n) ? n : 0;
-            flamesEls.forEach((f, i) => {
+            difficulty = [0, 1, 2, 3, 4, 5].includes(n) ? n : 0;
+            document.getElementById('diff-scale').style.setProperty('--dc', DIFF_COLOR[difficulty]);
+            document.getElementById('diff-label').style.setProperty('--dc', DIFF_COLOR[difficulty]);
+            diffDots.forEach((f, i) => {
                 f.classList.toggle('on', i < difficulty);
                 f.setAttribute('aria-checked', i === difficulty - 1);
             });
             document.getElementById('diff-label').textContent = DIFF_NAME[difficulty];
             if (withSound) {
-                difficulty === 3 ? playRiseChime() : playClick();
-                const f = flamesEls[Math.max(0, difficulty - 1)];
+                difficulty === 5 ? playRiseChime() : playClick();
+                const f = diffDots[Math.max(0, difficulty - 1)];
                 f.classList.remove('star-pop'); void f.offsetWidth; f.classList.add('star-pop');
             }
         }
-        flamesEls.forEach(f => f.addEventListener('click', () => {
+        diffDots.forEach(f => f.addEventListener('click', () => {
             const n = +f.dataset.value;
             setDifficulty(n === difficulty ? 0 : n, true);
         }));
@@ -2796,66 +3357,41 @@
         });
         estInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveTask(); });
 
-        // ---------- PRESETS (lidos do TASK_PRESETS lá do começo) ----------
-        const TAG_ALIASES = { trabalho: 'work', work: 'work', estudo: 'study', estudos: 'study', study: 'study',
-            lazer: 'play', hobby: 'play', hobbies: 'play', play: 'play', rotina: 'life', life: 'life' };
-        const tagFrom = (...names) => {
-            for (const n of names) {
-                const k = String(n || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-                if (TAG_ALIASES[k]) return TAG_ALIASES[k];
-            }
-            return 'work';
-        };
-        // Achata a cascata Categoria > Grupo > Preset numa lista (ignora o que estiver mal escrito)
-        const PRESETS = [];
-        try {
-            Object.entries(typeof TASK_PRESETS === 'object' && TASK_PRESETS ? TASK_PRESETS : {}).forEach(([cat, groups]) => {
-                if (!groups || typeof groups !== 'object') return;
-                const entries = Array.isArray(groups) ? [['', groups]] : Object.entries(groups);
-                entries.forEach(([group, list]) => {
-                    (Array.isArray(list) ? list : []).forEach(p => {
-                        const name = p && String(p.nome || p.name || '').trim().slice(0, 60);
-                        if (!name) return;
-                        const n13 = (v) => [1, 2, 3].includes(Number(v)) ? Number(v) : 0;
-                        const steps = p.passos || p.steps;
-                        PRESETS.push({
-                            cat: String(cat), group: String(group), name,
-                            tag: tagFrom(p.tag, cat),
-                            difficulty: n13(p.dificuldade ?? p.difficulty),
-                            estimate: clampEst(p.tempo ?? p.estimate),
-                            priority: n13(p.prioridade ?? p.priority),
-                            days: Math.min(60, Math.max(1, Math.round(Number(p.dias ?? p.days) || 1))),
-                            steps: (Array.isArray(steps) ? steps : []).map(s => String(s || '').trim().slice(0, 120)).filter(Boolean).slice(0, 50),
-                            description: typeof (p.descricao ?? p.description) === 'string' ? String(p.descricao ?? p.description).slice(0, 5000) : ''
-                        });
-                    });
-                });
-            });
-        } catch (err) { /* preset mal formatado: o app segue sem eles */ }
-
+        // ---------- PRESETS (vêm da aba Organização: Grupo > Sub-grupo > Preset) ----------
+        let PRESETS = []; // lista achatada: { ...preset, cat: nome do grupo, group: nome do sub-grupo }
         const presetSelect = document.getElementById('task-preset');
         const presetHint = document.getElementById('preset-hint');
+        const presetEmpty = document.getElementById('preset-empty');
         let presetApplied = null; // preset escolhido no modal aberto (traz sub-steps e descrição)
-        (function buildPresetSelect() {
-            if (!PRESETS.length) { document.getElementById('preset-block').classList.add('hidden'); return; }
+        function buildPresetSelect() {
+            PRESETS = [];
+            library.groups.forEach(g => g.subs.forEach(sg => sg.presets.forEach(pr => PRESETS.push({ ...pr, cat: g.name, group: sg.name }))));
+            presetSelect.innerHTML = '';
+            const first = document.createElement('option');
+            first.value = '';
+            first.textContent = PRESETS.length ? 'Carregar Preset…' : 'Nenhum preset ainda';
+            presetSelect.appendChild(first);
+            presetSelect.disabled = !PRESETS.length;
+            presetEmpty.classList.toggle('hidden', PRESETS.length > 0);
             const groups = new Map();
-            PRESETS.forEach((p, i) => {
-                const label = p.group ? `${p.cat} › ${p.group}` : p.cat;
+            PRESETS.forEach((pr, i) => {
+                const label = `${pr.cat} › ${pr.group}`;
                 if (!groups.has(label)) groups.set(label, []);
-                groups.get(label).push([p, i]);
+                groups.get(label).push([pr, i]);
             });
             groups.forEach((list, label) => {
                 const og = document.createElement('optgroup');
                 og.label = label;
-                list.forEach(([p, i]) => {
+                list.forEach(([pr, i]) => {
                     const o = document.createElement('option');
                     o.value = String(i);
-                    o.textContent = p.name;
+                    o.textContent = pr.name;
                     og.appendChild(o);
                 });
                 presetSelect.appendChild(og);
             });
-        })();
+        }
+        buildPresetSelect();
         function resetPreset() {
             presetApplied = null;
             presetSelect.value = '';
@@ -2867,6 +3403,7 @@
             setTag(p.tag);
             setDifficulty(p.difficulty);
             setEstimate(p.estimate);
+            setTaskIcon(p.icon);
             if (p.priority) setPriority(p.priority);
             if (p.days > 1) { // preset de vários dias: começa hoje e termina em "dias"
                 setTaskDate(addDaysISO(todayISO(), p.days - 1));
@@ -2876,7 +3413,7 @@
             if (p.days > 1) extra.push(`${p.days} dias`);
             if (p.steps.length) extra.push(`${p.steps.length} sub-step${p.steps.length > 1 ? 's' : ''}`);
             if (p.description) extra.push('descrição');
-            presetHint.textContent = `Preset "${p.cat}${p.group ? ' › ' + p.group : ''}" carregado${extra.length ? ' · com ' + extra.join(' e ') : ''}`;
+            presetHint.textContent = `Preset "${p.cat} › ${p.group}" carregado${extra.length ? ' · com ' + extra.join(' e ') : ''}`;
             presetHint.classList.remove('hidden');
             [nameInput, document.querySelector('.modal-split'), document.querySelector('.tag-pill.selected')].forEach(el => {
                 if (!el) return;
@@ -2889,6 +3426,20 @@
             applyPreset(p);
             if (audio) audio.resume().then(playRiseChime).catch(() => {});
         });
+        // Sem presets: atalho para a aba Organização
+        document.getElementById('preset-empty-link').addEventListener('click', () => { closeModal(); openSheet('library'); });
+
+        // Ícone da missão (estilo Notion), escolhido no seletor de ícones
+        const taskIconBtn = document.getElementById('task-icon-btn');
+        let taskIcon = null;
+        function iconBtnHTML(ic) { return ic ? iconHTML(ic, 'pick-ic') : '<i class="fas fa-face-smile pick-ic pick-empty" aria-hidden="true"></i>'; }
+        function setTaskIcon(ic) {
+            taskIcon = normIcon(ic);
+            taskIconBtn.innerHTML = iconBtnHTML(taskIcon);
+            taskIconBtn.classList.toggle('has-icon', !!taskIcon);
+            taskIconBtn.setAttribute('aria-label', taskIcon ? 'Trocar ícone da missão' : 'Escolher ícone da missão');
+        }
+        taskIconBtn.addEventListener('click', () => openIconPicker(taskIcon, (ic) => setTaskIcon(ic)));
 
         // Data da tarefa: atalhos Hoje / Amanhã + seletor de data
         const dateInput = document.getElementById('task-date');
@@ -2914,6 +3465,38 @@
             fitStart();
         }
         multiBtn.addEventListener('click', () => { setMulti(!multiOn); playClick(); });
+
+        // Horário de início / término
+        const tStartIn = document.getElementById('task-time-start');
+        const tEndIn = document.getElementById('task-time-end');
+        const timeHint = document.getElementById('time-hint');
+        function syncTimeUI(msg) {
+            const s0 = tStartIn.value, e0 = tEndIn.value;
+            document.getElementById('time-clear').classList.toggle('hidden', !s0 && !e0);
+            const dur = isHM(s0) && isHM(e0) ? hmToMin(e0) - hmToMin(s0) : 0;
+            const txt = msg || (dur > 0 ? `Duração: ${fmtDur(dur * 60000)}` : '');
+            timeHint.textContent = txt;
+            timeHint.classList.toggle('hidden', !txt);
+            timeHint.classList.toggle('is-warn', !!msg);
+        }
+        function setTimes(a, b) {
+            tStartIn.value = isHM(a) ? a : '';
+            tEndIn.value = isHM(a) && isHM(b) && b > a ? b : '';
+            syncTimeUI();
+        }
+        tStartIn.addEventListener('change', () => {
+            if (!isHM(tStartIn.value)) { tStartIn.value = ''; tEndIn.value = ''; syncTimeUI(); return; }
+            // término antes do novo início: empurra para 1h depois
+            if (isHM(tEndIn.value) && tEndIn.value <= tStartIn.value) tEndIn.value = minToHM(Math.min(hmToMin(tStartIn.value) + 60, 23 * 60 + 59));
+            syncTimeUI();
+        });
+        tEndIn.addEventListener('change', () => {
+            if (!tEndIn.value) { syncTimeUI(); return; }
+            if (!isHM(tStartIn.value)) { tEndIn.value = ''; syncTimeUI('Escolha o horário de início primeiro'); return; }
+            if (tEndIn.value <= tStartIn.value) { tEndIn.value = ''; syncTimeUI('O término precisa ser depois do início'); return; }
+            syncTimeUI();
+        });
+        document.getElementById('time-clear').addEventListener('click', () => { setTimes('', ''); playClick(); });
         startInput.addEventListener('change', fitStart);
 
         function setTaskDate(iso) {
@@ -2938,6 +3521,7 @@
         function openModal(taskEl = null, presetDate = null) {
             editingEl = taskEl;
             closeMenu();
+            buildPresetSelect();
             resetPreset();
             if (taskEl) {
                 modalTitle.textContent = 'Editar Missão';
@@ -2949,8 +3533,10 @@
                 setTag(t.tag || 'work');
                 setDifficulty(t.difficulty || 0);
                 setEstimate(t.estimate || 0);
+                setTaskIcon(t.icon);
                 setTaskDate(t.date);
                 setMulti(!!t.start, t.start);
+                setTimes(t.timeStart, t.timeEnd);
             } else {
                 modalTitle.textContent = 'Nova Missão';
                 modalSave.textContent = 'Adicionar';
@@ -2959,8 +3545,10 @@
                 setTag('work');
                 setDifficulty(0);
                 setEstimate(0);
+                setTaskIcon(null);
                 setTaskDate(presetDate || todayISO());
                 setMulti(false);
+                setTimes('', '');
                 showModalTime(null);
             }
             modal.classList.add('open');
@@ -2986,7 +3574,8 @@
         const STATUS_NAME = { todo: 'A Fazer', doing: 'Em Andamento', done: 'Concluído' };
         const STATUS_EMPTY = { todo: 'Nada a fazer por aqui', doing: 'Arraste uma missão para cá', done: 'Solte aqui o que terminar' };
         const fmtEst = (m) => (m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, '0') : ''}` : `${m}min`);
-        const flamesHTML = (n) => '<i class="fas fa-fire"></i>'.repeat(n);
+        // Mini escala de 5 bolinhas no card (as acesas ganham a cor do nível)
+        const diffMiniHTML = (n) => [1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('');
         let viewMode = store.get(STORAGE_KEYS.view, 'list');
         if (!['list', 'grid', 'kanban'].includes(viewMode)) viewMode = 'list';
 
@@ -3012,9 +3601,10 @@
             let h = t.done
                 ? `<span><i class="fas fa-circle-check"></i>Concluído${totalMs(t) >= 1000 ? ' • ' + fmtDur(totalMs(t)) : ''}</span>`
                 : `<span title="Prazo"><i class="fas fa-calendar-day"></i>${overdue ? 'Atrasada • ' : ''}${relLabel(t.date)} • ${TAG_NAME[t.tag]}</span>`;
+            if (t.timeStart) h += `<span title="Horário"><i class="fas fa-clock"></i>${timeLabel(t)}</span>`;
             if (t.start) h += `<span title="${esc(spanText(t))}"><i class="fas fa-arrows-left-right"></i>${plural(spanInfo(t).planned, 'dia', 'dias')}</span>`;
             if (t.estimate) h += `<span title="Tempo estimado"><i class="fas fa-hourglass-half"></i>${fmtEst(t.estimate)}</span>`;
-            if (t.difficulty) h += `<span class="flames" title="Dificuldade: ${DIFF_NAME[t.difficulty]}" aria-label="Dificuldade ${DIFF_NAME[t.difficulty]}">${flamesHTML(t.difficulty)}</span>`;
+            if (t.difficulty) h += `<span class="diff-mini" style="--dc:${DIFF_COLOR[t.difficulty]}" title="Dificuldade ${t.difficulty}/5: ${DIFF_NAME[t.difficulty]}" aria-label="Dificuldade ${t.difficulty} de 5: ${DIFF_NAME[t.difficulty]}">${diffMiniHTML(t.difficulty)}</span>`;
             if (t.steps.length) h += `<span title="Sub-steps"><i class="fas fa-list-check"></i>${t.steps.filter(s => s.done).length}/${t.steps.length}</span>`;
             return h;
         }
@@ -3051,6 +3641,7 @@
             cb.setAttribute('aria-label', `Concluir ${t.name}`);
             const h4 = el.querySelector('h4');
             h4.textContent = t.name; // textContent = seguro contra HTML injetado
+            if (t.icon) h4.insertAdjacentHTML('afterbegin', iconHTML(t.icon)); // ícone estilo Notion à esquerda do nome
             h4.classList.add(...(t.done ? ['text-gray-400', 'line-through'] : ['text-gray-800']));
             const p = el.querySelector('p');
             p.innerHTML = metaHTML(t);
@@ -3283,12 +3874,14 @@
             let id;
             const p = presetApplied;
             const startISO = multiOn && isISO(startInput.value) && startInput.value < selectedDate ? startInput.value : '';
+            const tS = isHM(tStartIn.value) ? tStartIn.value : '';
+            const tE = tS && isHM(tEndIn.value) && tEndIn.value > tS ? tEndIn.value : '';
             const presetSteps = () => (p ? p.steps.map(text => ({ id: uid('s'), text, done: false })) : []);
             if (editingEl) {
                 const t = findTask(editingEl.dataset.id);
                 if (t) {
                     t.name = name; t.priority = priority; t.tag = selectedTag; t.date = selectedDate;
-                    t.difficulty = difficulty; t.estimate = estimate; t.start = startISO; id = t.id;
+                    t.difficulty = difficulty; t.estimate = estimate; t.start = startISO; t.icon = taskIcon; t.timeStart = tS; t.timeEnd = tE; id = t.id;
                     // Preset carregado na edição só completa o que estiver vazio
                     if (p && !t.steps.length) t.steps = presetSteps();
                     if (p && p.description && !t.description) t.description = textToRich(p.description);
@@ -3297,7 +3890,7 @@
                 id = uid('t');
                 tasks.unshift({
                     id, name, tag: selectedTag, priority, done: false, status: 'todo', date: selectedDate,
-                    difficulty, estimate, start: startISO, doneAt: '', spent: 0, cur: 0, since: null, log: [],
+                    difficulty, dscale: 5, estimate, icon: taskIcon, start: startISO, timeStart: tS, timeEnd: tE, doneAt: '', spent: 0, cur: 0, since: null, log: [],
                     description: p && p.description ? textToRich(p.description) : '', links: [], steps: presetSteps(), thumb: ''
                 });
                 lastAddedId = id;
@@ -3578,8 +4171,8 @@
         const sheetBody = document.getElementById('sheet-body');
         const sheetTitle = document.getElementById('sheet-title');
         const navBtns = document.querySelectorAll('.nav-btn[data-view]'); // o botão Relaxar (lótus) é tratado à parte
-        const TAG_COLOR = { study: '#ec4899', work: '#14b8a6', play: '#f97316', life: '#8b5cf6' };
-        const VIEW_TITLE = { agenda: 'Todas as missões', calendar: 'Calendário', notes: 'Anotações', stats: 'Estatísticas', profile: 'Ajustes' };
+        const TAG_COLOR = { study: 'var(--tag-study)', work: 'var(--tag-work)', play: 'var(--tag-play)', life: 'var(--tag-life)' };
+        const VIEW_TITLE = { agenda: 'Todas as missões', calendar: 'Calendário', notes: 'Anotações', stats: 'Estatísticas', profile: 'Ajustes', library: 'Organização', life: 'Mundo Pessoal' };
         const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         let currentView = 'home', draft = null;
         let calMonth = null, calSelected = todayISO(), editingNoteId = null;
@@ -3627,7 +4220,7 @@
         // Redesenha o painel atual mantendo a posição da rolagem
         function renderSheet() {
             const keep = sheetBody.scrollTop;
-            const fn = { agenda: renderAgenda, calendar: renderCalendar, notes: renderNotes, stats: renderStats, profile: renderProfile }[currentView];
+            const fn = { agenda: renderAgenda, calendar: renderCalendar, notes: renderNotes, stats: renderStats, profile: renderProfile, library: renderLibrary, life: renderLife }[currentView];
             if (fn) fn();
             sheetBody.scrollTop = keep;
         }
@@ -3646,6 +4239,8 @@
             if (view === 'profile') draft = null;
             if (view === 'calendar') { calSelected = todayISO(); calMonth = null; }
             if (view === 'agenda') agendaQuery = '';
+            if (view === 'library') { libEdit = null; libDraft = null; }
+            if (view === 'life') { lifeLeave(); lifeEditList = null; }
             setNav(view);
             sheetTitle.textContent = VIEW_TITLE[view];
             renderSheet();
@@ -3661,6 +4256,7 @@
 
         function closeSheet() {
             leaveNoteEditor();
+            lifeLeave();
             sheet.classList.remove('open');
             sheet.setAttribute('aria-hidden', 'true');
             setNav('home');
@@ -3680,7 +4276,12 @@
         document.getElementById('sheet-close').addEventListener('click', () => { playClick(); closeSheet(); });
         sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && sheet.classList.contains('open') && !modal.classList.contains('open') && !hubOpen()) closeSheet();
+            if (e.key === 'Escape' && sheet.classList.contains('open') && !modal.classList.contains('open') && !hubOpen()) {
+                // Na Organização, Esc primeiro sai do editor / do campo de nome
+                if (currentView === 'library' && (libDraft || libEdit)) { libDraft = null; libEdit = null; renderSheet(); return; }
+                if (currentView === 'life' && (lifeItemId || lifeEditList)) { lifeLeave(); lifeEditList = null; renderSheet(); return; }
+                closeSheet();
+            }
         });
         document.getElementById('see-all').addEventListener('click', () => openSheet('agenda'));
 
@@ -3711,7 +4312,7 @@
                 <div class="agenda-row" data-id="${esc(t.id)}" data-name="${esc(t.name.toLowerCase())}">
                     <input type="checkbox" class="cute-checkbox" data-act="toggle" ${t.done ? 'checked' : ''} aria-label="Concluir ${esc(t.name)}">
                     <div class="flex-1 min-w-0">
-                        <p class="font-bold text-sm truncate ${t.done ? 'text-gray-400 line-through' : 'text-gray-800'}">${esc(t.name)}</p>
+                        <p class="font-bold text-sm truncate ${t.done ? 'text-gray-400 line-through' : 'text-gray-800'}">${iconHTML(t.icon)}${esc(t.name)}</p>
                         <p class="text-xs font-semibold ${overdue ? 'text-red-500' : 'text-gray-400'}">${showDate ? relLabel(t.date) + ' • ' : ''}${TAG_NAME[t.tag]} • ${PRIO[t.priority].label}</p>
                         ${sp ? `<p class="span-note${si.saved ? ' is-saved' : si.late ? ' is-late' : ''}"><i class="fas ${si.saved ? 'fa-leaf' : 'fa-arrows-left-right'}"></i>${esc(sp)}</p>` : ''}
                     </div>
@@ -3761,6 +4362,52 @@
             });
             const nr = document.getElementById('agenda-noresult');
             if (nr) nr.classList.toggle('hidden', !(q && !shown));
+        }
+
+        // --- Timeline do dia: missões com horário em ordem cronológica ---
+        const TL_HOUR = 48; // altura (px) de 1 hora na timeline
+        function dayTimelineHTML(day, list) {
+            const ev = list.filter(t => t.timeStart).map(t => {
+                const st = hmToMin(t.timeStart);
+                const en = t.timeEnd ? hmToMin(t.timeEnd) : st + 30; // só início: bloco de 30 min
+                return { t, s: st, e: Math.min(24 * 60, Math.max(en, st + 15)) };
+            }).sort((a, b) => a.s - b.s || b.e - a.e);
+            if (!ev.length) return '';
+            // Missões que se sobrepõem dividem a largura em colunas
+            let group = null;
+            const groups = [];
+            ev.forEach(x => {
+                if (!group || x.s >= group.end) { group = { items: [], end: x.e }; groups.push(group); }
+                group.items.push(x);
+                group.end = Math.max(group.end, x.e);
+            });
+            groups.forEach(g => {
+                const colEnd = [];
+                g.items.forEach(x => {
+                    let k = colEnd.findIndex(e => e <= x.s);
+                    if (k < 0) { k = colEnd.length; colEnd.push(0); }
+                    colEnd[k] = x.e; x.col = k;
+                });
+                g.items.forEach(x => { x.cols = colEnd.length; });
+            });
+            const h0 = Math.max(0, Math.min(8, Math.floor(ev[0].s / 60)));
+            const h1 = Math.min(24, Math.max(18, Math.ceil(Math.max(...ev.map(x => x.e)) / 60)));
+            let hours = '';
+            for (let h = h0; h <= h1; h++) hours += `<div class="tl-hour" style="top:${(h - h0) * TL_HOUR}px"><span>${pad(h % 24)}:00</span></div>`;
+            const blocks = ev.map(x => {
+                const t = x.t, top = (x.s - h0 * 60) / 60 * TL_HOUR, hgt = Math.max(24, (x.e - x.s) / 60 * TL_HOUR - 3);
+                const short = hgt < 42;
+                return `<button class="tl-block${t.done ? ' is-done' : ''}${short ? ' is-short' : ''}" data-act="cal-pill" data-id="${esc(t.id)}"
+                    style="top:${top}px;height:${hgt}px;left:calc(${x.col / x.cols * 100}% + 2px);width:calc(${100 / x.cols}% - 4px);--pc:var(--tag-${t.tag})"
+                    aria-label="${timeLabel(t)}: ${esc(t.name)}${t.done ? ' (concluída)' : ''}. Abrir detalhes">
+                    <span class="tl-time">${timeLabel(t)}</span><b>${iconHTML(t.icon)}${esc(t.name)}</b></button>`;
+            }).join('');
+            let now = '';
+            if (day === todayISO()) {
+                const d = new Date(), m = d.getHours() * 60 + d.getMinutes();
+                if (m >= h0 * 60 && m <= h1 * 60) now = `<div class="tl-now" style="top:${(m - h0 * 60) / 60 * TL_HOUR}px" aria-hidden="true"></div>`;
+            }
+            return `<div class="tl" style="height:${(h1 - h0) * TL_HOUR + 10}px" aria-label="Linha do tempo do dia">${hours}<div class="tl-track">${blocks}</div>${now}</div>`;
         }
 
         // --- Calendário mensal + tarefas e anotação do dia ---
@@ -3846,7 +4493,13 @@
                         <span class="modal-label">${longDate(calSelected)}</span>
                         <button data-act="cal-add" class="accent-pill text-xs font-bold px-3 py-1 rounded-full mb-2"><i class="fas fa-plus mr-1"></i>Tarefa</button>
                     </div>
-                    ${sel.length ? sel.map(t => agendaRow(t, t.date !== calSelected)).join('') : emptyMsg('Nenhuma tarefa neste dia')}
+                    ${dayTimelineHTML(calSelected, sel)}
+                    ${(() => {
+                        const untimed = sel.filter(t => !t.timeStart);
+                        if (!sel.length) return emptyMsg('Nenhuma tarefa neste dia');
+                        if (!untimed.length) return '';
+                        return (untimed.length < sel.length ? '<span class="tl-sub">Sem horário</span>' : '') + untimed.map(t => agendaRow(t, t.date !== calSelected)).join('');
+                    })()}
                 </div>
                 <div class="sheet-section">
                     <label class="modal-label" for="day-note">Anotação do dia</label>
@@ -3995,6 +4648,513 @@
         }
 
         // --- Estatísticas: tarefas, tempo registrado (com histórico) e categorias ---
+        // ================================================
+        //  ORGANIZAÇÃO — Grupos > Sub-grupos > Presets (painel da doca)
+        // ================================================
+        let libEdit = null;  // campo de nome aberto: { kind: 'group'|'sub', mode: 'new'|'rename', gid, sid }
+        let libDraft = null; // editor de preset aberto: { gid, sid, pid (null = novo), p: { ...campos } }
+        const libIsEditing = (kind, mode, gid, sid) => !!libEdit && libEdit.kind === kind && libEdit.mode === mode
+            && (gid === undefined || libEdit.gid === gid) && (sid === undefined || libEdit.sid === sid);
+        function libInlineHTML(label, value = '') {
+            return `<div class="lib-inline">
+                <input class="task-input lib-input" maxlength="40" placeholder="${esc(label)}" value="${esc(value)}" aria-label="${esc(label)}" autocomplete="off">
+                <button data-act="lib-inline-save" class="add-btn-sm" aria-label="Salvar"><i class="fas fa-check"></i></button>
+                <button data-act="lib-inline-cancel" class="mini-x" aria-label="Cancelar"><i class="fas fa-xmark"></i></button>
+            </div>`;
+        }
+        function presetMetaHTML(p) {
+            const parts = [`<span>${TAG_NAME[p.tag]}</span>`];
+            if (p.difficulty) parts.push(`<span class="diff-mini" style="--dc:${DIFF_COLOR[p.difficulty]}" aria-label="Dificuldade ${p.difficulty} de 5">${diffMiniHTML(p.difficulty)}</span>`);
+            if (p.estimate) parts.push(`<span>${fmtEst(p.estimate)}</span>`);
+            if (p.days > 1) parts.push(`<span>${p.days} dias</span>`);
+            if (p.steps.length) parts.push(`<span>${plural(p.steps.length, 'passo', 'passos')}</span>`);
+            return parts.join('');
+        }
+        const presetIconHTML = (p) => (p.icon ? iconHTML(p.icon, '') : `<i class="fas ${TAG_ICON[p.tag]}" style="color:var(--tag-${p.tag})" aria-hidden="true"></i>`);
+
+        function renderLibrary() {
+            if (libDraft) return renderPresetEditor();
+            const subHTML = (g, sg) => `
+                <div class="lib-sub" data-sid="${esc(sg.id)}">
+                    <div class="lib-sub-head">
+                        ${libIsEditing('sub', 'rename', g.id, sg.id) ? libInlineHTML('Nome do sub-grupo', sg.name) : `
+                        <i class="fas fa-folder-open" aria-hidden="true"></i><h4 class="lib-sub-name">${esc(sg.name)}</h4>
+                        <button data-act="lib-sub-rename" class="mini-btn" aria-label="Renomear sub-grupo ${esc(sg.name)}" title="Renomear"><i class="fas fa-pen"></i></button>
+                        <button data-act="lib-sub-del" class="mini-btn danger" aria-label="Excluir sub-grupo ${esc(sg.name)}" title="Excluir"><i class="fas fa-trash"></i></button>`}
+                    </div>
+                    ${sg.presets.map(pr => `
+                    <div class="lib-preset" data-pid="${esc(pr.id)}">
+                        <button data-act="lib-preset-edit" class="lib-preset-main" aria-label="Editar preset ${esc(pr.name)}">
+                            <span class="lib-pic">${presetIconHTML(pr)}</span>
+                            <span class="lib-ptext"><b>${esc(pr.name)}</b><small>${presetMetaHTML(pr)}</small></span>
+                        </button>
+                        <button data-act="lib-preset-use" class="row-btn" aria-label="Criar missão com ${esc(pr.name)}" title="Criar missão com este preset"><i class="fas fa-plus"></i></button>
+                    </div>`).join('')}
+                    <button data-act="lib-preset-new" class="lib-add sm"><i class="fas fa-plus"></i>Preset</button>
+                </div>`;
+            const groupHTML = (g) => `
+                <section class="lib-group" data-gid="${esc(g.id)}">
+                    <div class="lib-head">
+                        ${libIsEditing('group', 'rename', g.id) ? libInlineHTML('Nome do grupo', g.name) : `
+                        <i class="fas fa-folder lib-fold" aria-hidden="true"></i><h3 class="lib-name">${esc(g.name)}</h3>
+                        <span class="lib-count">${plural(libCount(g), 'preset', 'presets')}</span>
+                        <button data-act="lib-group-rename" class="row-btn" aria-label="Renomear grupo ${esc(g.name)}" title="Renomear"><i class="fas fa-pen"></i></button>
+                        <button data-act="lib-group-del" class="row-btn row-danger" aria-label="Excluir grupo ${esc(g.name)}" title="Excluir"><i class="fas fa-trash"></i></button>`}
+                    </div>
+                    ${g.subs.map(sg => subHTML(g, sg)).join('')}
+                    ${!g.subs.length && !libIsEditing('sub', 'new', g.id) ? '<p class="lib-hint">Crie um sub-grupo (ex.: Testes) para guardar os presets.</p>' : ''}
+                    ${libIsEditing('sub', 'new', g.id) ? libInlineHTML('Nome do sub-grupo (ex.: Testes)') : '<button data-act="lib-sub-new" class="lib-add"><i class="fas fa-plus"></i>Sub-grupo</button>'}
+                </section>`;
+            const empty = !library.groups.length && !libIsEditing('group', 'new');
+            sheetBody.innerHTML = `
+                <p class="lib-intro"><i class="fas fa-circle-info" aria-hidden="true"></i><span>Monte <b>Grupos</b> › <b>Sub-grupos</b> › <b>Presets</b>. Os presets aparecem em "Carregar Preset" na Nova Missão.</span></p>
+                ${empty ? `<div class="empty-state mb-4">
+                    <div class="empty-icon"><i class="fas fa-folder-tree"></i></div>
+                    <p class="font-extrabold text-gray-800">Nada organizado ainda</p>
+                    <p class="text-sm text-gray-500 font-semibold mt-1">Crie um grupo (ex.: Trabalho) para começar a guardar seus presets.</p>
+                </div>` : ''}
+                ${library.groups.map(groupHTML).join('')}
+                ${libIsEditing('group', 'new') ? libInlineHTML('Nome do grupo (ex.: Trabalho)') : '<button data-act="lib-group-new" class="pill-btn primary w-full"><i class="fas fa-plus mr-2"></i>Novo grupo</button>'}`;
+            const li = sheetBody.querySelector('.lib-input');
+            if (li) {
+                li.focus();
+                li.setSelectionRange(li.value.length, li.value.length);
+                li.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); libSaveInline(); }
+                    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); libEdit = null; renderSheet(); }
+                });
+            }
+        }
+
+        function libSaveInline() {
+            const li = sheetBody.querySelector('.lib-input');
+            const name = li ? libText(li.value, 40) : '';
+            if (!name) { if (li) { li.classList.remove('shake'); void li.offsetWidth; li.classList.add('shake'); li.focus(); } return; }
+            const e = libEdit; if (!e) return;
+            const g = e.gid ? libGroup(e.gid) : null;
+            const siblings = e.kind === 'group' ? library.groups : (g ? g.subs : []);
+            const dup = siblings.some(x => normName(x.name) === normName(name) && x.id !== (e.kind === 'group' ? e.gid : e.sid));
+            if (dup) { toast(e.kind === 'group' ? 'Já existe um grupo com esse nome' : 'Já existe um sub-grupo com esse nome'); li.focus(); return; }
+            if (e.kind === 'group' && e.mode === 'new') {
+                const id = uid('g');
+                library.groups.push({ id, name, subs: [] });
+                libEdit = { kind: 'sub', mode: 'new', gid: id }; // já pede o 1º sub-grupo
+                playPop();
+            } else if (e.kind === 'group' && g) {
+                g.name = name; libEdit = null; playClick();
+            } else if (e.kind === 'sub' && e.mode === 'new' && g) {
+                g.subs.push({ id: uid('s'), name, presets: [] }); libEdit = null; playPop();
+            } else if (e.kind === 'sub') {
+                const sg = libSub(e.gid, e.sid); if (sg) sg.name = name; libEdit = null; playClick();
+            }
+            saveLibrary();
+            renderSheet();
+        }
+
+        // Excluir com "Desfazer" (devolve no mesmo lugar)
+        function libRemove(list, item, label) {
+            const idx = list.indexOf(item);
+            if (idx < 0) return;
+            list.splice(idx, 1);
+            saveLibrary(); playClick(); renderSheet();
+            toast(`${label} excluído`, { label: 'Desfazer', fn: () => {
+                list.splice(Math.min(idx, list.length), 0, item);
+                saveLibrary();
+                if (sheet.classList.contains('open') && currentView === 'library') renderSheet();
+            } });
+        }
+
+        function usePreset(gid, sid, pid) {
+            const g = libGroup(gid), sg = libSub(gid, sid);
+            const pr = sg && sg.presets.find(x => x.id === pid);
+            if (!pr) return;
+            closeSheet();
+            openModal();
+            const i = PRESETS.findIndex(x => x.id === pr.id);
+            if (i >= 0) { presetSelect.value = String(i); applyPreset(PRESETS[i]); }
+            else applyPreset({ ...pr, cat: g.name, group: sg.name });
+        }
+
+        function handleLibAction(act, btn) {
+            const gid = btn.closest('[data-gid]') ? btn.closest('[data-gid]').dataset.gid : null;
+            const sid = btn.closest('[data-sid]') ? btn.closest('[data-sid]').dataset.sid : null;
+            const pid = btn.closest('[data-pid]') ? btn.closest('[data-pid]').dataset.pid : null;
+            if (act.startsWith('lib-ed-')) return handleEditorAction(act, btn);
+            if (act === 'lib-group-new') { libEdit = { kind: 'group', mode: 'new' }; playClick(); renderSheet(); }
+            else if (act === 'lib-group-rename') { libEdit = { kind: 'group', mode: 'rename', gid }; playClick(); renderSheet(); }
+            else if (act === 'lib-sub-new') { libEdit = { kind: 'sub', mode: 'new', gid }; playClick(); renderSheet(); }
+            else if (act === 'lib-sub-rename') { libEdit = { kind: 'sub', mode: 'rename', gid, sid }; playClick(); renderSheet(); }
+            else if (act === 'lib-inline-save') libSaveInline();
+            else if (act === 'lib-inline-cancel') { libEdit = null; playClick(); renderSheet(); }
+            else if (act === 'lib-group-del') { const g = libGroup(gid); if (g) libRemove(library.groups, g, 'Grupo'); }
+            else if (act === 'lib-sub-del') { const g = libGroup(gid), sg = libSub(gid, sid); if (g && sg) libRemove(g.subs, sg, 'Sub-grupo'); }
+            else if (act === 'lib-preset-new') {
+                libEdit = null;
+                libDraft = { gid, sid, pid: null, p: { name: '', icon: null, tag: 'work', difficulty: 0, priority: 1, estimate: 0, days: 1, steps: [], description: '' } };
+                playPop(); renderSheet(); sheetBody.scrollTop = 0;
+                const ni = document.getElementById('lp-name'); if (ni) ni.focus();
+            } else if (act === 'lib-preset-edit') {
+                const pr = libSub(gid, sid) && libSub(gid, sid).presets.find(x => x.id === pid);
+                if (!pr) return;
+                libEdit = null;
+                libDraft = { gid, sid, pid, p: JSON.parse(JSON.stringify(pr)) };
+                playClick(); renderSheet(); sheetBody.scrollTop = 0;
+            } else if (act === 'lib-preset-use') usePreset(gid, sid, pid);
+        }
+
+        // --- Editor de preset ---
+        function renderPresetEditor() {
+            const d = libDraft, p = d.p;
+            const where = library.groups.flatMap(g => g.subs.map(sg =>
+                `<option value="${esc(g.id)}|${esc(sg.id)}"${g.id === d.gid && sg.id === d.sid ? ' selected' : ''}>${esc(g.name)} › ${esc(sg.name)}</option>`)).join('');
+            sheetBody.innerHTML = `
+                <div class="lib-editor">
+                    <button data-act="lib-ed-back" class="note-tool mb-4"><i class="fas fa-chevron-left"></i>Organização</button>
+                    <label class="modal-label" for="lp-name">${d.pid ? 'Editar preset' : 'Novo preset'}</label>
+                    <div class="name-row">
+                        <button data-act="lib-ed-icon" class="icon-pick-btn${p.icon ? ' has-icon' : ''}" aria-label="${p.icon ? 'Trocar ícone' : 'Escolher ícone'}" title="Ícone">${iconBtnHTML(p.icon)}</button>
+                        <input id="lp-name" class="task-input" maxlength="60" autocomplete="off" placeholder="Ex.: Smoke test do build" value="${esc(p.name)}">
+                    </div>
+                    <label class="modal-label mt-4" for="lp-where">Guardar em</label>
+                    <select id="lp-where" class="date-input lib-select">${where}</select>
+                    <span class="modal-label mt-4">Tag</span>
+                    <div class="hub-tags" role="radiogroup" aria-label="Tag">
+                        ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${p.tag === tag ? ' selected' : ''}" data-act="lib-ed-tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${p.tag === tag}"><i class="fas ${TAG_ICON[tag]} mr-1"></i>${TAG_NAME[tag]}</button>`).join('')}
+                    </div>
+                    <div class="modal-split mt-4">
+                        <div>
+                            <span class="modal-label">Prioridade · ${PRIO[p.priority].label}</span>
+                            <div class="pick-row" role="radiogroup" aria-label="Prioridade">
+                                ${[1, 2, 3].map(n => `<button data-act="lib-ed-prio" data-value="${n}" class="hub-star${n <= p.priority ? ' on' : ''}" role="radio" aria-checked="${n === p.priority}" aria-label="Prioridade ${PRIO[n].label}"><i class="fas fa-star"></i></button>`).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="modal-label">Dificuldade · <span class="diff-text" style="--dc:${DIFF_COLOR[p.difficulty]}">${DIFF_NAME[p.difficulty]}</span></span>
+                            <div class="pick-row diff-scale" style="--dc:${DIFF_COLOR[p.difficulty]}" role="radiogroup" aria-label="Dificuldade (1 a 5)">
+                                ${[1, 2, 3, 4, 5].map(n => `<button data-act="lib-ed-diff" data-value="${n}" class="diff-dot${n <= p.difficulty ? ' on' : ''}" role="radio" aria-checked="${n === p.difficulty}" aria-label="Dificuldade ${n}"></button>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hub-grid mt-4">
+                        <div><label class="modal-label" for="lp-est">Tempo estimado</label>
+                            <span class="est-wrap"><input id="lp-est" type="number" min="0" max="999" step="5" inputmode="numeric" class="date-input est-input" value="${p.estimate || ''}" placeholder="—">min</span></div>
+                        <div><label class="modal-label" for="lp-days">Duração</label>
+                            <span class="est-wrap"><input id="lp-days" type="number" min="1" max="60" inputmode="numeric" class="date-input est-input" value="${p.days}">dias</span></div>
+                    </div>
+                    <label class="modal-label mt-4" for="lp-steps">Sub-steps <span class="opt-hint">(um por linha)</span></label>
+                    <textarea id="lp-steps" class="task-input lib-text" rows="4" placeholder="Baixar o build&#10;Abrir o jogo">${esc(p.steps.join('\n'))}</textarea>
+                    <label class="modal-label mt-4" for="lp-desc">Descrição <span class="opt-hint">(opcional)</span></label>
+                    <textarea id="lp-desc" class="task-input lib-text" rows="3" placeholder="Contexto, critérios…">${esc(p.description)}</textarea>
+                    <div class="flex gap-3 mt-6">
+                        ${d.pid ? '<button data-act="lib-ed-del" class="pill-btn danger flex-1"><i class="fas fa-trash mr-1"></i>Excluir</button>' : ''}
+                        <button data-act="lib-ed-save" class="pill-btn primary flex-1">${d.pid ? 'Salvar' : 'Criar preset'}</button>
+                    </div>
+                </div>`;
+            const val = (id) => document.getElementById(id);
+            val('lp-name').addEventListener('input', () => { p.name = val('lp-name').value.slice(0, 60); });
+            val('lp-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleEditorAction('lib-ed-save'); } });
+            val('lp-where').addEventListener('change', () => { const [g2, s2] = val('lp-where').value.split('|'); d.gid = g2; d.sid = s2; });
+            val('lp-est').addEventListener('input', () => { p.estimate = clampEst(val('lp-est').value); });
+            val('lp-days').addEventListener('input', () => { p.days = Math.min(60, Math.max(1, Math.round(Number(val('lp-days').value)) || 1)); });
+            val('lp-steps').addEventListener('input', () => { p.steps = val('lp-steps').value.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 50); });
+            val('lp-desc').addEventListener('input', () => { p.description = val('lp-desc').value.slice(0, 5000); });
+        }
+
+        function handleEditorAction(act, btn) {
+            const d = libDraft; if (!d) return;
+            const p = d.p;
+            if (act === 'lib-ed-back') { libDraft = null; playClick(); renderSheet(); return; }
+            if (act === 'lib-ed-icon') {
+                openIconPicker(p.icon, (ic) => { p.icon = normIcon(ic); if (libDraft === d) renderSheet(); });
+                return;
+            }
+            if (act === 'lib-ed-tag') { p.tag = btn.dataset.value; playClick(); renderSheet(); return; }
+            if (act === 'lib-ed-prio') { p.priority = +btn.dataset.value; p.priority === 3 ? playRiseChime() : playClick(); renderSheet(); return; }
+            if (act === 'lib-ed-diff') { const n = +btn.dataset.value; p.difficulty = n === p.difficulty ? 0 : n; p.difficulty === 5 ? playRiseChime() : playClick(); renderSheet(); return; }
+            if (act === 'lib-ed-save') {
+                const ni = document.getElementById('lp-name');
+                if (!libText(p.name, 60)) { if (ni) { ni.classList.remove('shake'); void ni.offsetWidth; ni.classList.add('shake'); ni.focus(); } return; }
+                const target = libSub(d.gid, d.sid);
+                if (!target) { toast('Escolha onde guardar o preset'); return; }
+                const clean = normPreset({ ...p, id: d.pid || uid('p') });
+                // tira da posição antiga (pode ter mudado de sub-grupo) e grava no destino
+                let placed = false;
+                library.groups.forEach(g => g.subs.forEach(sg => {
+                    const i = sg.presets.findIndex(x => x.id === clean.id);
+                    if (i < 0) return;
+                    if (sg === target) { sg.presets[i] = clean; placed = true; } else sg.presets.splice(i, 1);
+                }));
+                if (!placed) target.presets.push(clean);
+                saveLibrary();
+                libDraft = null;
+                playDone();
+                toast(d.pid ? 'Preset salvo' : 'Preset criado');
+                renderSheet();
+                return;
+            }
+            if (act === 'lib-ed-del' && d.pid) {
+                const sg = libSub(d.gid, d.sid);
+                const item = sg && sg.presets.find(x => x.id === d.pid);
+                libDraft = null;
+                if (item) libRemove(sg.presets, item, 'Preset'); else renderSheet();
+            }
+        }
+
+        // ================================================
+        //  MUNDO PESSOAL — listas e cards detalhados (painel da doca)
+        // ================================================
+        let lifeListId = null, lifeFilter = 'all', lifeItemId = null;
+        let lifeEditList = null; // { mode: 'new'|'rename' }
+        const LIFE_DURATION_HINT = { watch: 'Ex.: 2h 10min · 3 temporadas', play: 'Ex.: 40 horas', read: 'Ex.: 320 páginas', places: 'Ex.: 1 tarde · fim de semana' };
+        const curLifeList = () => lifeList(lifeListId) || life.lists[0];
+        // Sai do card: descarta item novo que ficou sem título
+        function lifeLeave() {
+            if (!lifeItemId) return;
+            const it = lifeItem(lifeItemId);
+            lifeItemId = null;
+            if (it && !it.title.trim()) { life.items = life.items.filter(x => x !== it); saveLife(); }
+        }
+        function lifeInlineHTML(label, value = '') {
+            return `<div class="lib-inline">
+                <input class="task-input life-input" maxlength="30" placeholder="${esc(label)}" value="${esc(value)}" aria-label="${esc(label)}" autocomplete="off">
+                <button data-act="life-inline-save" class="add-btn-sm" aria-label="Salvar"><i class="fas fa-check"></i></button>
+                <button data-act="life-inline-cancel" class="mini-x" aria-label="Cancelar"><i class="fas fa-xmark"></i></button>
+            </div>`;
+        }
+        const lifeListIcon = (l) => (l.icon ? iconHTML(l.icon, '') : '<i class="fas fa-heart" aria-hidden="true"></i>');
+
+        function renderLife() {
+            if (lifeItemId && lifeItem(lifeItemId)) return renderLifeItem();
+            lifeItemId = null;
+            const L = curLifeList();
+            lifeListId = L.id;
+            const inList = life.items.filter(x => x.list === L.id).sort((a, b) => b.updated - a.updated);
+            const shown = lifeFilter === 'all' ? inList : inList.filter(x => x.status === lifeFilter);
+            const countOf = (st) => inList.filter(x => x.status === st).length;
+            sheetBody.innerHTML = `
+                <div class="life-tabs no-scrollbar" role="tablist" aria-label="Listas">
+                    ${life.lists.map(l => `<button class="life-tab${l.id === L.id ? ' selected' : ''}" data-act="life-list" data-id="${esc(l.id)}" role="tab" aria-selected="${l.id === L.id}">
+                        ${lifeListIcon(l)}<span>${esc(l.name)}</span><b>${life.items.filter(x => x.list === l.id).length}</b></button>`).join('')}
+                    <button class="life-tab life-tab-add" data-act="life-list-new" aria-label="Nova lista" title="Nova lista"><i class="fas fa-plus"></i></button>
+                </div>
+                ${lifeEditList ? `<div class="life-listedit">
+                    ${lifeInlineHTML(lifeEditList.mode === 'new' ? 'Nome da lista (ex.: Ouvir)' : 'Nome da lista', lifeEditList.mode === 'new' ? '' : L.name)}
+                    ${lifeEditList.mode === 'rename' ? `<div class="flex gap-2 mt-2">
+                        <button data-act="life-list-icon" class="pill-btn ghost sm flex-1">${lifeListIcon(L)}<span style="margin-left:6px">Ícone</span></button>
+                        <button data-act="life-list-del" class="pill-btn danger sm flex-1"><i class="fas fa-trash mr-1"></i>Excluir lista</button></div>` : ''}
+                </div>` : ''}
+                <div class="life-bar">
+                    <div class="seg life-filter" role="radiogroup" aria-label="Filtrar por status">
+                        <button data-act="life-filter" data-value="all" class="${lifeFilter === 'all' ? 'selected' : ''}" role="radio" aria-checked="${lifeFilter === 'all'}">Todos</button>
+                        ${Object.keys(LIFE_STATUS).map(st => `<button data-act="life-filter" data-value="${st}" class="${lifeFilter === st ? 'selected' : ''}" role="radio" aria-checked="${lifeFilter === st}" title="${LIFE_STATUS[st]}">${LIFE_STATUS[st]} <b>${countOf(st)}</b></button>`).join('')}
+                    </div>
+                    <button data-act="life-list-rename" class="row-btn" aria-label="Editar a lista ${esc(L.name)}" title="Editar lista"><i class="fas fa-pen"></i></button>
+                </div>
+                <button data-act="life-new" class="pill-btn primary w-full mb-4"><i class="fas fa-plus mr-2"></i>Adicionar em ${esc(L.name)}</button>
+                ${shown.length ? `<div class="life-grid">${shown.map(it => `
+                    <button class="life-card" data-act="life-open" data-id="${esc(it.id)}" aria-label="${esc(it.title)}, ${LIFE_STATUS[it.status]}">
+                        <span class="life-cover${it.cover ? '' : ' is-empty'}">
+                            ${it.cover ? `<img src="${it.cover}" alt="">` : lifeListIcon(L)}
+                            <span class="life-status st-${it.status}"><i class="fas ${LIFE_STATUS_ICON[it.status]}"></i>${LIFE_STATUS[it.status]}</span>
+                        </span>
+                        <span class="life-info">
+                            <b>${esc(it.title)}</b>
+                            ${it.place ? `<small><i class="fas fa-location-dot"></i>${esc(it.place)}</small>` : ''}
+                            ${it.duration ? `<small><i class="fas fa-hourglass-half"></i>${esc(it.duration)}</small>` : ''}
+                            ${it.tags.length ? `<span class="life-tags">${it.tags.slice(0, 3).map(tg => `<i>${esc(tg)}</i>`).join('')}</span>` : ''}
+                        </span>
+                    </button>`).join('')}</div>`
+                : `<div class="empty-state">
+                    <div class="empty-icon">${L.icon ? `<i class="fas ${L.icon.n}"></i>` : '<i class="fas fa-heart"></i>'}</div>
+                    <p class="font-extrabold text-gray-800">${inList.length ? 'Nada com esse status' : `"${esc(L.name)}" está vazia`}</p>
+                    <p class="text-sm text-gray-500 font-semibold mt-1">${inList.length ? 'Troque o filtro para ver os outros.' : 'Guarde aqui o que você quer curtir, com capa, local e anotações.'}</p>
+                   </div>`}`;
+            const li = sheetBody.querySelector('.life-input');
+            if (li) {
+                li.focus();
+                li.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); lifeSaveList(); }
+                    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); lifeEditList = null; renderSheet(); }
+                });
+            }
+        }
+
+        function lifeSaveList() {
+            const li = sheetBody.querySelector('.life-input');
+            const name = li ? libText(li.value, 30) : '';
+            if (!name) { if (li) { li.classList.remove('shake'); void li.offsetWidth; li.classList.add('shake'); li.focus(); } return; }
+            const L = curLifeList();
+            const dup = life.lists.some(l => normName(l.name) === normName(name) && (lifeEditList.mode === 'new' || l.id !== L.id));
+            if (dup) { toast('Já existe uma lista com esse nome'); li.focus(); return; }
+            if (lifeEditList.mode === 'new') {
+                if (life.lists.length >= 20) { toast('Limite de 20 listas'); return; }
+                const id = uid('L');
+                life.lists.push({ id, name, icon: { n: 'fa-heart', c: '#C14C8A' } });
+                lifeListId = id; lifeFilter = 'all';
+                playPop();
+            } else { L.name = name; playClick(); }
+            lifeEditList = null;
+            saveLife(); renderSheet();
+        }
+
+        // --- Card detalhado (abre dentro do painel, salva enquanto digita) ---
+        function renderLifeItem() {
+            const it = lifeItem(lifeItemId), L = lifeList(it.list) || curLifeList();
+            const RT = [['bold', 'fa-bold', 'Negrito'], ['italic', 'fa-italic', 'Itálico'], ['underline', 'fa-underline', 'Sublinhado'],
+                ['insertUnorderedList', 'fa-list-ul', 'Lista'], ['removeFormat', 'fa-eraser', 'Limpar formatação']];
+            sheetBody.innerHTML = `
+                <div class="life-editor">
+                    <div class="flex items-center justify-between mb-3">
+                        <button data-act="life-back" class="note-tool"><i class="fas fa-chevron-left"></i>${esc(L.name)}</button>
+                        <button data-act="life-del" class="row-btn row-danger" aria-label="Excluir item" title="Excluir"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="life-hero${it.cover ? '' : ' is-empty'}">
+                        ${it.cover ? `<div class="life-hero-bg" style="background-image:url('${it.cover}')" aria-hidden="true"></div><img src="${it.cover}" alt="Capa">` : `<span class="life-hero-ph">${lifeListIcon(L)}<small>Sem capa</small></span>`}
+                        <div class="hub-hero-btns">
+                            <label for="life-file" class="hub-chip-btn cursor-pointer" role="button" tabindex="0" data-life-pick><i class="fas fa-camera"></i>${it.cover ? 'Trocar capa' : 'Adicionar capa'}</label>
+                            ${it.cover ? '<button data-act="life-cover-del" class="hub-chip-btn" aria-label="Remover capa" title="Remover capa"><i class="fas fa-xmark"></i></button>' : ''}
+                        </div>
+                        <input id="life-file" type="file" accept="image/*" class="hidden" aria-label="Escolher imagem de capa">
+                    </div>
+                    <input id="life-title" class="hub-title" maxlength="80" autocomplete="off" placeholder="Título (ex.: Nome do filme, jogo, livro ou lugar)" value="${esc(it.title)}" aria-label="Título">
+                    <span class="modal-label mt-4">Status</span>
+                    <div class="seg" role="radiogroup" aria-label="Status">
+                        ${Object.keys(LIFE_STATUS).map(st => `<button data-act="life-status" data-value="${st}" class="${it.status === st ? 'selected' : ''}" role="radio" aria-checked="${it.status === st}"><i class="fas ${LIFE_STATUS_ICON[st]} mr-1"></i>${LIFE_STATUS[st]}</button>`).join('')}
+                    </div>
+                    <div class="hub-card hub-grid">
+                        <div><label class="modal-label" for="life-list">Lista</label>
+                            <select id="life-list" class="date-input lib-select">${life.lists.map(l => `<option value="${esc(l.id)}"${l.id === it.list ? ' selected' : ''}>${esc(l.name)}</option>`).join('')}</select></div>
+                        <div><label class="modal-label" for="life-duration">Duração</label>
+                            <input id="life-duration" class="date-input lib-select" maxlength="40" autocomplete="off" placeholder="${esc(LIFE_DURATION_HINT[it.list] || 'Ex.: 2 horas')}" value="${esc(it.duration)}"></div>
+                        <div class="span-2"><label class="modal-label" for="life-place">Local</label>
+                            <label class="search-box life-place"><i class="fas fa-location-dot"></i><input id="life-place" maxlength="80" autocomplete="off" placeholder="Onde? (ex.: Netflix, Steam, Biblioteca, São Paulo)" value="${esc(it.place)}"></label></div>
+                    </div>
+                    <div class="hub-card">
+                        <label class="modal-label" for="life-tag-in">Tags</label>
+                        <div class="life-tagbox">
+                            ${it.tags.map((tg, i) => `<span class="life-chip">${esc(tg)}<button data-act="life-tag-del" data-i="${i}" aria-label="Remover tag ${esc(tg)}"><i class="fas fa-xmark"></i></button></span>`).join('')}
+                            <input id="life-tag-in" maxlength="24" autocomplete="off" placeholder="${it.tags.length ? '+ tag' : 'Digite e aperte Enter (ex.: cozy, coop)'}" aria-label="Nova tag">
+                        </div>
+                    </div>
+                    <div class="hub-card">
+                        <span class="modal-label">Descrição</span>
+                        <div class="rt-toolbar" role="toolbar" aria-label="Formatação do texto">
+                            ${RT.map(([cmd, ic, label]) => `<button class="rt-btn" data-act="life-rt" data-cmd="${cmd}" aria-label="${label}" title="${label}"><i class="fas ${ic}"></i></button>`).join('')}
+                        </div>
+                        <div id="life-desc" class="rt-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Descrição" data-placeholder="Por que quero, com quem, impressões…">${it.description}</div>
+                    </div>
+                    <p class="text-xs text-gray-400 font-semibold mt-3"><i class="fas fa-check mr-1"></i>Salvo automaticamente</p>
+                </div>`;
+            const touch = () => { it.updated = Date.now(); saveLife(); };
+            const ti = document.getElementById('life-title');
+            ti.addEventListener('input', () => { it.title = ti.value.slice(0, 80); touch(); });
+            ti.addEventListener('keydown', (e) => { if (e.key === 'Enter') ti.blur(); });
+            document.getElementById('life-place').addEventListener('input', (e) => { it.place = e.target.value.slice(0, 80); touch(); });
+            document.getElementById('life-duration').addEventListener('input', (e) => { it.duration = e.target.value.slice(0, 40); touch(); });
+            document.getElementById('life-list').addEventListener('change', (e) => { if (lifeList(e.target.value)) { it.list = e.target.value; lifeListId = it.list; touch(); renderSheet(); playClick(); } });
+            const tagIn = document.getElementById('life-tag-in');
+            const addTag = () => {
+                const v = libText(tagIn.value.replace(/,/g, ' '), 24);
+                tagIn.value = '';
+                if (!v) return;
+                if (it.tags.some(x => normName(x) === normName(v))) { toast('Essa tag já está aí'); return; }
+                if (it.tags.length >= 12) { toast('Limite de 12 tags'); return; }
+                it.tags.push(v); touch(); playBloop(); renderSheet();
+                const again = document.getElementById('life-tag-in'); if (again) again.focus();
+            };
+            tagIn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(); }
+                if (e.key === 'Backspace' && !tagIn.value && it.tags.length) { it.tags.pop(); touch(); renderSheet(); const a = document.getElementById('life-tag-in'); if (a) a.focus(); }
+            });
+            tagIn.addEventListener('blur', () => { if (tagIn.value.trim()) addTag(); });
+            const de = document.getElementById('life-desc');
+            de.addEventListener('input', () => {
+                if (!de.textContent.trim() && !de.querySelector('li')) de.innerHTML = '';
+                it.description = sanitizeRich(de.innerHTML); touch();
+            });
+            de.addEventListener('paste', (e) => {
+                const txt = e.clipboardData && e.clipboardData.getData('text/plain');
+                if (typeof txt !== 'string') return;
+                e.preventDefault();
+                let okIns = false;
+                try { okIns = document.execCommand('insertText', false, txt); } catch (err) {}
+                if (!okIns) de.insertAdjacentText('beforeend', txt);
+                de.dispatchEvent(new Event('input'));
+            });
+            const lf = document.getElementById('life-file');
+            sheetBody.querySelector('[data-life-pick]').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lf.click(); } });
+            lf.addEventListener('change', () => {
+                const file = lf.files && lf.files[0];
+                if (!file) return;
+                fileToJpeg(file, 600).then(url => {
+                    const old = it.cover;
+                    it.cover = url; it.updated = Date.now();
+                    if (!saveLife()) { it.cover = old; toast('Sem espaço para salvar a imagem'); return; }
+                    if (audio) audio.resume().then(playSuccess).catch(() => {});
+                    renderSheet();
+                }).catch(() => toast('Não foi possível usar essa imagem'));
+            });
+        }
+
+        function handleLifeAction(act, btn) {
+            const L = curLifeList();
+            const it = lifeItemId ? lifeItem(lifeItemId) : null;
+            if (act === 'life-list') { lifeLeave(); lifeListId = btn.dataset.id; lifeFilter = 'all'; lifeEditList = null; playTick(); renderSheet(); sheetBody.scrollTop = 0; }
+            else if (act === 'life-list-new') { lifeEditList = { mode: 'new' }; playClick(); renderSheet(); }
+            else if (act === 'life-list-rename') { lifeEditList = lifeEditList && lifeEditList.mode === 'rename' ? null : { mode: 'rename' }; playClick(); renderSheet(); }
+            else if (act === 'life-inline-save') lifeSaveList();
+            else if (act === 'life-inline-cancel') { lifeEditList = null; playClick(); renderSheet(); }
+            else if (act === 'life-list-icon') openIconPicker(L.icon, (ic) => { L.icon = normIcon(ic); saveLife(); renderSheet(); });
+            else if (act === 'life-list-del') {
+                if (life.lists.length <= 1) { toast('Precisa ficar pelo menos uma lista'); return; }
+                const idx = life.lists.indexOf(L), gone = life.items.filter(x => x.list === L.id);
+                life.lists.splice(idx, 1);
+                life.items = life.items.filter(x => x.list !== L.id);
+                lifeEditList = null; lifeListId = life.lists[0].id;
+                saveLife(); playClick(); renderSheet();
+                toast(`Lista "${L.name}" excluída`, { label: 'Desfazer', fn: () => {
+                    life.lists.splice(Math.min(idx, life.lists.length), 0, L);
+                    life.items.push(...gone); lifeListId = L.id;
+                    saveLife();
+                    if (sheet.classList.contains('open') && currentView === 'life') renderSheet();
+                } });
+            }
+            else if (act === 'life-filter') { lifeFilter = btn.dataset.value; playClick(); renderSheet(); }
+            else if (act === 'life-new') {
+                const id = uid('h');
+                life.items.push({ id, list: L.id, title: '', cover: '', place: '', description: '', duration: '', tags: [], status: lifeFilter !== 'all' ? lifeFilter : 'want', updated: Date.now() });
+                lifeItemId = id; lifeEditList = null;
+                playPop(); renderSheet(); sheetBody.scrollTop = 0;
+                const ti = document.getElementById('life-title'); if (ti) ti.focus();
+            }
+            else if (act === 'life-open') { lifeItemId = btn.dataset.id; lifeEditList = null; playClick(); renderSheet(); sheetBody.scrollTop = 0; }
+            else if (act === 'life-back') { lifeLeave(); playClick(); renderSheet(); }
+            else if (!it) return;
+            else if (act === 'life-status') { it.status = btn.dataset.value; it.updated = Date.now(); saveLife(); it.status === 'done' ? playDone() : playClick(); renderSheet(); }
+            else if (act === 'life-tag-del') { it.tags.splice(+btn.dataset.i, 1); it.updated = Date.now(); saveLife(); playClick(); renderSheet(); }
+            else if (act === 'life-cover-del') { it.cover = ''; saveLife(); playClick(); renderSheet(); }
+            else if (act === 'life-rt') {
+                const de = document.getElementById('life-desc');
+                if (document.activeElement !== de) de.focus();
+                try { document.execCommand(btn.dataset.cmd, false, null); } catch (err) {}
+                de.dispatchEvent(new Event('input'));
+                playClick();
+            }
+            else if (act === 'life-del') {
+                const idx = life.items.indexOf(it), empty = !it.title.trim();
+                life.items.splice(idx, 1);
+                lifeItemId = null;
+                saveLife(); playClick(); renderSheet();
+                if (!empty) toast('Item excluído', { label: 'Desfazer', fn: () => {
+                    life.items.splice(Math.min(idx, life.items.length), 0, it);
+                    saveLife();
+                    if (sheet.classList.contains('open') && currentView === 'life') renderSheet();
+                } });
+            }
+        }
+        // Botões de formatação não tiram a seleção do texto
+        sheetBody.addEventListener('mousedown', (e) => { if (e.target.closest('[data-act="life-rt"]')) e.preventDefault(); });
+
         // --- Tarefas recorrentes: mesmo nome (sem diferenciar maiúsculas/acentos) = mesma rotina ---
         const normName = (s) => String(s).trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
         function recurringGroups() {
@@ -4144,6 +5304,16 @@
             const seg = (key, opts, cur) => `<div class="seg" role="radiogroup">${opts.map(([v, label]) =>
                 `<button data-act="setting" data-key="${key}" data-value="${v}" class="${cur === v ? 'selected' : ''}" role="radio" aria-checked="${cur === v}">${label}</button>`).join('')}</div>`;
             sheetBody.innerHTML = `
+                <span class="modal-label">Avatar</span>
+                <div class="avatar-row mb-5">
+                    <div class="avatar-preview profile-avatar" aria-hidden="true">${avatarInner()}</div>
+                    <div class="avatar-actions">
+                        <label for="avatar-file" class="pill-btn primary sm cursor-pointer" role="button" tabindex="0" data-avatar-pick><i class="fas fa-camera mr-1"></i>${avatar ? 'Trocar' : 'Escolher imagem'}</label>
+                        ${avatar ? '<button data-act="avatar-remove" class="pill-btn ghost sm"><i class="fas fa-xmark mr-1"></i>Remover</button>' : ''}
+                    </div>
+                    <input id="avatar-file" type="file" accept="image/*" class="hidden" aria-label="Escolher imagem do avatar">
+                </div>
+
                 <label class="modal-label" for="pf-title">Título da tela</label>
                 <input id="pf-title" class="task-input" maxlength="30" autocomplete="off" placeholder="${esc(APP_CONFIG.appTitle)}" value="${esc(profile.title)}">
                 <p class="text-xs text-gray-400 font-semibold mt-1.5">Deixe vazio para usar "${esc(APP_CONFIG.appTitle)}".</p>
@@ -4158,9 +5328,16 @@
                 ${seg('mode', [['light', '<i class="fas fa-sun mr-1"></i>Claro'], ['dark', '<i class="fas fa-moon mr-1"></i>Escuro'], ['auto', 'Automático']], appearance.mode)}
                 <span class="modal-label mt-4">Estilo de cor</span>
                 ${seg('style', [['color', 'Colorido'], ['simple', 'Simples']], appearance.style)}
-                <span class="modal-label mt-4">Cor do tema</span>
-                <div class="flex gap-3 p-1.5">
-                    ${THEMES.map((t, i) => `<button class="swatch swatch-lg${currentTheme && currentTheme.accent === t.accent ? ' selected' : ''}" data-act="theme" data-i="${i}" style="background:${t.bg}" aria-label="Tema ${esc(t.label)}"></button>`).join('')}
+                <span class="modal-label mt-4">Tema</span>
+                <div class="palette-grid" role="radiogroup" aria-label="Tema de cores">
+                    ${THEMES.map(t => {
+                        const on = !!currentTheme && currentTheme.id === t.id;
+                        return `<button class="palette-opt${on ? ' selected' : ''}" data-act="theme" data-id="${esc(t.id)}" role="radio" aria-checked="${on}" style="--p-accent:${t.icon};--p-surface:${t.surface}">
+                            <span class="palette-dots" aria-hidden="true"><i style="background:${t.surface}"></i><i style="background:${t.icon2}"></i><i style="background:${t.icon}"></i></span>
+                            <span class="palette-name">${esc(t.name)}</span>
+                            ${on ? '<i class="fas fa-check palette-check" aria-hidden="true"></i>' : ''}
+                        </button>`;
+                    }).join('')}
                 </div>
                 <span class="modal-label mt-4">Sons</span>
                 ${seg('sound', [['on', '<i class="fas fa-volume-high mr-1"></i>Ligados'], ['off', '<i class="fas fa-volume-xmark mr-1"></i>Desligados']], soundOn ? 'on' : 'off')}
@@ -4189,6 +5366,23 @@
             ti.addEventListener('keydown', (e) => { if (e.key === 'Enter') ti.blur(); });
             const fi = document.getElementById('import-file');
             fi.addEventListener('change', () => { if (fi.files && fi.files[0]) importBackup(fi.files[0]); });
+            // Avatar: escolher imagem (Enter/Espaço também abrem, pelo teclado)
+            const af = document.getElementById('avatar-file');
+            const pick = sheetBody.querySelector('[data-avatar-pick]');
+            pick.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); af.click(); } });
+            af.addEventListener('change', () => {
+                const file = af.files && af.files[0];
+                if (!file) return;
+                fileToSquareJpeg(file, 256).then(url => {
+                    const old = avatar;
+                    avatar = url;
+                    if (!store.set(STORAGE_KEYS.avatar, avatar)) { avatar = old; toast('Sem espaço para salvar a imagem'); return; }
+                    applyAvatar();
+                    if (audio) audio.resume().then(playSuccess).catch(() => {});
+                    toast('Avatar atualizado');
+                    renderSheet();
+                }).catch(() => toast('Não foi possível usar essa imagem'));
+            });
         }
 
         function handleProfileAction(act, data = {}) {
@@ -4207,9 +5401,19 @@
                     applyAppearance();
                 }
                 playClick(); renderSheet();
+            } else if (act === 'avatar-remove') {
+                avatar = '';
+                store.remove(STORAGE_KEYS.avatar);
+                applyAvatar(); playClick(); renderSheet();
+                toast('Avatar removido');
             } else if (act === 'theme') {
-                applyTheme(THEMES[+data.i]);
-                store.set(STORAGE_KEYS.theme, currentTheme);
+                const p = THEMES.find(x => x.id === data.id);
+                if (!p) return;
+                const root = document.documentElement;
+                root.classList.add('theme-anim'); // troca de cores suave
+                applyTheme(p);
+                saveTheme();
+                setTimeout(() => root.classList.remove('theme-anim'), 450);
                 playClick(); renderSheet();
             } else if (act === 'edit-layout') {
                 closeSheet(); enterEditMode();
@@ -4280,6 +5484,8 @@
             if (currentView === 'profile') return handleProfileAction(act, btn.dataset);
             if (act.startsWith('cal-')) return handleCalendarAction(act, btn.dataset);
             if (act.startsWith('note-')) return handleNoteAction(act, btn.dataset);
+            if (act.startsWith('lib-')) return handleLibAction(act, btn);
+            if (act.startsWith('life-')) return handleLifeAction(act, btn);
             const row = btn.closest('[data-id]');
             const t = row && findTask(row.dataset.id);
             if (!t) return;
@@ -4399,7 +5605,10 @@
                     </div>
                 </div>
 
-                <input id="hub-title" class="hub-title" maxlength="60" autocomplete="off" value="${esc(t.name)}" aria-label="Título da missão">
+                <div class="name-row hub-title-row">
+                    <button data-hub="icon" class="icon-pick-btn lg${t.icon ? ' has-icon' : ''}" aria-label="${t.icon ? 'Trocar ícone' : 'Escolher ícone'}" title="Ícone">${iconBtnHTML(t.icon)}</button>
+                    <input id="hub-title" class="hub-title" maxlength="60" autocomplete="off" value="${esc(t.name)}" aria-label="Título da missão">
+                </div>
                 <div class="hub-tags" role="radiogroup" aria-label="Tag">
                     ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${t.tag === tag ? ' selected' : ''}" data-hub="tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${t.tag === tag}"><i class="fas ${TAG_ICON[tag]} mr-1"></i>${TAG_NAME[tag]}</button>`).join('')}
                 </div>
@@ -4418,15 +5627,23 @@
                         <label class="modal-label" for="hub-date">Prazo</label>
                         <input id="hub-date" type="date" class="date-input" value="${esc(t.date)}">
                     </div>
+                    <div>
+                        <label class="modal-label" for="hub-tstart">Horário de início</label>
+                        <input id="hub-tstart" type="time" class="date-input" value="${esc(t.timeStart)}">
+                    </div>
+                    <div>
+                        <label class="modal-label" for="hub-tend">Horário de término</label>
+                        <input id="hub-tend" type="time" class="date-input" value="${esc(t.timeEnd)}"${t.timeStart ? '' : ' disabled'}>
+                    </div>
                     ${spanText(t) ? `<p class="span-note hub-span${spanInfo(t).saved ? ' is-saved' : spanInfo(t).late ? ' is-late' : ''}"><i class="fas ${spanInfo(t).saved ? 'fa-leaf' : 'fa-arrows-left-right'}"></i>${esc(spanText(t))}</p>` : ''}
                     <div>
                         <label class="modal-label" for="hub-est">Tempo estimado</label>
                         <span class="est-wrap"><input id="hub-est" type="number" min="0" max="999" step="5" inputmode="numeric" class="date-input est-input" value="${t.estimate || ''}" placeholder="—">min</span>
                     </div>
                     <div>
-                        <span class="modal-label">Dificuldade · ${DIFF_NAME[t.difficulty]}</span>
-                        <div class="pick-row" role="radiogroup" aria-label="Dificuldade">
-                            ${[1, 2, 3].map(n => `<button data-hub="diff" data-value="${n}" class="diff-flame${n <= t.difficulty ? ' on' : ''}" role="radio" aria-checked="${n === t.difficulty}" aria-label="Dificuldade ${DIFF_NAME[n]}"><i class="fas fa-fire"></i></button>`).join('')}
+                        <span class="modal-label">Dificuldade · <span class="diff-text" style="--dc:${DIFF_COLOR[t.difficulty]}">${DIFF_NAME[t.difficulty]}</span></span>
+                        <div class="pick-row diff-scale" style="--dc:${DIFF_COLOR[t.difficulty]}" role="radiogroup" aria-label="Dificuldade (1 a 5)">
+                            ${[1, 2, 3, 4, 5].map(n => `<button data-hub="diff" data-value="${n}" class="diff-dot${n <= t.difficulty ? ' on' : ''}" role="radio" aria-checked="${n === t.difficulty}" aria-label="Dificuldade ${n}: ${DIFF_NAME[n].toLowerCase()}"></button>`).join('')}
                         </div>
                     </div>
                     <div>
@@ -4489,6 +5706,21 @@
             const di = document.getElementById('hub-date');
             di.addEventListener('change', () => {
                 if (isISO(di.value)) { t.date = di.value; fixSpan(t); hubChanged(true); playClick(); } else di.value = t.date;
+            });
+            const hts = document.getElementById('hub-tstart'), hte = document.getElementById('hub-tend');
+            hts.addEventListener('change', () => {
+                if (!isHM(hts.value)) { t.timeStart = ''; t.timeEnd = ''; }
+                else {
+                    t.timeStart = hts.value;
+                    if (t.timeEnd && t.timeEnd <= t.timeStart) t.timeEnd = minToHM(Math.min(hmToMin(t.timeStart) + 60, 23 * 60 + 59));
+                }
+                hubChanged(true); playClick();
+            });
+            hte.addEventListener('change', () => {
+                if (!hte.value) t.timeEnd = '';
+                else if (!t.timeStart || hte.value <= t.timeStart) { toast('O término precisa ser depois do início'); hte.value = t.timeEnd; return; }
+                else t.timeEnd = hte.value;
+                hubChanged(true); playClick();
             });
             const si = document.getElementById('hub-start');
             si.addEventListener('change', () => {
@@ -4586,6 +5818,10 @@
             const t = hubTask();
             if (act === 'close') { playClick(); closeHub(); return; }
             if (!t) return;
+            if (act === 'icon') {
+                openIconPicker(t.icon, (ic) => { t.icon = normIcon(ic); saveTasks(); hubChanged(true); });
+                return;
+            }
             if (act === 'tag') {
                 t.tag = btn.dataset.value; playClick(); hubChanged(true);
             } else if (act === 'status') {
@@ -4595,7 +5831,7 @@
             } else if (act === 'diff') {
                 const n = +btn.dataset.value;
                 t.difficulty = n === t.difficulty ? 0 : n;
-                t.difficulty === 3 ? playRiseChime() : playClick();
+                t.difficulty === 5 ? playRiseChime() : playClick();
                 hubChanged(true);
             } else if (act === 'prio') {
                 t.priority = +btn.dataset.value;
@@ -4671,31 +5907,104 @@
             const t = hubTask();
             if (!file || !t) return;
             if (!/^image\//.test(file.type)) { toast('Escolha um arquivo de imagem'); return; }
-            const r = new FileReader();
-            r.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    const S = 256, c = document.createElement('canvas');
-                    c.width = c.height = S;
-                    const g = c.getContext && c.getContext('2d');
-                    if (!g) { toast('Não foi possível usar essa imagem'); return; }
-                    const k = Math.max(S / img.width, S / img.height), w = img.width * k, h = img.height * k;
-                    g.fillStyle = '#ffffff'; g.fillRect(0, 0, S, S); // PNG transparente fica com fundo branco
-                    g.drawImage(img, (S - w) / 2, (S - h) / 2, w, h);
-                    let url = '';
-                    try { url = c.toDataURL('image/jpeg', 0.82); } catch (err) {}
-                    if (!isThumb(url)) { toast('Não foi possível usar essa imagem'); return; }
-                    const old = t.thumb;
-                    t.thumb = url;
-                    if (!saveTasks()) { t.thumb = old; toast('Sem espaço para salvar a imagem'); return; }
-                    if (audio) audio.resume().then(playSuccess).catch(() => {});
-                    hubChanged(true);
-                };
-                img.onerror = () => toast('Imagem inválida');
-                img.src = r.result;
-            };
-            r.readAsDataURL(file);
+            fileToSquareJpeg(file, 256).then(url => {
+                const old = t.thumb;
+                t.thumb = url;
+                if (!saveTasks()) { t.thumb = old; toast('Sem espaço para salvar a imagem'); return; }
+                if (audio) audio.resume().then(playSuccess).catch(() => {});
+                hubChanged(true);
+            }).catch(() => toast('Não foi possível usar essa imagem'));
         });
+
+        // Avatar do topo: atalho para os Ajustes
+        document.getElementById('user-avatar').addEventListener('click', () => openSheet('profile'));
+
+        // ================================================
+        //  12. SELETOR DE ÍCONES (estilo Notion)
+        //      openIconPicker(ícone atual, callback) -> callback({ n, c }) ou callback(null)
+        // ================================================
+        const ipEl = document.getElementById('icon-picker');
+        const ipGrid = document.getElementById('ip-grid');
+        const ipColors = document.getElementById('ip-colors');
+        const ipSearch = document.getElementById('ip-search');
+        let ipColor = ICON_COLORS[0][0], ipCurrent = null, ipStartColor = null, ipCallback = null, ipReturnFocus = null;
+        const ipOpen = () => ipEl.classList.contains('open');
+        const ipNorm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+        ipColors.innerHTML = ICON_COLORS.map(([c, name]) =>
+            `<button class="ip-color" data-color="${c}" style="--ipc:${c}" role="radio" aria-label="Cor ${name}" title="${name}"></button>`).join('');
+        ipGrid.innerHTML = ICON_CHOICES.map(([n, words]) =>
+            `<button class="ip-icon" data-icon="${n}" data-words="${ipNorm(words + ' ' + n.slice(3))}" role="option" aria-label="Ícone ${words.split(' ')[0]}"><i class="fas ${n}" aria-hidden="true"></i></button>`).join('');
+        function ipPaint() {
+            ipGrid.style.setProperty('--ipc', ipColor);
+            ipColors.querySelectorAll('.ip-color').forEach(b => {
+                const on = b.dataset.color === ipColor;
+                b.classList.toggle('selected', on);
+                b.setAttribute('aria-checked', String(on));
+            });
+            ipGrid.querySelectorAll('.ip-icon').forEach(b => {
+                const on = !!ipCurrent && ipCurrent.n === b.dataset.icon;
+                b.classList.toggle('selected', on);
+                b.setAttribute('aria-selected', String(on));
+            });
+        }
+        function ipFilter() {
+            const q = ipNorm(ipSearch.value.trim());
+            let shown = 0;
+            ipGrid.querySelectorAll('.ip-icon').forEach(b => {
+                const ok = !q || b.dataset.words.includes(q);
+                b.style.display = ok ? '' : 'none';
+                if (ok) shown++;
+            });
+            document.getElementById('ip-none').classList.toggle('hidden', shown > 0);
+        }
+        function openIconPicker(current, cb) {
+            ipCurrent = normIcon(current);
+            ipStartColor = ipCurrent ? ipCurrent.c : null;
+            ipColor = ipCurrent ? ipCurrent.c : ipColor;
+            ipCallback = cb;
+            ipReturnFocus = document.activeElement;
+            ipSearch.value = '';
+            ipFilter(); ipPaint();
+            ipEl.classList.add('open');
+            ipEl.setAttribute('aria-hidden', 'false');
+            if (audio) audio.resume().then(playPop).catch(() => {});
+            setTimeout(() => { const b = ipGrid.querySelector('.ip-icon.selected') || ipGrid.querySelector('.ip-icon'); if (b && ipOpen()) b.focus({ preventScroll: true }); }, 60);
+        }
+        function closeIconPicker(result) {
+            if (!ipOpen()) return;
+            ipEl.classList.remove('open');
+            ipEl.setAttribute('aria-hidden', 'true');
+            const cb = ipCallback; ipCallback = null;
+            if (result !== undefined && cb) cb(result);
+            if (ipReturnFocus && ipReturnFocus.focus) ipReturnFocus.focus({ preventScroll: true });
+        }
+        ipEl.addEventListener('click', (e) => {
+            if (e.target === ipEl) { ipDismiss(); return; }
+            const col = e.target.closest('.ip-color');
+            if (col) {
+                ipColor = col.dataset.color;
+                if (ipCurrent) ipCurrent = { n: ipCurrent.n, c: ipColor }; // muda a cor do ícone já escolhido
+                ipPaint(); playClick();
+                return;
+            }
+            const ic = e.target.closest('.ip-icon');
+            if (ic) { playDone(); closeIconPicker({ n: ic.dataset.icon, c: ipColor }); return; }
+            const b = e.target.closest('[data-ip]');
+            if (!b) return;
+            if (b.dataset.ip === 'remove') { playClick(); closeIconPicker(null); }
+            else { playClick(); ipDismiss(); }
+        });
+        // Fechar pelo X: se só trocou a cor do ícone que já tinha, guarda a cor nova
+        const ipColorChanged = () => !!ipCurrent && ipStartColor !== null && ipCurrent.c !== ipStartColor;
+        const ipDismiss = () => closeIconPicker(ipColorChanged() ? ipCurrent : undefined);
+        ipSearch.addEventListener('input', ipFilter);
+        ipSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { const b = [...ipGrid.querySelectorAll('.ip-icon')].find(x => x.style.display !== 'none'); if (b) b.click(); }
+        });
+        // Esc fecha só o seletor (captura: roda antes dos outros atalhos)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && ipOpen()) { e.stopPropagation(); e.preventDefault(); ipDismiss(); }
+        }, true);
 
         // ================================================
         //  11. ZEN MODE (Relaxar) — sem cronômetro na tela; o tempo é contado
