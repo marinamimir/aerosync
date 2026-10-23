@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
     <script>try{var a=JSON.parse(localStorage.getItem('aerosync.appearance')||'{}')||{};var dk=a.mode==='dark'||(a.mode!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(dk)document.documentElement.classList.add('dark');if(a.style==='simple')document.documentElement.setAttribute('data-style','simple');
-    /* tema salvo: aplica as cores antes de desenhar */var th=JSON.parse(localStorage.getItem('aerosync.theme')||'null');if(th&&th.id){var st=document.documentElement.style,ok=function(c){return typeof c==='string'&&/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c)};[['--theme-icon','icon'],['--theme-icon-2','icon2'],['--surface','surface'],['--page','page']].forEach(function(k){if(ok(th[k[1]]))st.setProperty(k[0],th[k[1]])});}}catch(e){}</script>
+    /* tema salvo: aplica as cores antes de desenhar */var th=JSON.parse(localStorage.getItem('aerosync.theme')||'null');if(th&&th.id){var st=document.documentElement.style,ok=function(c){return typeof c==='string'&&/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c)};[['--theme-accent','accent'],['--theme-accent-2','accent2'],['--theme-soft','soft'],['--theme-glow','glow'],['--on-accent','on'],['--surface','surface'],['--page','page']].forEach(function(k){if(ok(th[k[1]]))st.setProperty(k[0],th[k[1]])});}}catch(e){}</script>
     <!-- PWA: app instalável e offline -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -42,22 +42,27 @@
     <style>
         /* ===== Variáveis de Tema (alteradas pelo Onboarding) ===== */
         :root {
-            /* Cores do TEMA (o JS troca pela paleta escolhida): só o fundo e os ícones */
-            --theme-icon: #B85A55;      /* ícones */
-            --theme-icon-2: #D9A7AA;    /* 2ª cor dos ícones (gradientes) */
-            --surface: #FFF8F1;         /* fundo do app */
-            --page: #F3E7DD;            /* fundo atrás do "aparelho" */
+            /* Cores do TEMA (o JS troca pela paleta escolhida; padrão = Rosa) */
+            --theme-accent: #F06AAE;    /* cor principal: botões, destaques */
+            --theme-accent-2: #FFC2E0;  /* segunda cor (gradientes) */
+            --theme-soft: #FFEAF4;      /* fundo suave das pílulas */
+            --theme-glow: rgba(240, 106, 174, 0.35);
+            --on-accent: #ffffff;       /* texto em cima da cor principal (escuro nas cores bem claras) */
+            --theme-icon: color-mix(in srgb, var(--theme-accent) 88%, #1f2937); /* ícones */
+            --theme-icon-2: var(--theme-accent-2);
+            --surface: #FFF8FB;         /* fundo do app */
+            --page: #FDEAF3;            /* fundo atrás do "aparelho" */
+            --accent: var(--theme-accent);
+            --accent-2: var(--theme-accent-2);
+            --accent-glow: var(--theme-glow);
+            --accent-soft: var(--theme-soft);
+            --accent-ink: color-mix(in srgb, var(--accent) 62%, #1f2937); /* a cor do tema mais escura, para TEXTO legível */
             --icon: var(--theme-icon);
-            /* Interface NEUTRA (botões, pílulas, barras, destaques): grafite em todos os temas */
-            --accent: #3F4651;          /* cor principal */
-            --accent-2: #6B7280;        /* segunda cor do gradiente */
-            --accent-glow: rgba(31, 41, 55, 0.2);
-            --accent-soft: color-mix(in srgb, var(--surface) 84%, #8f96a0); /* fundo suave: o fundo do tema um pouco mais escuro */
-            /* Cores das categorias (tons suaves que combinam com todas as paletas) */
-            --tag-work: #5E958C;
-            --tag-study: #B9708A;
-            --tag-play: #C4824F;
-            --tag-life: #8676B5;
+            /* Cores das categorias: vivas e clarinhas */
+            --tag-work: #1FBF9F;
+            --tag-study: #F05FA6;
+            --tag-play: #FA8A3C;
+            --tag-life: #9C7BEF;
         }
 
         /* Elementos do dashboard que usam a cor de destaque */
@@ -806,7 +811,7 @@
         /* ================================================
            MODO ESCURO
            ================================================ */
-        html.dark { color-scheme: dark; --accent: #59616E; --accent-2: #7B8494; --accent-glow: rgba(0, 0, 0, 0.35); --accent-soft: #262a3b; --icon: color-mix(in srgb, var(--theme-icon) 62%, white); }
+        html.dark { color-scheme: dark; --accent-soft: #262a3b; --icon: color-mix(in srgb, var(--theme-accent) 75%, white); }
         html.dark body { background-color: #0b0c12; background-image: radial-gradient(#23263a 1px, transparent 1px); }
         html.dark .mobile-frame { background-color: #14161f; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6), inset 0 0 0 8px #232636; }
         html.dark #boot-screen, html.dark #focus-mode { background: #14161f; }
@@ -1618,7 +1623,7 @@
         html.dark .diff-dot:not(.on), html.dark .diff-mini i:not(.on) { background: #3a3f55; box-shadow: none; }
 
         /* ================================================
-           ÍCONES NA COR DO TEMA (o resto da interface fica neutro)
+           ÍCONES NA COR DO TEMA
            "html:root" na frente = vence as regras antigas de cor
            ================================================ */
         html:root i.accent-text,
@@ -1645,7 +1650,7 @@
         /* sol do modo escuro continua amarelinho */
         html.dark:root .theme-toggle i { color: #fcd34d !important; }
         /* Ícones "grandes" (estado vazio, lótus do Relaxar e aurora) usam as cores do tema */
-        .empty-icon, #zen-mode { --accent: var(--theme-icon); --accent-2: var(--theme-icon-2); --accent-glow: color-mix(in srgb, var(--theme-icon) 40%, transparent); }
+        .empty-icon, #zen-mode { --accent: var(--theme-accent); --accent-2: var(--theme-accent-2); --accent-glow: var(--theme-glow); }
         html[data-style="simple"] .banner-icon { color: var(--icon); }
         html[data-style="simple"] .zen-aurora span:nth-child(3) { background: radial-gradient(closest-side, var(--theme-icon), transparent); }
 
@@ -1993,11 +1998,34 @@
         html.dark .break-ic { background: rgba(159,107,83,0.22); color: #d9a98f; }
         .dot-coffee, .sp-coffee, .b-coffee { background: linear-gradient(160deg, #D9A98F, #9F6B53); }
 
+        /* ================================================
+           CORES CLARINHAS: texto sempre legível
+           --on-accent = texto em cima da cor do tema (escuro nas cores bem claras)
+           --accent-ink = a cor do tema mais escura, para textos em fundo claro
+           ================================================ */
+        html:root :is(.pill-btn.primary, .pill-btn.focus-start, .focus-btn.success, .date-chip.selected, .filter-chip, .edit-done,
+            .cal-day.is-selected, .rt-btn.on, .row-btn.is-on, .st-btn.is-on, .life-tab.selected, .life-chip, .life-chip button,
+            .add-btn-sm, #add-btn, .empty-icon, .task-timer[data-running="true"] .tt-btn[data-tt="toggle"]) { color: var(--on-accent) !important; }
+        html:root :is(.row-btn.is-on, .st-btn.is-on, .empty-icon, #add-btn, .add-btn-sm) i { color: var(--on-accent) !important; }
+        html:root .w-quote.q-accent p, html:root .w-quote.q-accent cite { color: var(--on-accent); text-shadow: none; }
+        html:root .w-quote.q-accent { background: linear-gradient(160deg, var(--theme-accent-2), var(--theme-accent)); }
+        html:root .cal-day.is-selected .cal-dot, html:root .cal-day.is-selected .cal-note, html:root .cal-day.is-selected .cal-coffee { background: var(--on-accent); }
+        html:root .life-tab.selected b { color: var(--accent-ink); }
+        html:not(.dark) :is(.accent-pill, .date-chip:not(.selected), .seg button.selected, .st-label, .edit-bar, .edit-add, .preset-select,
+            .preset-hint, .view-toggle button.selected, .time-row summary b, .rec-meta strong, .link-row a b, .cal-more, .toast-action,
+            .lcd, .num-display, .note-tool, .text-xs.font-bold.accent-text, button.accent-text) { color: var(--accent-ink); }
+        html:not(.dark) .cal-day.is-today:not(.is-selected) { color: var(--accent-ink); }
+        html:not(.dark) .lcd-big { background: linear-gradient(160deg, var(--accent), var(--accent-ink)); -webkit-background-clip: text; background-clip: text; }
+        /* Escolha de tema na Boot Screen: 10 paletas em 2 linhas */
+        .theme-choices { grid-template-columns: repeat(5, 60px); gap: 14px 10px; }
+        .theme-choices .theme-btn { width: 56px; height: 56px; }
+        .theme-choice span { font-size: 10px; }
+
         /* Animação de background para os banners */
-        .bg-gradient-study { background: linear-gradient(135deg, #D79AAE 0%, #EFC9CF 100%); }
-        .bg-gradient-work { background: linear-gradient(120deg, #8FC1B4 0%, #9DBFD0 100%); }
-        .bg-gradient-play { background: linear-gradient(to right, #DB9F86 0%, #E9CB8D 100%); }
-        .bg-gradient-life { background: linear-gradient(to top, #A598CC 0%, #E3C2D6 100%); }
+        .bg-gradient-study { background: linear-gradient(135deg, #FFA3C8 0%, #FFD6EC 100%); }
+        .bg-gradient-work { background: linear-gradient(120deg, #7FEBC2 0%, #9BDCFF 100%); }
+        .bg-gradient-play { background: linear-gradient(to right, #FF9DB5 0%, #FFE08A 100%); }
+        .bg-gradient-life { background: linear-gradient(to top, #B7A2F5 0%, #FFC6EC 100%); }
     </style>
 </head>
 <body>
@@ -2479,18 +2507,24 @@
         };
 
         // ================================================
-        //  TEMAS — paletas nomeadas (aparecem na Boot Screen e nos Ajustes)
-        //  O tema pinta SÓ o fundo e os ícones; botões, pílulas e barras ficam em grafite neutro.
-        //    icon    = cor dos ícones              icon2 = 2ª cor dos ícones (gradientes)
-        //    surface = fundo do app                page  = fundo atrás do "aparelho"
+        //  TEMAS — paletas (aparecem na Boot Screen e nos Ajustes)
+        //    accent  = cor principal (botões, destaques)   accent2 = 2ª cor (gradientes)
+        //    soft    = fundo suave das pílulas             glow    = brilho colorido
+        //    surface = fundo do app                        page    = fundo atrás do "aparelho"
+        //    on      = cor do texto em cima da cor principal (use escuro se a cor for bem clarinha)
         //  Dá pra criar uma nova: copie um bloco { ... }, troque o id, o nome e as cores.
         // ================================================
         const THEME_PALETTES = [
-            { id: 'strawberry', name: 'Strawberry Shortcake', icon: '#B85A55', icon2: '#D9A7AA', surface: '#FFF8F1', page: '#F3E7DD' },
-            { id: 'pudding',    name: 'Pudding',              icon: '#94704B', icon2: '#E9C987', surface: '#FFFAE8', page: '#F3EAD0' },
-            { id: 'matcha',     name: 'Matcha',               icon: '#5F8256', icon2: '#B3CF9E', surface: '#FBF8EE', page: '#E9EEDC' },
-            { id: 'ocean',      name: 'Ocean',                icon: '#5B7A92', icon2: '#AFC4D3', surface: '#FAF5EB', page: '#E9E3D6' },
-            { id: 'preto',      name: 'Preto',                icon: '#1F2328', icon2: '#8A919C', surface: '#FFFFFF', page: '#EEEFF1' }
+            { id: 'rosa',   name: 'Rosa',          accent: '#F06AAE', accent2: '#FFC2E0', soft: '#FFEAF4', surface: '#FFF8FB', page: '#FDEAF3', glow: 'rgba(240,106,174,0.35)', on: '#FFFFFF' },
+            { id: 'lilas',  name: 'Lilás',         accent: '#A57CF5', accent2: '#DCCBFF', soft: '#F3EDFF', surface: '#FBF9FF', page: '#EEE8FD', glow: 'rgba(165,124,245,0.35)', on: '#FFFFFF' },
+            { id: 'ciano',  name: 'Ciano',         accent: '#3FB8F0', accent2: '#A6E7FF', soft: '#E4F6FF', surface: '#F7FCFF', page: '#E1F2FB', glow: 'rgba(63,184,240,0.35)',  on: '#073B54' },
+            { id: 'grama',  name: 'Verde Grama',   accent: '#5CCB6A', accent2: '#BDF2B3', soft: '#E8FAE4', surface: '#F8FEF6', page: '#E3F5DC', glow: 'rgba(92,203,106,0.35)',  on: '#12451C' },
+            { id: 'pudim',  name: 'Amarelo Pudim', accent: '#F4B740', accent2: '#FFE3A3', soft: '#FFF5DA', surface: '#FFFCF2', page: '#FBEFD2', glow: 'rgba(244,183,64,0.4)',   on: '#4D3405' },
+            { id: 'pessego', name: 'Pêssego',      accent: '#FF8F70', accent2: '#FFD0BD', soft: '#FFEDE5', surface: '#FFF9F6', page: '#FCE7DE', glow: 'rgba(255,143,112,0.35)', on: '#5C1F0E' },
+            { id: 'menta',  name: 'Menta',         accent: '#34CDB3', accent2: '#ABF1E3', soft: '#E1FAF5', surface: '#F6FEFC', page: '#DDF4EE', glow: 'rgba(52,205,179,0.35)',  on: '#0A4239' },
+            { id: 'cereja', name: 'Cereja',        accent: '#F2667E', accent2: '#FFC4CD', soft: '#FFE9EC', surface: '#FFF8F9', page: '#FCE5E9', glow: 'rgba(242,102,126,0.35)', on: '#FFFFFF' },
+            { id: 'grafite', name: 'Grafite',      accent: '#7484A0', accent2: '#C3CCDA', soft: '#EDF0F5', surface: '#FAFBFD', page: '#E7EBF1', glow: 'rgba(116,132,160,0.3)',  on: '#FFFFFF' },
+            { id: 'preto',  name: 'Preto',         accent: '#2B2F36', accent2: '#8A919C', soft: '#F0F1F3', surface: '#FFFFFF', page: '#EEEFF1', glow: 'rgba(31,35,40,0.25)',    on: '#FFFFFF' }
         ];
 
         // ================================================
@@ -3261,14 +3295,15 @@
         const isColor = (c) => isHex(c) || (typeof c === 'string' && /^rgba?\([\d\s.,%]+\)$/i.test(c.trim()));
         // Paletas válidas (se alguém digitar uma cor errada no config, aquela paleta é ignorada)
         const THEMES = (Array.isArray(THEME_PALETTES) ? THEME_PALETTES : []).filter(p => p && typeof p.id === 'string'
-            && ['icon', 'icon2', 'surface', 'page'].every(k => isColor(p[k])))
-            .map(p => ({ ...p, name: String(p.name || p.id).slice(0, 30) }));
-        if (!THEMES.length) THEMES.push({ id: 'strawberry', name: 'Strawberry Shortcake', icon: '#B85A55', icon2: '#D9A7AA', surface: '#FFF8F1', page: '#F3E7DD' });
-        // Cores das versões antigas (Rosa / Lilás / Ciano / Grafite) viram a paleta mais parecida
-        const OLD_THEME_MAP = { '#ec4899': 'strawberry', '#8b5cf6': 'ocean', '#3b82f6': 'ocean', '#475569': 'preto' };
+            && ['accent', 'accent2', 'soft', 'surface', 'page', 'glow'].every(k => isColor(p[k])))
+            .map(p => ({ ...p, name: String(p.name || p.id).slice(0, 30), on: isColor(p.on) ? p.on : '#FFFFFF' }));
+        if (!THEMES.length) THEMES.push({ id: 'rosa', name: 'Rosa', accent: '#F06AAE', accent2: '#FFC2E0', soft: '#FFEAF4', surface: '#FFF8FB', page: '#FDEAF3', glow: 'rgba(240,106,174,0.35)', on: '#FFFFFF' });
+        // Temas de versões anteriores viram a paleta mais parecida
+        const OLD_THEME_IDS = { strawberry: 'rosa', pudding: 'pudim', matcha: 'grama', ocean: 'ciano' };
+        const OLD_THEME_MAP = { '#ec4899': 'rosa', '#8b5cf6': 'lilas', '#3b82f6': 'ciano', '#475569': 'grafite' };
         function themeFrom(saved) {
             if (!saved || typeof saved !== 'object') return null;
-            const byId = THEMES.find(p => p.id === saved.id);
+            const byId = THEMES.find(p => p.id === saved.id) || THEMES.find(p => p.id === OLD_THEME_IDS[saved.id]);
             if (byId) return byId;
             if (typeof saved.accent === 'string') {
                 const id = OLD_THEME_MAP[saved.accent.toLowerCase()];
@@ -3284,21 +3319,18 @@
         }
         // Aplica a paleta nas variáveis do :root
         var currentTheme = null; // "var": o modo escuro (lá em cima) já consulta isso antes desta linha
-        // Só fundo e ícones mudam; a interface neutra (--accent) fica no CSS
+        // A paleta colore botões, destaques, ícones e o fundo
+        const THEME_VARS = [['--theme-accent', 'accent'], ['--theme-accent-2', 'accent2'], ['--theme-soft', 'soft'], ['--theme-glow', 'glow'],
+            ['--on-accent', 'on'], ['--surface', 'surface'], ['--page', 'page']];
         function applyTheme(t) {
             currentTheme = { ...t };
             const root = document.documentElement.style;
-            root.setProperty('--theme-icon', t.icon);
-            root.setProperty('--theme-icon-2', t.icon2);
-            root.setProperty('--surface', t.surface);
-            root.setProperty('--page', t.page);
+            THEME_VARS.forEach(([v, k]) => root.setProperty(v, t[k]));
             syncMetaTheme();
         }
-        const saveTheme = () => store.set(STORAGE_KEYS.theme, {
-            id: currentTheme.id, icon: currentTheme.icon, icon2: currentTheme.icon2, surface: currentTheme.surface, page: currentTheme.page
-        });
+        const saveTheme = () => store.set(STORAGE_KEYS.theme, Object.fromEntries([['id', currentTheme.id], ...THEME_VARS.map(([, k]) => [k, currentTheme[k]])]));
         // Bolinha de amostra de uma paleta (fundo + 2 cores)
-        const paletteDot = (p) => `background: radial-gradient(circle at 50% 50%, ${p.surface} 0 34%, transparent 35%), linear-gradient(135deg, ${p.icon2} 0 50%, ${p.icon} 50% 100%)`;
+        const paletteDot = (p) => `background: radial-gradient(circle at 50% 50%, ${p.surface} 0 34%, transparent 35%), linear-gradient(135deg, ${p.accent2} 0 50%, ${p.accent} 50% 100%)`;
 
         const bootScreen = document.getElementById('boot-screen');
         const logoStage = document.getElementById('boot-logo-stage');
@@ -3337,7 +3369,7 @@
         const restoredTheme = themeFrom(savedTheme);
         if (restoredTheme) {
             applyTheme(restoredTheme);
-            if (savedTheme.id !== restoredTheme.id || !savedTheme.icon) saveTheme(); // tema de versão antiga: grava no formato novo
+            if (savedTheme.id !== restoredTheme.id || savedTheme.accent !== restoredTheme.accent || !savedTheme.on) saveTheme(); // tema de versão antiga: grava no formato novo
             themePicked = true;
             bootScreen.remove();
         } else {
@@ -5654,8 +5686,8 @@
                 <div class="palette-grid" role="radiogroup" aria-label="Tema de cores">
                     ${THEMES.map(t => {
                         const on = !!currentTheme && currentTheme.id === t.id;
-                        return `<button class="palette-opt${on ? ' selected' : ''}" data-act="theme" data-id="${esc(t.id)}" role="radio" aria-checked="${on}" style="--p-accent:${t.icon};--p-surface:${t.surface}">
-                            <span class="palette-dots" aria-hidden="true"><i style="background:${t.surface}"></i><i style="background:${t.icon2}"></i><i style="background:${t.icon}"></i></span>
+                        return `<button class="palette-opt${on ? ' selected' : ''}" data-act="theme" data-id="${esc(t.id)}" role="radio" aria-checked="${on}" style="--p-accent:${t.accent};--p-surface:${t.surface}">
+                            <span class="palette-dots" aria-hidden="true"><i style="background:${t.surface}"></i><i style="background:${t.accent2}"></i><i style="background:${t.accent}"></i></span>
                             <span class="palette-name">${esc(t.name)}</span>
                             ${on ? '<i class="fas fa-check palette-check" aria-hidden="true"></i>' : ''}
                         </button>`;
