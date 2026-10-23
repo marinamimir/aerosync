@@ -1867,6 +1867,132 @@
         html.dark .life-tagbox { background: #262a3b; }
         html.dark .life-tagbox input { color: #eef0f6; }
 
+        /* ================================================
+           WIDGETS, NOVO MOMENTO ZEN E PAUSAS PRO CAFÉ
+           ================================================ */
+        /* --- Widgets da tela inicial --- */
+        .w-body { display: block; min-height: 100%; cursor: pointer; border-radius: 24px; outline-offset: 3px; }
+        .w-image { position: relative; margin: 0; height: 100%; min-height: 150px; border-radius: 24px; overflow: hidden; background: #0f1115;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 0 8px 20px -8px rgba(0,0,0,0.3); }
+        .is-full > .w-body .w-image, .wd-preview.is-full .w-image { min-height: 200px; aspect-ratio: 16 / 9; }
+        .w-image img { position: relative; z-index: 1; width: 100%; height: 100%; display: block; object-fit: cover; }
+        .w-image.fit-contain img { object-fit: contain; }
+        .w-image-bg { position: absolute; inset: -30px; background-size: cover; background-position: center; filter: blur(20px) brightness(0.85); }
+        .w-image::after { content: ''; position: absolute; inset: 0 0 55% 0; z-index: 2; background: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent); pointer-events: none; }
+        .w-image figcaption { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3; padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: 800; color: #fff; background: rgba(20,22,31,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .w-image.is-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding: 16px; background: var(--accent-soft); border: 2px dashed color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: none; font-size: 26px; }
+        .w-image.is-empty span { font-size: 12px; font-weight: 700; color: #9ca3af; }
+        html:root .w-image.is-empty > i, html:root .w-quote > .fa-quote-left { color: var(--icon) !important; }
+        .w-quote { position: relative; margin: 0; height: 100%; min-height: 110px; padding: 18px 18px 16px; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+        .w-quote > i { font-size: 18px; opacity: 0.85; }
+        .w-quote p { font-size: 16px; font-weight: 800; line-height: 1.4; color: #1f2937; overflow-wrap: anywhere; }
+        .w-quote cite { font-style: normal; font-size: 12px; font-weight: 700; color: #6b7280; }
+        .w-quote cite::before { content: '— '; }
+        .w-quote.is-empty p { color: #9ca3af; font-weight: 700; font-size: 14px; }
+        .w-quote.q-paper { background: linear-gradient(160deg, #fffdf7, #fff7e8); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04), 0 6px 16px -6px rgba(0,0,0,0.12); }
+        .w-quote.q-paper p { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; font-style: italic; }
+        .w-quote.q-accent { background: linear-gradient(160deg, var(--theme-icon-2), var(--theme-icon)); box-shadow: inset 0 2px 8px rgba(255,255,255,0.45), 0 10px 22px -10px var(--theme-icon); }
+        .w-quote.q-accent p, .w-quote.q-accent cite { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.18); }
+        html:root .w-quote.q-accent > .fa-quote-left { color: rgba(255,255,255,0.85) !important; }
+        .w-quote.q-minimal { background: transparent; border: 2px solid color-mix(in srgb, var(--accent) 15%, transparent); }
+        .w-quote.q-minimal p { font-weight: 700; }
+        html.dark .w-quote.q-paper { background: #23262f; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05); }
+        html.dark .w-quote p { color: #eef0f6; }
+        html.dark .w-quote.q-accent p { color: #fff; }
+        html.dark .w-quote cite { color: #a3a9bb; }
+        html.dark .w-quote.q-minimal { border-color: #2b2f42; }
+        html.dark .w-image.is-empty { background: #1e2130; border-color: #3a3f55; }
+        .st-btn.st-danger { color: #dc2626; background: #fef2f2; }
+        html.dark .st-btn.st-danger { color: #fca5a5; background: rgba(248,113,113,0.14); }
+        .edit-add { padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 800; color: var(--accent); background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        html.dark .edit-add { background: #1e2130; color: #d9dce6; }
+        /* painel e editor */
+        .wd-add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .wd-add { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px; border-radius: 20px; text-align: left; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.15s; }
+        .wd-add:active { transform: scale(0.96); }
+        .wd-add > i { font-size: 20px; margin-bottom: 4px; }
+        html:root .wd-add > i, html:root .wd-thumb > i { color: var(--icon) !important; }
+        .wd-add b { font-size: 14px; font-weight: 800; color: #1f2937; }
+        .wd-add small { font-size: 11px; font-weight: 700; color: #9ca3af; }
+        .wd-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 8px; border-radius: 16px; background: #fff; border: 1px solid #f1f5f9; }
+        .wd-thumb { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); }
+        .wd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .wd-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .wd-text b { font-size: 13px; font-weight: 800; color: #1f2937; }
+        .wd-text small { font-size: 11px; font-weight: 600; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .wd-preview { max-width: 100%; }
+        .wd-preview:not(.is-full) { width: calc(50% - 6px); }
+        html.dark .wd-add, html.dark .wd-row { background: #1e2130; border-color: #2b2f42; }
+        html.dark .wd-add b, html.dark .wd-text b { color: #eef0f6; }
+
+        /* --- Momento Zen: X, menu de pausas e anotações do café --- */
+        #zen-mode [hidden] { display: none !important; }
+        .zen-x {
+            position: absolute; top: 18px; right: 18px; z-index: 3; width: 44px; height: 44px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;
+            background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.35);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+            transition: transform 0.15s, background 0.2s;
+        }
+        .zen-x:hover { background: rgba(255,255,255,0.28); }
+        .zen-x:active { transform: scale(0.9); }
+        .zen-x:focus-visible, .zen-opt:focus-visible, .zen-pill:focus-visible { outline: 3px solid rgba(255,255,255,0.6); outline-offset: 3px; }
+        .zen-menu, .zen-session, .zen-coffee { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 330px; }
+        .zen-h { margin: 8px 0 22px; font-size: 22px; font-weight: 800; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+        .zen-opts { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .zen-opt {
+            display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: 22px; text-align: left; color: #fff;
+            background: linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 10px 24px rgba(0,0,0,0.2);
+            transition: transform 0.15s, background 0.2s;
+        }
+        .zen-opt:hover { background: linear-gradient(160deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1)); }
+        .zen-opt:active { transform: scale(0.97); }
+        .zo-ic { width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(255,255,255,0.2); box-shadow: inset 0 2px 4px rgba(255,255,255,0.35); }
+        .zo-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .zo-txt b { font-size: 16px; font-weight: 800; }
+        .zo-txt small { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.75); }
+        .zen-link { margin-top: 22px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; color: rgba(255,255,255,0.8); }
+        .zen-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        /* Só "Respirar Fundo" tem o círculo respirando e o Inspire/Expire */
+        #zen-mode.running:not(.mode-breathe) .zen-ring { animation: zenGlow 7s ease-in-out infinite; }
+        #zen-mode.running:not(.mode-breathe) .b-in, #zen-mode.running:not(.mode-breathe) .b-out { animation: none; opacity: 0; }
+        #zen-mode.running:not(.mode-breathe) .b-calm { opacity: 1; }
+        .zen-breath .b-calm { letter-spacing: 0.04em; text-transform: none; font-weight: 700; font-size: 14px; color: rgba(255,255,255,0.75); }
+        @keyframes zenGlow { 0%, 100% { transform: scale(0.9); opacity: 0.85; } 50% { transform: scale(0.95); opacity: 1; } }
+        /* Anotações do café */
+        .zen-sub { margin: -14px 0 18px; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.75); text-align: center; }
+        .zen-field { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 12px; text-align: left; }
+        .zen-field span { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: rgba(255,255,255,0.85); }
+        .zen-field input {
+            width: 100%; padding: 12px 14px; border-radius: 16px; font-family: inherit; font-size: 15px; font-weight: 700; color: #fff; outline: none;
+            background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.3); transition: border-color 0.2s, background 0.2s;
+        }
+        .zen-field input::placeholder { color: rgba(255,255,255,0.5); font-weight: 600; }
+        .zen-field input:focus { border-color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.2); }
+        .zen-form-btns { display: flex; gap: 10px; width: 100%; margin-top: 8px; }
+        .zen-pill { flex: 1; padding: 13px; border-radius: 999px; font-size: 14px; font-weight: 800; color: #1f2937; background: rgba(255,255,255,0.92); box-shadow: 0 8px 20px rgba(0,0,0,0.25); transition: transform 0.15s; }
+        .zen-pill.ghost { flex: 0 0 auto; padding: 13px 18px; color: #fff; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.3); box-shadow: none; }
+        .zen-pill:active { transform: scale(0.96); }
+
+        /* --- Pausas pro café no calendário e nos gráficos --- */
+        .cal-coffee { width: 6px; height: 5px; border-radius: 1px 1px 3px 3px; background: #9F6B53; }
+        .cal-day.is-selected .cal-coffee { background: #fff; }
+        .tl-coffee { --pc: #9F6B53; cursor: default; background: repeating-linear-gradient(135deg, color-mix(in srgb, #9F6B53 14%, #fff) 0 6px, color-mix(in srgb, #9F6B53 22%, #fff) 6px 12px); }
+        .tl-coffee:hover { transform: none; }
+        html.dark .tl-coffee { background: repeating-linear-gradient(135deg, color-mix(in srgb, #9F6B53 22%, #1e2130) 0 6px, color-mix(in srgb, #9F6B53 30%, #1e2130) 6px 12px); }
+        .break-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; margin-bottom: 8px; border-radius: 16px; background: #fff; border: 1px solid #f1f5f9; }
+        .break-ic { width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #9F6B53; background: color-mix(in srgb, #9F6B53 14%, #fff); }
+        .break-head { font-size: 13px; font-weight: 800; color: #1f2937; }
+        .break-line { font-size: 12px; font-weight: 600; color: #6b7280; }
+        .break-line b { font-weight: 800; color: #4b5563; }
+        html.dark .break-row { background: #1e2130; border-color: #2b2f42; }
+        html.dark .break-head { color: #eef0f6; }
+        html.dark .break-line { color: #a3a9bb; }
+        html.dark .break-line b { color: #d9dce6; }
+        html.dark .break-ic { background: rgba(159,107,83,0.22); color: #d9a98f; }
+        .dot-coffee, .sp-coffee, .b-coffee { background: linear-gradient(160deg, #D9A98F, #9F6B53); }
+
         /* Animação de background para os banners */
         .bg-gradient-study { background: linear-gradient(135deg, #D79AAE 0%, #EFC9CF 100%); }
         .bg-gradient-work { background: linear-gradient(120deg, #8FC1B4 0%, #9DBFD0 100%); }
@@ -1942,26 +2068,55 @@
         </div>
 
         <!-- ===== ZEN MODE (Relaxar): sem números, só respirar ===== -->
-        <div id="zen-mode" role="dialog" aria-modal="true" aria-label="Modo Relaxar" aria-hidden="true">
+        <div id="zen-mode" role="dialog" aria-modal="true" aria-label="Momento Zen" aria-hidden="true">
             <div class="zen-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="zen-stars" aria-hidden="true"></div>
+            <button id="zen-close" class="zen-x" aria-label="Fechar o Momento Zen" title="Fechar"><i class="fas fa-xmark"></i></button>
             <div class="zen-content">
-                <p id="zen-status" class="zen-label">Momento Zen</p>
-                <div class="zen-orb" aria-hidden="true">
-                    <div class="zen-ring r2"></div>
-                    <div class="zen-ring"></div>
-                    <div class="zen-lotus"><i class="fas fa-spa"></i></div>
+                <!-- Tela inicial: escolher o tipo de pausa -->
+                <div id="zen-menu" class="zen-menu">
+                    <p class="zen-label">Momento Zen</p>
+                    <h2 class="zen-h">Como você quer pausar?</h2>
+                    <div class="zen-opts">
+                        <button class="zen-opt" data-zen-mode="relax"><span class="zo-ic"><i class="fas fa-spa"></i></span><span class="zo-txt"><b>Apenas Relaxar</b><small>Sem relógio na tela, só Play e Stop</small></span></button>
+                        <button class="zen-opt" data-zen-mode="breathe"><span class="zo-ic"><i class="fas fa-wind"></i></span><span class="zo-txt"><b>Respirar Fundo</b><small>Siga o círculo: inspire e expire</small></span></button>
+                        <button class="zen-opt" data-zen-mode="coffee"><span class="zo-ic"><i class="fas fa-mug-hot"></i></span><span class="zo-txt"><b>Pausa pro Café</b><small>No fim, anote o que bebeu, comeu e fez</small></span></button>
+                    </div>
                 </div>
-                <p class="zen-breath" aria-hidden="true">
-                    <span class="b-idle">Toque no play e respire com o círculo</span>
-                    <span class="b-in">Inspire</span>
-                    <span class="b-out">Expire</span>
-                    <span class="b-pause">Pausado</span>
-                </p>
-                <div class="zen-btns">
-                    <button id="zen-play" class="zen-btn primary" aria-label="Começar a relaxar" title="Play"><i class="fas fa-play"></i></button>
-                    <button id="zen-stop" class="zen-btn" aria-label="Encerrar e voltar" title="Stop"><i class="fas fa-stop"></i></button>
+                <!-- Sessão (o tempo é contado em silêncio) -->
+                <div id="zen-session" class="zen-session" hidden>
+                    <p id="zen-status" class="zen-label">Momento Zen</p>
+                    <div class="zen-orb" aria-hidden="true">
+                        <div class="zen-ring r2"></div>
+                        <div class="zen-ring"></div>
+                        <div class="zen-lotus"><i id="zen-icon" class="fas fa-spa"></i></div>
+                    </div>
+                    <p class="zen-breath" aria-hidden="true">
+                        <span class="b-idle" id="zen-idle">Toque no play e respire com o círculo</span>
+                        <span class="b-in">Inspire</span>
+                        <span class="b-out">Expire</span>
+                        <span class="b-calm" id="zen-calm">Só aproveite</span>
+                        <span class="b-pause">Pausado</span>
+                    </p>
+                    <div class="zen-btns">
+                        <button id="zen-play" class="zen-btn primary" aria-label="Começar" title="Play"><i class="fas fa-play"></i></button>
+                        <button id="zen-stop" class="zen-btn" aria-label="Encerrar" title="Stop"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <button id="zen-back" class="zen-link"><i class="fas fa-chevron-left mr-1"></i>Trocar de pausa</button>
                 </div>
+                <!-- Fim da Pausa pro Café: anotações que vão para o calendário -->
+                <form id="zen-coffee" class="zen-coffee" autocomplete="off" hidden>
+                    <p class="zen-label">Pausa pro Café</p>
+                    <h2 class="zen-h">Como foi a pausa?</h2>
+                    <p id="zen-coffee-time" class="zen-sub"></p>
+                    <label class="zen-field"><span><i class="fas fa-mug-hot"></i>O que bebeu?</span><input id="zc-drink" maxlength="60" placeholder="Ex.: café com leite"></label>
+                    <label class="zen-field"><span><i class="fas fa-cookie-bite"></i>O que comeu?</span><input id="zc-food" maxlength="60" placeholder="Ex.: pão de queijo"></label>
+                    <label class="zen-field"><span><i class="fas fa-person-walking"></i>O que fez?</span><input id="zc-did" maxlength="60" placeholder="Ex.: conversei com a equipe"></label>
+                    <div class="zen-form-btns">
+                        <button type="button" id="zc-skip" class="zen-pill ghost">Pular</button>
+                        <button type="submit" class="zen-pill">Salvar no calendário</button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -2123,7 +2278,10 @@
         <!-- Barra do modo "Organizar" (só aparece enquanto organiza a tela inicial) -->
         <div id="edit-bar" class="edit-bar hidden" role="status">
             <span><i class="fas fa-up-down mr-2"></i>Organizando a tela inicial</span>
-            <button id="edit-done" class="edit-done">Concluir</button>
+            <div class="flex items-center gap-2">
+                <button id="edit-add-widget" class="edit-add" aria-label="Adicionar widget"><i class="fas fa-plus mr-1"></i>Widget</button>
+                <button id="edit-done" class="edit-done">Concluir</button>
+            </div>
         </div>
 
         <!-- Área rolável: as seções da tela inicial (a ordem pode ser trocada no modo Organizar) -->
@@ -2392,7 +2550,9 @@
             layout: 'aerosync.layout', hideDone: 'aerosync.hidedone', view: 'aerosync.view',
             avatar: 'aerosync.avatar', // imagem do avatar em base64 (data:image/jpeg;base64,...)
             library: 'aerosync.library', // aba Organização: Grupos > Sub-grupos > Presets
-            life: 'aerosync.life' // Mundo Pessoal (hobbies) — separado das tarefas
+            life: 'aerosync.life', // Mundo Pessoal (hobbies) — separado das tarefas
+            widgets: 'aerosync.widgets', // widgets da tela inicial (imagem e citação)
+            breaks: 'aerosync.breaks' // Pausas pro Café (aparecem no calendário)
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
         const store = {
@@ -2650,6 +2810,18 @@
         const lifeList = (id) => life.lists.find(l => l.id === id);
         const lifeItem = (id) => life.items.find(x => x.id === id);
 
+        // Pausas pro Café: { id, date, at ('HH:MM'), ms, drink, food, did } — aparecem no calendário
+        let breaks = (() => {
+            const raw = store.get(STORAGE_KEYS.breaks, []);
+            return (Array.isArray(raw) ? raw : []).filter(b => b && isISO(b.date)).map(b => ({
+                id: typeof b.id === 'string' && b.id ? b.id.slice(0, 40) : uid('b'),
+                date: b.date, at: isHM(b.at) ? b.at : '',
+                ms: Number.isFinite(b.ms) && b.ms > 0 ? Math.min(b.ms, 6 * 3600 * 1000) : 0,
+                drink: libText(b.drink, 60), food: libText(b.food, 60), did: libText(b.did, 60)
+            })).slice(-1000);
+        })();
+        const saveBreaks = () => store.set(STORAGE_KEYS.breaks, breaks);
+
         // ---------- Planejado vs Executado (missões de vários dias) ----------
         const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
         // s..e = dias que a pílula cobre no calendário (vai além do prazo se terminou atrasada)
@@ -2793,7 +2965,11 @@
             focusDays: cleanDays(savedStats.focusDays),
             zenTime: posNum(savedStats.zenTime),
             zenSessions: Number.isFinite(savedStats.zenSessions) && savedStats.zenSessions > 0 ? Math.floor(savedStats.zenSessions) : 0,
-            zenDays: cleanDays(savedStats.zenDays)
+            zenDays: cleanDays(savedStats.zenDays),
+            // Pausas pro Café (contadas à parte do Relaxar)
+            coffeeTime: posNum(savedStats.coffeeTime),
+            coffeeSessions: Number.isFinite(savedStats.coffeeSessions) && savedStats.coffeeSessions > 0 ? Math.floor(savedStats.coffeeSessions) : 0,
+            coffeeDays: cleanDays(savedStats.coffeeDays)
         };
         const saveStats = () => store.set(STORAGE_KEYS.stats, stats);
         function addFocus(ms) {
@@ -4172,7 +4348,7 @@
         const sheetTitle = document.getElementById('sheet-title');
         const navBtns = document.querySelectorAll('.nav-btn[data-view]'); // o botão Relaxar (lótus) é tratado à parte
         const TAG_COLOR = { study: 'var(--tag-study)', work: 'var(--tag-work)', play: 'var(--tag-play)', life: 'var(--tag-life)' };
-        const VIEW_TITLE = { agenda: 'Todas as missões', calendar: 'Calendário', notes: 'Anotações', stats: 'Estatísticas', profile: 'Ajustes', library: 'Organização', life: 'Mundo Pessoal' };
+        const VIEW_TITLE = { agenda: 'Todas as missões', calendar: 'Calendário', notes: 'Anotações', stats: 'Estatísticas', profile: 'Ajustes', library: 'Organização', life: 'Mundo Pessoal', widgets: 'Widgets', widget: 'Editar widget' };
         const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         let currentView = 'home', draft = null;
         let calMonth = null, calSelected = todayISO(), editingNoteId = null;
@@ -4220,7 +4396,7 @@
         // Redesenha o painel atual mantendo a posição da rolagem
         function renderSheet() {
             const keep = sheetBody.scrollTop;
-            const fn = { agenda: renderAgenda, calendar: renderCalendar, notes: renderNotes, stats: renderStats, profile: renderProfile, library: renderLibrary, life: renderLife }[currentView];
+            const fn = { agenda: renderAgenda, calendar: renderCalendar, notes: renderNotes, stats: renderStats, profile: renderProfile, library: renderLibrary, life: renderLife, widgets: renderWidgetsPanel, widget: renderWidgetEditor }[currentView];
             if (fn) fn();
             sheetBody.scrollTop = keep;
         }
@@ -4241,6 +4417,7 @@
             if (view === 'agenda') agendaQuery = '';
             if (view === 'library') { libEdit = null; libDraft = null; }
             if (view === 'life') { lifeLeave(); lifeEditList = null; }
+            if (view === 'widgets') widgetEditId = null;
             setNav(view);
             sheetTitle.textContent = VIEW_TITLE[view];
             renderSheet();
@@ -4280,6 +4457,7 @@
                 // Na Organização, Esc primeiro sai do editor / do campo de nome
                 if (currentView === 'library' && (libDraft || libEdit)) { libDraft = null; libEdit = null; renderSheet(); return; }
                 if (currentView === 'life' && (lifeItemId || lifeEditList)) { lifeLeave(); lifeEditList = null; renderSheet(); return; }
+                if (currentView === 'widget') { openSheet('widgets'); return; }
                 closeSheet();
             }
         });
@@ -4371,7 +4549,13 @@
                 const st = hmToMin(t.timeStart);
                 const en = t.timeEnd ? hmToMin(t.timeEnd) : st + 30; // só início: bloco de 30 min
                 return { t, s: st, e: Math.min(24 * 60, Math.max(en, st + 15)) };
-            }).sort((a, b) => a.s - b.s || b.e - a.e);
+            });
+            // Pausas pro Café do dia (com o horário em que começaram)
+            breaks.filter(b => b.date === day && b.at).forEach(b => {
+                const st = hmToMin(b.at);
+                ev.push({ b, s: st, e: Math.min(24 * 60, st + Math.max(15, Math.round(b.ms / 60000))) });
+            });
+            ev.sort((a, b) => a.s - b.s || b.e - a.e);
             if (!ev.length) return '';
             // Missões que se sobrepõem dividem a largura em colunas
             let group = null;
@@ -4397,6 +4581,10 @@
             const blocks = ev.map(x => {
                 const t = x.t, top = (x.s - h0 * 60) / 60 * TL_HOUR, hgt = Math.max(24, (x.e - x.s) / 60 * TL_HOUR - 3);
                 const short = hgt < 42;
+                if (x.b) {
+                    return `<div class="tl-block tl-coffee${short ? ' is-short' : ''}" style="top:${top}px;height:${hgt}px;left:calc(${x.col / x.cols * 100}% + 2px);width:calc(${100 / x.cols}% - 4px)"
+                        aria-label="Pausa pro café às ${x.b.at}, ${fmtDur(x.b.ms)}"><span class="tl-time">${x.b.at} · ${fmtDur(x.b.ms)}</span><b><i class="fas fa-mug-hot task-icon"></i>Pausa pro café</b></div>`;
+                }
                 return `<button class="tl-block${t.done ? ' is-done' : ''}${short ? ' is-short' : ''}" data-act="cal-pill" data-id="${esc(t.id)}"
                     style="top:${top}px;height:${hgt}px;left:calc(${x.col / x.cols * 100}% + 2px);width:calc(${100 / x.cols}% - 4px);--pc:var(--tag-${t.tag})"
                     aria-label="${timeLabel(t)}: ${esc(t.name)}${t.done ? ' (concluída)' : ''}. Abrir detalhes">
@@ -4462,8 +4650,10 @@
                     let dots = [...new Set(pendSingle.map(t => t.tag))].slice(0, 3).map(tag => `<i class="cal-dot" data-tag="${tag}"></i>`).join('');
                     if (dayTasks.length && !pend.length) dots += '<i class="cal-dot cal-dot-done"></i>';
                     if (hasNote) dots += '<i class="cal-note"></i>';
+                    const nBreaks = breaks.filter(b => b.date === iso).length;
+                    if (nBreaks) dots += '<i class="cal-coffee" aria-hidden="true"></i>';
                     if (hiddenAt[c]) dots += `<b class="cal-more">+${hiddenAt[c]}</b>`;
-                    const label = longDate(iso) + (pend.length ? `, ${pend.length} pendente${pend.length > 1 ? 's' : ''}` : '') + (hasNote ? ', com anotação' : '');
+                    const label = longDate(iso) + (pend.length ? `, ${pend.length} pendente${pend.length > 1 ? 's' : ''}` : '') + (hasNote ? ', com anotação' : '') + (nBreaks ? `, ${nBreaks} pausa${nBreaks > 1 ? 's' : ''} pro café` : '');
                     cells += `<button class="cal-day${iso === today ? ' is-today' : ''}${iso === calSelected ? ' is-selected' : ''}" style="grid-column:${c + 1}" data-act="cal-day" data-date="${iso}" aria-label="${label}" aria-pressed="${iso === calSelected}"><span>${d}</span><span class="cal-dots">${dots}</span></button>`;
                 }
                 weeksHTML += `<div class="cal-week">${cells}${pills}</div>`;
@@ -4501,6 +4691,25 @@
                         return (untimed.length < sel.length ? '<span class="tl-sub">Sem horário</span>' : '') + untimed.map(t => agendaRow(t, t.date !== calSelected)).join('');
                     })()}
                 </div>
+                ${(() => {
+                    const dayBreaks = breaks.filter(b => b.date === calSelected).sort((a, b) => (a.at < b.at ? -1 : 1));
+                    if (!dayBreaks.length) return '';
+                    const total = dayBreaks.reduce((n, b) => n + b.ms, 0);
+                    return `<div class="sheet-section">
+                        <div class="flex items-center justify-between"><span class="modal-label">Pausas pro café</span><span class="text-xs font-bold text-gray-400 mb-2">${fmtDur(total)}</span></div>
+                        ${dayBreaks.map(b => `<div class="break-row" data-bid="${esc(b.id)}">
+                            <span class="break-ic"><i class="fas fa-mug-hot"></i></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="break-head">${b.at ? esc(b.at) + ' · ' : ''}${fmtDur(b.ms)}</p>
+                                ${b.drink ? `<p class="break-line"><b>Bebeu:</b> ${esc(b.drink)}</p>` : ''}
+                                ${b.food ? `<p class="break-line"><b>Comeu:</b> ${esc(b.food)}</p>` : ''}
+                                ${b.did ? `<p class="break-line"><b>Fez:</b> ${esc(b.did)}</p>` : ''}
+                                ${!b.drink && !b.food && !b.did ? '<p class="break-line">Sem anotações</p>' : ''}
+                            </div>
+                            <button data-act="cal-break-del" class="mini-btn danger" aria-label="Apagar pausa" title="Apagar"><i class="fas fa-trash"></i></button>
+                        </div>`).join('')}
+                    </div>`;
+                })()}
                 <div class="sheet-section">
                     <label class="modal-label" for="day-note">Anotação do dia</label>
                     <textarea id="day-note" class="task-input day-note" maxlength="1000" placeholder="Algo pra lembrar desse dia?">${esc(dayNotes[calSelected] || '')}</textarea>
@@ -5155,6 +5364,114 @@
         // Botões de formatação não tiram a seleção do texto
         sheetBody.addEventListener('mousedown', (e) => { if (e.target.closest('[data-act="life-rt"]')) e.preventDefault(); });
 
+        // ================================================
+        //  WIDGETS — painel (lista + adicionar) e editor
+        // ================================================
+        let widgetEditId = null;
+        function openWidgetEditor(id) {
+            if (!widgetById(id)) return;
+            widgetEditId = id;
+            if (!sheet.classList.contains('open')) openSheet('widget');
+            else { setNav('widget'); sheetTitle.textContent = VIEW_TITLE.widget; renderSheet(); playClick(); }
+            sheetTitle.textContent = VIEW_TITLE.widget;
+            sheetBody.scrollTop = 0;
+        }
+        function renderWidgetsPanel() {
+            sheetBody.innerHTML = `
+                <p class="lib-intro"><i class="fas fa-circle-info" aria-hidden="true"></i><span>Adicione quantos quiser. Para mudar a ordem ou o tamanho, use <b>Organizar seções</b> (ou segure numa área vazia da tela inicial).</span></p>
+                <div class="wd-add-grid">
+                    <button data-act="wd-add" data-type="image" class="wd-add"><i class="fas fa-image" aria-hidden="true"></i><b>Imagem</b><small>Uma foto decorativa</small></button>
+                    <button data-act="wd-add" data-type="quote" class="wd-add"><i class="fas fa-quote-left" aria-hidden="true"></i><b>Citação</b><small>Uma frase para lembrar</small></button>
+                </div>
+                <span class="modal-label mt-5">Na tela inicial (${widgets.length})</span>
+                ${widgets.length ? widgets.map(w => `
+                    <div class="wd-row" data-wid="${w.id}">
+                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : '<i class="fas fa-quote-left"></i>'}</span>
+                        <span class="wd-text"><b>${esc(sectionEl(w.id) ? sectionEl(w.id).dataset.label : WIDGET_LABEL[w.type])}</b><small>${esc(w.type === 'image' ? (w.caption || (w.image ? 'Foto' : 'Sem foto ainda')) : (w.text || 'Sem texto'))}</small></span>
+                        <button data-act="wd-edit" class="row-btn" aria-label="Editar widget" title="Editar"><i class="fas fa-pen"></i></button>
+                        <button data-act="wd-del" class="row-btn row-danger" aria-label="Remover widget" title="Remover"><i class="fas fa-trash"></i></button>
+                    </div>`).join('') : emptyMsg('Nenhum widget ainda.')}`;
+        }
+        function renderWidgetEditor() {
+            const w = widgetById(widgetEditId);
+            if (!w) { widgetEditId = null; setNav('widgets'); sheetTitle.textContent = VIEW_TITLE.widgets; return renderWidgetsPanel(); }
+            const seg = (act, opts, cur) => `<div class="seg" role="radiogroup">${Object.entries(opts).map(([v, label]) =>
+                `<button data-act="${act}" data-value="${v}" class="${cur === v ? 'selected' : ''}" role="radio" aria-checked="${cur === v}">${label}</button>`).join('')}</div>`;
+            sheetBody.innerHTML = `
+                <button data-act="wd-back" class="note-tool mb-4"><i class="fas fa-chevron-left"></i>Widgets</button>
+                <span class="modal-label">Prévia</span>
+                <div class="wd-preview widget-section ${layout.sizes[w.id] === 'full' ? 'is-full' : ''}"><div class="w-body">${widgetBodyHTML(w)}</div></div>
+                ${w.type === 'image' ? `
+                    <div class="flex gap-2 mt-4">
+                        <label for="wd-file" class="pill-btn primary sm flex-1 text-center cursor-pointer" role="button" tabindex="0" data-wd-pick><i class="fas fa-camera mr-1"></i>${w.image ? 'Trocar foto' : 'Escolher foto'}</label>
+                        ${w.image ? '<button data-act="wd-img-del" class="pill-btn ghost sm"><i class="fas fa-xmark mr-1"></i>Tirar foto</button>' : ''}
+                    </div>
+                    <input id="wd-file" type="file" accept="image/*" class="hidden" aria-label="Escolher foto do widget">
+                    <label class="modal-label mt-4" for="wd-caption">Legenda <span class="opt-hint">(opcional)</span></label>
+                    <input id="wd-caption" class="task-input" maxlength="80" autocomplete="off" placeholder="Ex.: Meu cantinho" value="${esc(w.caption)}">
+                    <span class="modal-label mt-4">Ajuste da foto</span>
+                    ${seg('wd-fit', { cover: 'Preencher', contain: 'Foto inteira' }, w.fit)}
+                ` : `
+                    <label class="modal-label mt-4" for="wd-text">Citação</label>
+                    <textarea id="wd-text" class="task-input lib-text" rows="3" maxlength="240" placeholder="Escreva uma frase que te faz bem">${esc(w.text)}</textarea>
+                    <label class="modal-label mt-4" for="wd-author">Autor <span class="opt-hint">(opcional)</span></label>
+                    <input id="wd-author" class="task-input" maxlength="60" autocomplete="off" placeholder="Ex.: Minha avó" value="${esc(w.author)}">
+                    <button data-act="wd-idea" class="pill-btn ghost sm w-full mt-3"><i class="fas fa-wand-magic-sparkles mr-1"></i>Inspiração aleatória</button>
+                    <span class="modal-label mt-4">Estilo</span>
+                    ${seg('wd-style', QUOTE_STYLES, w.style)}
+                `}
+                <span class="modal-label mt-4">Tamanho na tela inicial</span>
+                ${seg('wd-size', { half: 'Metade', full: 'Largura toda' }, layout.sizes[w.id] || defaultSizeOf(w.id))}
+                <button data-act="wd-del" class="pill-btn danger w-full mt-6"><i class="fas fa-trash mr-1"></i>Remover widget</button>
+                <p class="text-xs text-gray-400 font-semibold mt-3"><i class="fas fa-check mr-1"></i>Salvo automaticamente</p>`;
+            const refresh = () => {
+                saveWidgets(); syncWidgetSections();
+                const pv = sheetBody.querySelector('.wd-preview .w-body'); if (pv) pv.innerHTML = widgetBodyHTML(w);
+            };
+            if (w.type === 'image') {
+                const cap = document.getElementById('wd-caption');
+                cap.addEventListener('input', () => { w.caption = cap.value.slice(0, 80); refresh(); });
+                const wf = document.getElementById('wd-file');
+                sheetBody.querySelector('[data-wd-pick]').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); wf.click(); } });
+                wf.addEventListener('change', () => {
+                    const file = wf.files && wf.files[0];
+                    if (!file) return;
+                    fileToJpeg(file, 900).then(url => {
+                        const old = w.image;
+                        w.image = url;
+                        if (!saveWidgets()) { w.image = old; toast('Sem espaço para salvar a foto'); return; }
+                        syncWidgetSections();
+                        if (audio) audio.resume().then(playSuccess).catch(() => {});
+                        renderSheet();
+                    }).catch(() => toast('Não foi possível usar essa imagem'));
+                });
+            } else {
+                const tx = document.getElementById('wd-text'), au = document.getElementById('wd-author');
+                tx.addEventListener('input', () => { w.text = tx.value.slice(0, 240); refresh(); });
+                au.addEventListener('input', () => { w.author = au.value.slice(0, 60); refresh(); });
+            }
+        }
+        function handleWidgetAction(act, btn) {
+            const row = btn.closest('[data-wid]');
+            const id = row ? row.dataset.wid : widgetEditId;
+            const w = id ? widgetById(id) : null;
+            if (act === 'wd-add') { addWidget(btn.dataset.type); return; }
+            if (act === 'wd-back') { playClick(); openSheet('widgets'); return; }
+            if (!w) return;
+            if (act === 'wd-edit') { openWidgetEditor(w.id); }
+            else if (act === 'wd-del') { removeWidget(w.id); }
+            else if (act === 'wd-fit') { w.fit = btn.dataset.value === 'contain' ? 'contain' : 'cover'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
+            else if (act === 'wd-style') { w.style = QUOTE_STYLES[btn.dataset.value] ? btn.dataset.value : 'paper'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
+            else if (act === 'wd-size') { layout.sizes[w.id] = btn.dataset.value === 'full' ? 'full' : 'half'; saveLayout(); applyLayout(); playClick(); renderSheet(); }
+            else if (act === 'wd-img-del') { w.image = ''; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
+            else if (act === 'wd-idea') {
+                const pool = QUOTE_IDEAS.filter(q => q[0] !== w.text);
+                const q = pool[Math.floor(Math.random() * pool.length)];
+                w.text = q[0]; w.author = q[1];
+                saveWidgets(); syncWidgetSections(); playPop(); renderSheet();
+            }
+        }
+
         // --- Tarefas recorrentes: mesmo nome (sem diferenciar maiúsculas/acentos) = mesma rotina ---
         const normName = (s) => String(s).trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
         function recurringGroups() {
@@ -5215,25 +5532,28 @@
             const weekMs = sum(logs.filter(l => l.d >= weekAgo)) + live;
             const daySum = (o, from) => Object.keys(o).filter(k => k >= from).reduce((s, k) => s + o[k], 0);
             // Foco vs Relax: últimos 7 dias e desde o começo
-            const splitBar = (label, f, z) => {
-                const tot = f + z, pf = tot ? Math.round(f / tot * 100) : 0, pz = tot ? 100 - pf : 0;
-                return `<div class="st-split-label"><span>${label}</span><span>${tot ? `${pf}% foco · ${pz}% relax` : 'sem registros'}</span></div>
-                    <div class="st-split" role="img" aria-label="${label}: foco ${fmtDur(f)}, relaxando ${fmtDur(z)}">
-                        <span class="sp-focus" style="width:${pf}%"></span><span class="sp-zen" style="width:${pz}%"></span></div>`;
+            // Foco x Relax x Café (pausas pro café vêm do Momento Zen)
+            const splitBar = (label, f, z, c = 0) => {
+                const tot = f + z + c;
+                const pf = tot ? Math.round(f / tot * 100) : 0, pc = tot && c ? Math.round(c / tot * 100) : 0, pz = tot ? 100 - pf - pc : 0;
+                return `<div class="st-split-label"><span>${label}</span><span>${tot ? `${pf}% foco · ${pz}% relax${c ? ` · ${pc}% café` : ''}` : 'sem registros'}</span></div>
+                    <div class="st-split" role="img" aria-label="${label}: foco ${fmtDur(f)}, relaxando ${fmtDur(z)}, café ${fmtDur(c)}">
+                        <span class="sp-focus" style="width:${pf}%"></span><span class="sp-zen" style="width:${pz}%"></span><span class="sp-coffee" style="width:${pc}%"></span></div>`;
             };
-            const focusAll = stats.focusMinutes * 60000, zenAll = stats.zenTime;
-            const focus7 = daySum(stats.focusDays, weekAgo), zen7 = daySum(stats.zenDays, weekAgo);
-            const zenShare = focusAll + zenAll ? zenAll / (focusAll + zenAll) : 0;
-            const note = !(focusAll + zenAll) ? 'Use o Modo Foco e o Relaxar (ícone de lótus) para ver o seu equilíbrio aqui.'
-                : focusAll >= 30 * 60000 && zenShare < 0.15 ? 'Muito foco e pouca pausa: que tal alguns minutos no Relaxar?'
+            const focusAll = stats.focusMinutes * 60000, zenAll = stats.zenTime, coffeeAll = stats.coffeeTime;
+            const focus7 = daySum(stats.focusDays, weekAgo), zen7 = daySum(stats.zenDays, weekAgo), coffee7 = daySum(stats.coffeeDays, weekAgo);
+            const pauseAll = zenAll + coffeeAll;
+            const zenShare = focusAll + pauseAll ? pauseAll / (focusAll + pauseAll) : 0;
+            const note = !(focusAll + pauseAll) ? 'Use o Modo Foco e o Relaxar (ícone de lótus) para ver o seu equilíbrio aqui.'
+                : focusAll >= 30 * 60000 && zenShare < 0.15 ? 'Muito foco e pouca pausa: que tal um café ou alguns minutos no Relaxar?'
                 : 'Bom equilíbrio entre foco e descanso.';
             // Últimos 7 dias: tempo nas missões + tempo relaxando, por dia
             const week = [];
             for (let i = 6; i >= 0; i--) {
                 const d = addDaysISO(t0, -i);
-                week.push({ d, task: sum(logs.filter(l => l.d === d)) + (d === t0 ? live : 0), zen: stats.zenDays[d] || 0 });
+                week.push({ d, task: sum(logs.filter(l => l.d === d)) + (d === t0 ? live : 0), zen: stats.zenDays[d] || 0, coffee: stats.coffeeDays[d] || 0 });
             }
-            const wMax = Math.max(1, ...week.map(x => x.task + x.zen));
+            const wMax = Math.max(1, ...week.map(x => x.task + x.zen + x.coffee));
             const WD = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
             const timed = tasks.filter(t => totalMs(t) >= 1000).sort((a, b) => totalMs(b) - totalMs(a));
             const timeRows = timed.length ? timed.map(t => `
@@ -5268,11 +5588,12 @@
 
                 <div class="st-card">
                     <span class="modal-label">Tempo focado vs relaxando</span>
-                    ${splitBar('Últimos 7 dias', focus7, zen7)}
-                    ${splitBar('Desde o começo', focusAll, zenAll)}
+                    ${splitBar('Últimos 7 dias', focus7, zen7, coffee7)}
+                    ${splitBar('Desde o começo', focusAll, zenAll, coffeeAll)}
                     <div class="st-split-legend">
                         <span class="lg-item" data-stat="focus"><i class="lg-dot dot-done"></i>Foco <b>${fmtDur(focusAll)}</b> · <span data-stat="focus-sessions">${plural(stats.focusSessions, 'sessão', 'sessões')}</span></span>
                         <span class="lg-item" data-stat="zen"><i class="lg-dot dot-zen"></i>Relax <b>${fmtDur(zenAll)}</b> · <span data-stat="zen-sessions">${plural(stats.zenSessions, 'sessão', 'sessões')}</span></span>
+                        <span class="lg-item" data-stat="coffee"><i class="lg-dot dot-coffee"></i>Café <b>${fmtDur(coffeeAll)}</b> · <span data-stat="coffee-sessions">${plural(stats.coffeeSessions, 'pausa', 'pausas')}</span></span>
                     </div>
                     <p class="st-note">${note}</p>
                 </div>
@@ -5280,12 +5601,12 @@
                 <div class="st-card">
                     <div class="st-head"><span class="modal-label">Últimos 7 dias</span><span class="st-sub" data-stat="time">Hoje ${fmtDur(todayMs)} · semana ${fmtDur(weekMs)}</span></div>
                     <div class="st-week">
-                        ${week.map(x => `<div class="st-col${x.d === t0 ? ' is-today' : ''}" title="${longDate(x.d)}: missões ${fmtDur(x.task)}, relax ${fmtDur(x.zen)}">
-                            <div class="st-bar" role="img" aria-label="${longDate(x.d)}: missões ${fmtDur(x.task)}, relax ${fmtDur(x.zen)}">
-                                <i class="b-zen" style="height:${Math.round(x.zen / wMax * 100)}%"></i><i class="b-task" style="height:${Math.round(x.task / wMax * 100)}%"></i>
+                        ${week.map(x => `<div class="st-col${x.d === t0 ? ' is-today' : ''}" title="${longDate(x.d)}: missões ${fmtDur(x.task)}, relax ${fmtDur(x.zen)}, café ${fmtDur(x.coffee)}">
+                            <div class="st-bar" role="img" aria-label="${longDate(x.d)}: missões ${fmtDur(x.task)}, relax ${fmtDur(x.zen)}, café ${fmtDur(x.coffee)}">
+                                <i class="b-coffee" style="height:${Math.round(x.coffee / wMax * 100)}%"></i><i class="b-zen" style="height:${Math.round(x.zen / wMax * 100)}%"></i><i class="b-task" style="height:${Math.round(x.task / wMax * 100)}%"></i>
                             </div><span>${WD[parseISO(x.d).getDay()]}</span></div>`).join('')}
                     </div>
-                    <div class="st-split-legend"><span class="lg-item"><i class="lg-dot dot-done"></i>Missões</span><span class="lg-item"><i class="lg-dot dot-zen"></i>Relaxar</span></div>
+                    <div class="st-split-legend"><span class="lg-item"><i class="lg-dot dot-done"></i>Missões</span><span class="lg-item"><i class="lg-dot dot-zen"></i>Relaxar</span><span class="lg-item"><i class="lg-dot dot-coffee"></i>Café</span></div>
                 </div>
 
                 <div class="st-card">
@@ -5320,6 +5641,7 @@
 
                 <span class="modal-label mt-6">Tela inicial</span>
                 <button data-act="edit-layout" class="pill-btn primary w-full"><i class="fas fa-up-down mr-2"></i>Organizar seções</button>
+                <button data-act="open-widgets" class="pill-btn ghost w-full mt-2"><i class="fas fa-shapes mr-2"></i>Widgets (imagem e citação)</button>
                 <p class="text-xs text-gray-400 font-semibold mt-1.5">Dica: segure numa área vazia da tela inicial para organizar.</p>
                 <span class="opt-label">Missões concluídas</span>
                 ${seg('hideDone', [['show', 'Mostrar'], ['hide', 'Ocultar']], hideDone ? 'hide' : 'show')}
@@ -5415,6 +5737,8 @@
                 saveTheme();
                 setTimeout(() => root.classList.remove('theme-anim'), 450);
                 playClick(); renderSheet();
+            } else if (act === 'open-widgets') {
+                openSheet('widgets');
             } else if (act === 'edit-layout') {
                 closeSheet(); enterEditMode();
             } else if (act === 'reset-layout') {
@@ -5482,10 +5806,20 @@
             if (btn.dataset.act === 'toggle') return;
             const act = btn.dataset.act;
             if (currentView === 'profile') return handleProfileAction(act, btn.dataset);
+            if (act === 'cal-break-del') {
+                const id = btn.closest('[data-bid]').dataset.bid;
+                const i = breaks.findIndex(b => b.id === id);
+                if (i < 0) return;
+                const [gone] = breaks.splice(i, 1);
+                saveBreaks(); playClick(); renderSheet();
+                toast('Pausa apagada', { label: 'Desfazer', fn: () => { breaks.splice(Math.min(i, breaks.length), 0, gone); saveBreaks(); if (sheet.classList.contains('open') && currentView === 'calendar') renderSheet(); } });
+                return;
+            }
             if (act.startsWith('cal-')) return handleCalendarAction(act, btn.dataset);
             if (act.startsWith('note-')) return handleNoteAction(act, btn.dataset);
             if (act.startsWith('lib-')) return handleLibAction(act, btn);
             if (act.startsWith('life-')) return handleLifeAction(act, btn);
+            if (act.startsWith('wd-')) return handleWidgetAction(act, btn);
             const row = btn.closest('[data-id]');
             const t = row && findTask(row.dataset.id);
             if (!t) return;
@@ -6048,8 +6382,21 @@
         const zenEl = document.getElementById('zen-mode');
         const zenPlayBtn = document.getElementById('zen-play');
         const zenStatus = document.getElementById('zen-status');
-        let zenRunning = false, zenMark = 0, zenSessionMs = 0, zenTimer = null;
+        const zenMenu = document.getElementById('zen-menu'), zenSession = document.getElementById('zen-session'), zenCoffee = document.getElementById('zen-coffee');
+        // Os 3 tipos de pausa
+        const ZEN_MODES = {
+            relax:   { name: 'Apenas Relaxar', icon: 'fa-spa',     idle: 'Toque no play e deixe o tempo passar', calm: 'Só aproveite este momento' },
+            breathe: { name: 'Respirar Fundo', icon: 'fa-wind',    idle: 'Toque no play e respire com o círculo', calm: '' },
+            coffee:  { name: 'Pausa pro Café', icon: 'fa-mug-hot', idle: 'Toque no play e aproveite seu café', calm: 'Sem pressa, sem tela' }
+        };
+        let zenMode = null, zenRunning = false, zenMark = 0, zenSessionMs = 0, zenTimer = null, zenStartAt = '';
         const zenOpen = () => zenEl.classList.contains('open');
+        function zenShow(view) { // 'menu' | 'session' | 'coffee'
+            zenMenu.hidden = view !== 'menu';
+            zenSession.hidden = view !== 'session';
+            zenCoffee.hidden = view !== 'coffee';
+            zenEl.dataset.view = view;
+        }
 
         // Soma o tempo desde a última marca (chamado a cada 5 s, ao pausar, parar ou sair do app)
         function zenAccount() {
@@ -6059,18 +6406,29 @@
             zenMark = now;
             if (!d) return;
             zenSessionMs += d;
-            stats.zenTime += d;
             const k = todayISO();
-            stats.zenDays[k] = (stats.zenDays[k] || 0) + d;
-            pruneDays(stats.zenDays);
+            if (zenMode === 'coffee') { // café tem a própria métrica
+                stats.coffeeTime += d;
+                stats.coffeeDays[k] = (stats.coffeeDays[k] || 0) + d;
+                pruneDays(stats.coffeeDays);
+            } else {
+                stats.zenTime += d;
+                stats.zenDays[k] = (stats.zenDays[k] || 0) + d;
+                pruneDays(stats.zenDays);
+            }
             saveStats();
         }
         function setZenUI() {
+            const M = ZEN_MODES[zenMode] || ZEN_MODES.relax;
             zenEl.classList.toggle('running', zenRunning);
             zenEl.classList.toggle('paused', !zenRunning && zenSessionMs > 0);
+            Object.keys(ZEN_MODES).forEach(m => zenEl.classList.toggle('mode-' + m, m === zenMode));
+            document.getElementById('zen-icon').className = `fas ${M.icon}`;
+            document.getElementById('zen-idle').textContent = M.idle;
+            document.getElementById('zen-calm').textContent = M.calm;
             zenPlayBtn.innerHTML = `<i class="fas ${zenRunning ? 'fa-pause' : 'fa-play'}"></i>`;
-            zenPlayBtn.setAttribute('aria-label', zenRunning ? 'Pausar' : (zenSessionMs ? 'Continuar relaxando' : 'Começar a relaxar'));
-            zenStatus.textContent = zenRunning ? 'Relaxando' : (zenSessionMs ? 'Pausado' : 'Momento Zen');
+            zenPlayBtn.setAttribute('aria-label', zenRunning ? 'Pausar' : (zenSessionMs ? 'Continuar' : 'Começar'));
+            zenStatus.textContent = zenRunning ? M.name : (zenSessionMs ? 'Pausado' : M.name);
         }
         function openZen() {
             if (zenOpen() || focusEl.classList.contains('open')) return;
@@ -6078,16 +6436,24 @@
             if (hubOpen()) closeHub();
             if (sheet.classList.contains('open')) closeSheet();
             if (modal.classList.contains('open')) closeModal();
-            zenRunning = false; zenSessionMs = 0;
+            zenMode = null; zenRunning = false; zenSessionMs = 0;
+            zenShow('menu');
             setZenUI();
             frame.classList.add('zen-on');
             zenEl.classList.add('open');
             zenEl.setAttribute('aria-hidden', 'false');
-            document.title = 'Relaxar';
+            document.title = 'Momento Zen';
             if (audio) audio.resume().then(playZenIn).catch(() => {});
+            setTimeout(() => { const o = zenMenu.querySelector('.zen-opt'); if (zenOpen() && o) o.focus({ preventScroll: true }); }, 60);
+        }
+        function pickZenMode(m) {
+            if (!ZEN_MODES[m]) return;
+            zenMode = m; zenRunning = false; zenSessionMs = 0; zenStartAt = '';
+            zenShow('session'); setZenUI(); playClick();
             setTimeout(() => { if (zenOpen()) zenPlayBtn.focus({ preventScroll: true }); }, 60);
         }
         function zenToggle() {
+            if (zenEl.dataset.view !== 'session') return;
             if (zenRunning) {
                 zenAccount();
                 zenRunning = false;
@@ -6096,33 +6462,86 @@
             } else {
                 zenRunning = true;
                 zenMark = Date.now();
+                if (!zenStartAt) { const d = new Date(); zenStartAt = `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
                 clearInterval(zenTimer);
                 zenTimer = setInterval(zenAccount, 5000);
                 if (audio) audio.resume().then(() => playZenTap(true)).catch(() => {});
             }
             setZenUI();
         }
-        function closeZen() {
-            if (!zenOpen()) return;
+        // Encerra a sessão atual (guarda o tempo) e devolve quanto durou
+        function zenFinish() {
             zenAccount();
             zenRunning = false;
             clearInterval(zenTimer); zenTimer = null;
             const ms = zenSessionMs;
-            if (ms >= 5000) { stats.zenSessions++; saveStats(); }
+            if (ms >= 5000) {
+                if (zenMode === 'coffee') stats.coffeeSessions++; else if (zenMode) stats.zenSessions++;
+                saveStats();
+            }
+            zenSessionMs = 0;
+            zenEl.classList.remove('running', 'paused');
+            return ms;
+        }
+        let coffeePending = null; // pausa que espera as anotações
+        function saveCoffeeBreak(fields = {}) {
+            const p = coffeePending; coffeePending = null;
+            if (!p) return false;
+            const entry = { id: uid('b'), date: p.date, at: p.at, ms: p.ms, drink: libText(fields.drink, 60), food: libText(fields.food, 60), did: libText(fields.did, 60) };
+            if (entry.ms < 1000 && !entry.drink && !entry.food && !entry.did) return false;
+            breaks.push(entry);
+            if (breaks.length > 1000) breaks.shift();
+            saveBreaks();
+            return true;
+        }
+        // Stop: no Café abre as anotações; nos outros, encerra e fecha
+        function zenStop() {
+            if (zenEl.dataset.view !== 'session') return;
+            if (zenMode === 'coffee') {
+                const ms = zenFinish();
+                if (ms < 1000) { closeZen(); return; }
+                coffeePending = { date: todayISO(), at: zenStartAt, ms };
+                document.getElementById('zen-coffee-time').textContent = `Você pausou por ${fmtDur(ms)}${zenStartAt ? ' (desde ' + zenStartAt + ')' : ''}.`;
+                ['zc-drink', 'zc-food', 'zc-did'].forEach(id => { document.getElementById(id).value = ''; });
+                zenShow('coffee');
+                if (audio) audio.resume().then(() => playZenTap(false)).catch(() => {});
+                setTimeout(() => { const i = document.getElementById('zc-drink'); if (zenOpen() && i) i.focus({ preventScroll: true }); }, 60);
+                return;
+            }
+            closeZen();
+        }
+        function closeZen(msgOverride) {
+            if (!zenOpen()) return;
+            const wasCoffee = zenMode === 'coffee';
+            const ms = zenEl.dataset.view === 'session' ? zenFinish() : 0;
+            if (wasCoffee && ms >= 1000) coffeePending = { date: todayISO(), at: zenStartAt, ms };
+            const savedBreak = coffeePending ? saveCoffeeBreak() : false; // fechou sem anotar: a pausa fica registrada mesmo assim
             zenEl.classList.remove('open', 'running', 'paused');
             zenEl.setAttribute('aria-hidden', 'true');
             frame.classList.remove('zen-on');
             document.title = BASE_TITLE;
             if (audio) audio.resume().then(playZenOut).catch(() => {});
-            if (ms >= 5000) toast(`Momento zen salvo · ${fmtDur(ms)}`);
-            zenSessionMs = 0;
-            if (sheet.classList.contains('open') && currentView === 'stats') renderSheet();
+            if (msgOverride) toast(msgOverride);
+            else if (savedBreak) toast('Pausa pro café registrada no calendário');
+            else if (ms >= 5000) toast(`Momento zen salvo · ${fmtDur(ms)}`);
+            zenMode = null;
+            if (sheet.classList.contains('open') && (currentView === 'stats' || currentView === 'calendar')) renderSheet();
             const b = document.getElementById('zen-open');
             if (b) b.focus({ preventScroll: true });
         }
         document.getElementById('zen-open').addEventListener('click', openZen);
+        zenMenu.addEventListener('click', (e) => { const o = e.target.closest('[data-zen-mode]'); if (o) pickZenMode(o.dataset.zenMode); });
         zenPlayBtn.addEventListener('click', zenToggle);
-        document.getElementById('zen-stop').addEventListener('click', closeZen);
+        document.getElementById('zen-stop').addEventListener('click', zenStop);
+        document.getElementById('zen-close').addEventListener('click', () => { playClick(); closeZen(); });
+        document.getElementById('zen-back').addEventListener('click', () => { zenFinish(); zenMode = null; zenShow('menu'); setZenUI(); playClick(); });
+        zenCoffee.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const ok = saveCoffeeBreak({ drink: document.getElementById('zc-drink').value, food: document.getElementById('zc-food').value, did: document.getElementById('zc-did').value });
+            playDone();
+            closeZen(ok ? 'Pausa salva no calendário' : undefined);
+        });
+        document.getElementById('zc-skip').addEventListener('click', () => { playClick(); closeZen(); });
         document.addEventListener('keydown', (e) => {
             if (!zenOpen()) return;
             if (e.key === 'Escape') closeZen();
@@ -6290,41 +6709,115 @@
         const SECTION_IDS = ['progress', 'date', 'carousel', 'focus', 'time', 'note', 'tasks'];
         const FIXED_FULL = ['carousel', 'tasks']; // esses precisam da largura toda
         const DEFAULT_SIZES = { progress: 'half', date: 'half', carousel: 'full', focus: 'half', time: 'half', note: 'full', tasks: 'full' };
-        const defaultLayout = () => ({ order: [...SECTION_IDS], hidden: [], sizes: { ...DEFAULT_SIZES } });
+
+        // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
+        //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
+        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação' };
+        const QUOTE_STYLES = { paper: 'Papel', accent: 'Destaque', minimal: 'Simples' };
+        // Frases curtinhas para o botão "Inspiração" (escritas para o app; troque à vontade)
+        const QUOTE_IDEAS = [
+            ['Um passo de cada vez também é progresso.', ''], ['Descansar faz parte do trabalho.', ''],
+            ['Feito é melhor que perfeito.', 'Ditado popular'], ['Respire. Você está indo bem.', ''],
+            ['Pequenas pausas, grandes recomeços.', ''], ['Hoje eu escolho ser gentil comigo.', ''],
+            ['Devagar também se chega longe.', 'Ditado popular'], ['Celebre as pequenas vitórias.', ''],
+            ['Água, alongamento e um sorriso.', ''], ['Você não precisa dar conta de tudo hoje.', '']
+        ];
+        function normWidgets(raw) {
+            return (Array.isArray(raw) ? raw : []).map(w => {
+                if (!w || !WIDGET_LABEL[w.type]) return null;
+                const id = typeof w.id === 'string' && /^w_[a-z0-9]{1,40}$/i.test(w.id) ? w.id : uid('w_');
+                if (w.type === 'image') return { id, type: 'image', image: isThumb(w.image) ? w.image : '', caption: libText(w.caption, 80), fit: w.fit === 'contain' ? 'contain' : 'cover' };
+                return { id, type: 'quote', text: typeof w.text === 'string' ? w.text.slice(0, 240) : '', author: libText(w.author, 60), style: QUOTE_STYLES[w.style] ? w.style : 'paper' };
+            }).filter(Boolean).filter((w, i, a) => a.findIndex(x => x.id === w.id) === i).slice(0, 30);
+        }
+        const rawWidgets = store.get(STORAGE_KEYS.widgets, []);
+        let widgets = normWidgets(rawWidgets);
+        const saveWidgets = () => store.set(STORAGE_KEYS.widgets, widgets);
+        if (Array.isArray(rawWidgets) && rawWidgets.length && JSON.stringify(rawWidgets) !== JSON.stringify(widgets)) saveWidgets(); // grava a versão limpa
+        const widgetById = (id) => widgets.find(w => w.id === id);
+        const allSectionIds = () => [...SECTION_IDS, ...widgets.map(w => w.id)];
+        const defaultSizeOf = (id) => DEFAULT_SIZES[id] || ((widgetById(id) || {}).type === 'quote' ? 'full' : 'half');
+        const defaultLayout = () => ({ order: [...widgets.map(w => w.id), ...SECTION_IDS], hidden: [], sizes: Object.fromEntries(allSectionIds().map(id => [id, defaultSizeOf(id)])) });
         // A versão anterior juntava Progresso+Hoje ("summary") e Foco+Tempo ("focus")
         const OLD_IDS = { summary: ['progress', 'date'], focus: ['focus', 'time'] };
         const savedLayout = store.get(STORAGE_KEYS.layout, {}) || {};
         const expandIds = (ids) => (Array.isArray(ids) ? ids : []).flatMap(id => (savedLayout.v === 2 ? [id] : (OLD_IDS[id] || [id])));
+        const knownIds = allSectionIds();
         let layout = {
-            order: [...new Set([...expandIds(savedLayout.order), ...SECTION_IDS])].filter(id => SECTION_IDS.includes(id)),
-            hidden: [...new Set(expandIds(savedLayout.hidden))].filter(id => SECTION_IDS.includes(id)),
-            sizes: { ...DEFAULT_SIZES }
+            order: [...new Set([...expandIds(savedLayout.order), ...SECTION_IDS])].filter(id => knownIds.includes(id)),
+            hidden: [...new Set(expandIds(savedLayout.hidden))].filter(id => knownIds.includes(id)),
+            sizes: Object.fromEntries(knownIds.map(id => [id, defaultSizeOf(id)]))
         };
+        // widget que não estava na ordem salva entra no topo
+        layout.order = [...widgets.map(w => w.id).filter(id => !layout.order.includes(id)), ...layout.order];
         if (savedLayout.sizes && typeof savedLayout.sizes === 'object') {
-            SECTION_IDS.forEach(id => {
+            knownIds.forEach(id => {
                 if (!FIXED_FULL.includes(id) && ['half', 'full'].includes(savedLayout.sizes[id])) layout.sizes[id] = savedLayout.sizes[id];
             });
         }
         const saveLayout = () => store.set(STORAGE_KEYS.layout, { v: 2, ...layout });
         const sectionEl = (id) => homeEl.querySelector(`[data-section="${id}"]`);
 
-        // Cada bloco ganha uma barrinha (só aparece no modo Organizar)
-        SECTION_IDS.forEach(id => {
-            const sec = sectionEl(id);
+        // Cada bloco ganha uma barrinha (só aparece no modo Organizar); widgets também têm Editar e Remover
+        function addSectionTools(sec, isWidget) {
             const label = sec.dataset.label;
             const tools = document.createElement('div');
             tools.className = 'section-tools';
-            tools.innerHTML = `<span class="st-label">${label}</span>
+            tools.innerHTML = `<span class="st-label">${esc(label)}</span>
                 <div class="st-btns">
-                    <button class="st-btn" data-st="prev" aria-label="Mover ${label} para antes" title="Mover para antes"><i class="fas fa-arrow-left"></i></button>
-                    <button class="st-btn" data-st="next" aria-label="Mover ${label} para depois" title="Mover para depois"><i class="fas fa-arrow-right"></i></button>
+                    <button class="st-btn" data-st="prev" aria-label="Mover ${esc(label)} para antes" title="Mover para antes"><i class="fas fa-arrow-left"></i></button>
+                    <button class="st-btn" data-st="next" aria-label="Mover ${esc(label)} para depois" title="Mover para depois"><i class="fas fa-arrow-right"></i></button>
                     <button class="st-btn" data-st="size"></button>
                     <button class="st-btn" data-st="hide"><i class="fas fa-eye"></i></button>
+                    ${isWidget ? `<button class="st-btn" data-st="wedit" aria-label="Editar ${esc(label)}" title="Editar"><i class="fas fa-pen"></i></button>
+                    <button class="st-btn st-danger" data-st="wdel" aria-label="Remover ${esc(label)}" title="Remover"><i class="fas fa-trash"></i></button>` : ''}
                 </div>`;
             sec.prepend(tools);
-        });
+        }
+        SECTION_IDS.forEach(id => addSectionTools(sectionEl(id), false));
+
+        // Conteúdo de um widget (usado na tela inicial e na prévia do editor)
+        function widgetBodyHTML(w) {
+            if (w.type === 'image') {
+                if (!w.image) return '<div class="w-image is-empty"><i class="fas fa-image" aria-hidden="true"></i><span>Toque para escolher uma foto</span></div>';
+                return `<figure class="w-image fit-${w.fit}">
+                    ${w.fit === 'contain' ? `<span class="w-image-bg" style="background-image:url('${w.image}')" aria-hidden="true"></span>` : ''}
+                    <img src="${w.image}" alt="${esc(w.caption || 'Imagem decorativa')}">
+                    ${w.caption ? `<figcaption>${esc(w.caption)}</figcaption>` : ''}</figure>`;
+            }
+            return `<blockquote class="w-quote q-${w.style}${w.text.trim() ? '' : ' is-empty'}">
+                <i class="fas fa-quote-left" aria-hidden="true"></i>
+                <p>${w.text.trim() ? esc(w.text) : 'Toque para escrever sua citação'}</p>
+                ${w.author ? `<cite>${esc(w.author)}</cite>` : ''}</blockquote>`;
+        }
+        // Cria/atualiza as seções dos widgets e remove as que foram apagadas
+        function syncWidgetSections() {
+            homeEl.querySelectorAll('[data-widget]').forEach(sec => { if (!widgetById(sec.dataset.section)) sec.remove(); });
+            widgets.forEach((w, i) => {
+                let sec = sectionEl(w.id);
+                const label = `${WIDGET_LABEL[w.type]} ${widgets.filter((x, j) => x.type === w.type && j <= i).length}`;
+                if (!sec) {
+                    sec = document.createElement('section');
+                    sec.className = 'home-section widget-section';
+                    sec.dataset.section = w.id;
+                    sec.dataset.widget = w.type;
+                    sec.dataset.label = label;
+                    sec.innerHTML = '<div class="w-body" role="button" tabindex="0"></div>';
+                    addSectionTools(sec, true);
+                    homeEl.appendChild(sec);
+                }
+                const body = sec.querySelector('.w-body');
+                body.setAttribute('aria-label', `Editar widget ${label}`);
+                body.innerHTML = widgetBodyHTML(w);
+            });
+        }
+        syncWidgetSections();
 
         function applyLayout() {
+            const ids = allSectionIds();
+            layout.order = layout.order.filter(id => ids.includes(id));
+            ids.forEach(id => { if (!layout.order.includes(id)) layout.order.unshift(id); if (!layout.sizes[id]) layout.sizes[id] = defaultSizeOf(id); });
+            layout.hidden = layout.hidden.filter(id => ids.includes(id));
             layout.order.forEach(id => homeEl.appendChild(sectionEl(id)));
             layout.order.forEach((id, i) => {
                 const sec = sectionEl(id), label = sec.dataset.label;
@@ -6349,6 +6842,46 @@
         }
         applyLayout();
 
+        // Adicionar / remover widgets
+        function addWidget(type) {
+            if (widgets.length >= 30) { toast('Limite de 30 widgets'); return; }
+            const w = normWidgets([{ type, id: uid('w_') }])[0];
+            if (type === 'quote') { const q = QUOTE_IDEAS[Math.floor(Math.random() * QUOTE_IDEAS.length)]; w.text = q[0]; w.author = q[1]; }
+            widgets.push(w);
+            layout.order.unshift(w.id); // entra no topo da tela inicial
+            layout.sizes[w.id] = defaultSizeOf(w.id);
+            saveWidgets(); saveLayout(); syncWidgetSections(); applyLayout();
+            playPop();
+            openWidgetEditor(w.id);
+        }
+        function removeWidget(id) {
+            const w = widgetById(id); if (!w) return;
+            const wi = widgets.indexOf(w), oi = layout.order.indexOf(id), size = layout.sizes[id], wasHidden = layout.hidden.includes(id);
+            widgets.splice(wi, 1);
+            saveWidgets(); syncWidgetSections(); applyLayout(); saveLayout();
+            playClick();
+            if (sheet.classList.contains('open') && (currentView === 'widgets' || currentView === 'widget')) { widgetEditId = null; setNav('widgets'); sheetTitle.textContent = VIEW_TITLE.widgets; renderSheet(); }
+            toast('Widget removido', { label: 'Desfazer', fn: () => {
+                widgets.splice(Math.min(wi, widgets.length), 0, w);
+                syncWidgetSections();
+                layout.order = layout.order.filter(x => x !== id); layout.order.splice(Math.max(0, oi), 0, id);
+                layout.sizes[id] = size; if (wasHidden) layout.hidden.push(id);
+                saveWidgets(); applyLayout(); saveLayout();
+                if (sheet.classList.contains('open') && currentView === 'widgets') renderSheet();
+            } });
+        }
+        // Tocar no widget (fora do modo Organizar) abre o editor dele
+        homeEl.addEventListener('click', (e) => {
+            const wb = e.target.closest('.w-body');
+            if (!wb || isEditing()) return;
+            openWidgetEditor(wb.closest('.home-section').dataset.section);
+        });
+        homeEl.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('w-body') && !isEditing()) {
+                e.preventDefault(); openWidgetEditor(e.target.closest('.home-section').dataset.section);
+            }
+        });
+
         homeEl.addEventListener('click', (e) => {
             const b = e.target.closest('[data-st]');
             if (!b || !homeEl.classList.contains('editing')) return;
@@ -6360,6 +6893,8 @@
             if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
             if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) layout.sizes[id] = layout.sizes[id] === 'full' ? 'half' : 'full';
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
+            if (b.dataset.st === 'wedit') { openWidgetEditor(id); return; }
+            if (b.dataset.st === 'wdel') { removeWidget(id); return; }
             saveLayout();
             applyLayout();
             playClick();
@@ -6388,6 +6923,7 @@
             toast('Tela inicial organizada');
         }
         document.getElementById('edit-done').addEventListener('click', exitEditMode);
+        document.getElementById('edit-add-widget').addEventListener('click', () => openSheet('widgets'));
 
         // Segurar (mouse ou dedo) numa área vazia da tela inicial também entra no modo Organizar
         let lpTimer = null, lpStart = null, lpFired = false;
