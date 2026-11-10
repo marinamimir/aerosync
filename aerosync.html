@@ -2585,7 +2585,7 @@
             <div class="glass-dock dock-9 pointer-events-auto flex items-center gap-4 px-5 py-3 rounded-full">
                 <button class="nav-btn active" data-view="home" aria-label="Início" aria-current="page"><i class="fas fa-home"></i></button>
                 <button class="nav-btn" data-view="calendar" aria-label="Calendário"><i class="fas fa-calendar-alt"></i></button>
-                <button class="nav-btn" id="open-finances-btn" aria-label="Finanças"><i class="fas fa-wallet"></i></button>
+                <button class="nav-btn" id="open-finances-btn" aria-label="Finanças" title="Finanças"><i class="fas fa-wallet"></i></button>
                 <button id="zen-open" class="nav-btn zen-btn-dock" aria-label="Relaxar" title="Relaxar"><i class="fas fa-spa"></i></button>
                 <button class="nav-btn" data-view="life" aria-label="Mundo Pessoal" title="Mundo Pessoal"><i class="fas fa-heart"></i></button>
 
@@ -2595,7 +2595,7 @@
                 </button>
 
                 <button class="nav-btn" data-view="library" aria-label="Organização" title="Organização"><i class="fas fa-folder-tree"></i></button>
-                <button class="nav-btn" data-view="finance" aria-label="Finanças" title="Finanças"><i class="fas fa-wallet"></i></button>
+                
                 <button class="nav-btn" data-view="notes" aria-label="Anotações"><i class="fas fa-note-sticky"></i></button>
                 <button class="nav-btn" data-view="profile" aria-label="Ajustes"><i class="fas fa-cog"></i></button>
             </div>
@@ -7245,40 +7245,57 @@
         });
 
     </script>
-    <!-- ==================== MÓDULO DE FINANÇAS (ISOLADO) ==================== -->
+
+<!-- ==================== MÓDULO DE FINANÇAS V2 (COMPLETO & ISOLADO) ==================== -->
 <style>
+    /* Remove/oculta qualquer resquício do botão antigo de finanças caso exista */
+    .nav-btn[data-view="finance"], #fin-modal { display: none !important; }
+
     #fin-sheet {
         position: absolute; inset: 0; z-index: 86;
-        background: rgba(15, 23, 42, 0.14);
-        backdrop-filter: blur(8px) brightness(0.92);
-        -webkit-backdrop-filter: blur(8px) brightness(0.92);
+        background: rgba(15, 23, 42, 0.16);
+        backdrop-filter: blur(8px) brightness(0.95);
+        -webkit-backdrop-filter: blur(8px) brightness(0.95);
         opacity: 0; visibility: hidden;
         transition: opacity 0.25s ease, visibility 0.25s ease;
     }
     #fin-sheet.open { opacity: 1; visibility: visible; }
     #fin-sheet .fin-panel {
         position: absolute; left: 0; right: 0; bottom: 0;
-        height: calc(100% - 48px); display: flex; flex-direction: column;
-        padding: 12px 20px 24px; border-radius: 32px 32px 0 0;
-        background: linear-gradient(160deg, rgba(255,255,255,0.97), rgba(255,255,255,0.90));
+        height: calc(100% - 36px); display: flex; flex-direction: column;
+        padding: 12px 18px 24px; border-radius: 32px 32px 0 0;
+        background: linear-gradient(160deg, rgba(255,255,255,0.98), rgba(255,255,255,0.93));
         border-top: 1px solid #fff;
         box-shadow: inset 0 2px 0 #fff, 0 -20px 40px -10px rgba(0,0,0,0.18);
         transform: translateY(100%);
-        transition: transform 0.38s cubic-bezier(0.34, 1.25, 0.64, 1);
+        transition: transform 0.36s cubic-bezier(0.34, 1.25, 0.64, 1);
     }
     #fin-sheet.open .fin-panel { transform: none; }
     html.dark #fin-sheet .fin-panel {
         background: linear-gradient(160deg, rgba(32,35,51,0.98), rgba(24,27,40,0.97));
         border-top-color: rgba(255,255,255,0.08);
     }
+    .fin-month-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        background: rgba(241,245,249,0.85); border-radius: 999px;
+        padding: 4px 10px; margin-bottom: 10px;
+    }
+    html.dark .fin-month-bar { background: #262a3b; }
+    .fin-month-nav {
+        width: 30px; height: 30px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #fff; color: #374151; font-size: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    html.dark .fin-month-nav { background: #1e2130; color: #e5e7eb; }
     .fin-tabs {
-        display: flex; gap: 6px; padding: 4px; border-radius: 999px;
-        background: rgba(241,245,249,0.9); margin-bottom: 14px; overflow-x: auto;
+        display: flex; gap: 5px; padding: 4px; border-radius: 999px;
+        background: rgba(241,245,249,0.9); margin-bottom: 12px; overflow-x: auto;
     }
     html.dark .fin-tabs { background: #262a3b; }
     .fin-tab {
-        flex: 1; white-space: nowrap; padding: 7px 12px; border-radius: 999px;
-        font-size: 12px; font-weight: 800; color: #6b7280; transition: all 0.2s;
+        flex: 1; white-space: nowrap; padding: 7px 11px; border-radius: 999px;
+        font-size: 11px; font-weight: 800; color: #6b7280; transition: all 0.2s;
     }
     .fin-tab.active {
         background: #fff; color: var(--theme-accent, var(--accent, #3b82f6));
@@ -7287,54 +7304,78 @@
     html.dark .fin-tab.active { background: #1e2130; color: #fff; }
     .fin-card {
         background: #fff; border: 1px solid #f1f5f9; border-radius: 22px;
-        padding: 14px; margin-bottom: 12px;
+        padding: 13px; margin-bottom: 11px;
         box-shadow: 0 8px 24px -8px rgba(0,0,0,0.05);
     }
     html.dark .fin-card { background: #1e2130; border-color: #2b2f42; }
     .fin-hero {
         background: linear-gradient(135deg, var(--theme-accent, var(--accent, #3b82f6)), var(--theme-accent-2, var(--accent-2, #22d3ee)));
-        color: #fff; border-radius: 24px; padding: 18px; margin-bottom: 14px;
-        box-shadow: inset 0 2px 6px rgba(255,255,255,0.5), 0 12px 26px var(--theme-glow, var(--accent-glow, rgba(59,130,246,0.3)));
+        color: #fff; border-radius: 24px; padding: 16px; margin-bottom: 12px;
+        box-shadow: inset 0 2px 6px rgba(255,255,255,0.45), 0 12px 26px var(--theme-glow, var(--accent-glow, rgba(59,130,246,0.28)));
     }
     .fin-toggle {
-        width: 42px; height: 24px; border-radius: 999px; background: #e2e8f0;
-        position: relative; transition: background 0.2s; flex-shrink: 0;
+        width: 40px; height: 22px; border-radius: 999px; background: #cbd5e1;
+        position: relative; transition: background 0.2s; flex-shrink: 0; border: none;
     }
     .fin-toggle::after {
-        content: ''; position: absolute; top: 3px; left: 3px;
+        content: ''; position: absolute; top: 2px; left: 2px;
         width: 18px; height: 18px; border-radius: 50%; background: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform 0.2s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.18); transition: transform 0.2s;
     }
     .fin-toggle.on { background: var(--theme-accent, var(--accent, #3b82f6)); }
     .fin-toggle.on::after { transform: translateX(18px); }
     .fin-pill-alert {
-        display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+        display: flex; align-items: center; gap: 10px; padding: 9px 13px;
         border-radius: 16px; background: #fff7ed; border: 1px solid #fed7aa;
-        color: #9a3412; font-size: 12px; font-weight: 700; margin-bottom: 10px;
+        color: #9a3412; font-size: 11.5px; font-weight: 700; margin-bottom: 9px;
     }
     html.dark .fin-pill-alert { background: rgba(251,146,60,0.12); border-color: rgba(251,146,60,0.3); color: #fdba74; }
     .fin-bar-track { height: 8px; border-radius: 999px; background: #f1f5f9; overflow: hidden; }
     html.dark .fin-bar-track { background: #262a3b; }
     .fin-chip-pick {
-        width: 34px; height: 34px; border-radius: 12px; display: inline-flex;
+        width: 32px; height: 32px; border-radius: 10px; display: inline-flex;
         align-items: center; justify-content: center; border: 2px solid transparent;
-        font-size: 14px; cursor: pointer; transition: transform 0.15s;
+        font-size: 13px; cursor: pointer; transition: transform 0.15s;
     }
-    .fin-chip-pick.selected { border-color: #1f2937; transform: scale(1.1); }
+    .fin-chip-pick.selected { border-color: #1f2937; transform: scale(1.08); }
     html.dark .fin-chip-pick.selected { border-color: #fff; }
+    .fin-mini-pill {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;
+        background: #f1f5f9; color: #475569;
+    }
+    html.dark .fin-mini-pill { background: #2b2f42; color: #cbd5e1; }
+    .fin-subgrid {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .fin-kv {
+        background: rgba(255,255,255,0.16); border-radius: 14px; padding: 8px 10px;
+    }
 </style>
 
 <div id="fin-sheet" aria-hidden="true">
-    <div class="fin-panel" role="dialog" aria-modal="true" aria-labelledby="fin-title">
+    <div class="fin-panel" role="dialog" aria-modal="true" aria-labelledby="fin-v2-title">
         <div class="sheet-grip"></div>
-        <div class="flex items-center justify-between mb-3">
-            <h2 id="fin-title" class="text-xl font-extrabold text-gray-800">Finanças</h2>
+        <div class="flex items-center justify-between mb-2">
+            <h2 id="fin-v2-title" class="text-xl font-extrabold text-gray-800">Finanças & Cartões</h2>
             <button id="fin-close" class="modal-x" aria-label="Fechar Finanças"><i class="fas fa-times"></i></button>
         </div>
 
+        <!-- Barra Seletora de Mês (Visão Mensal Global + Parcelas) -->
+        <div class="fin-month-bar">
+            <button type="button" class="fin-month-nav" id="fin-prev-m" title="Mês anterior"><i class="fas fa-chevron-left"></i></button>
+            <div class="text-center">
+                <div id="fin-month-label" class="text-sm font-extrabold text-gray-800">Novembro 2026</div>
+                <div class="text-[10px] font-bold text-gray-400">Visão por vencimento de fatura & fluxo do mês</div>
+            </div>
+            <button type="button" class="fin-month-nav" id="fin-next-m" title="Próximo mês"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
         <div class="fin-tabs no-scrollbar" id="fin-tabs">
-            <button class="fin-tab active" data-ftab="overview"><i class="fas fa-wallet mr-1"></i>Resumo & Cofres</button>
-            <button class="fin-tab" data-ftab="expenses"><i class="fas fa-receipt mr-1"></i>Gastos</button>
+            <button class="fin-tab active" data-ftab="overview"><i class="fas fa-layer-group mr-1"></i>Visão Geral</button>
+            <button class="fin-tab" data-ftab="cards"><i class="fas fa-credit-card mr-1"></i>Cartões</button>
+            <button class="fin-tab" data-ftab="expenses"><i class="fas fa-receipt mr-1"></i>Compras</button>
+            <button class="fin-tab" data-ftab="income"><i class="fas fa-money-bill-trend-up mr-1"></i>Salário & Entradas</button>
             <button class="fin-tab" data-ftab="stats"><i class="fas fa-chart-pie mr-1"></i>Estatísticas</button>
             <button class="fin-tab" data-ftab="sim"><i class="fas fa-calculator mr-1"></i>Simulador</button>
             <button class="fin-tab" data-ftab="rec"><i class="fas fa-bell mr-1"></i>Recorrentes</button>
@@ -7346,56 +7387,169 @@
 
 <script>
 (function(){
-    const FIN_KEY = 'aerosync.finances.v1';
-    const PALETTE = ['#f472b6','#a78bfa','#38bdf8','#34d399','#fbbf24','#fb7185','#f97316','#818cf8'];
-    const ICONS = ['fa-piggy-bank','fa-building-columns','fa-vault','fa-credit-card','fa-utensils','fa-gamepad','fa-bag-shopping','fa-heart','fa-bolt','fa-paw','fa-house','fa-star'];
+    const FIN_KEY = 'aerosync.finances.v2';
+    const PALETTE = ['#f472b6','#a78bfa','#38bdf8','#34d399','#fbbf24','#fb7185','#f97316','#818cf8','#60a5fa','#4ade80'];
+    const ICONS = ['fa-piggy-bank','fa-building-columns','fa-vault','fa-credit-card','fa-utensils','fa-gamepad','fa-bag-shopping','fa-heart','fa-bolt','fa-paw','fa-house','fa-star','fa-car','fa-pills','fa-plane','fa-shirt'];
+    const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+    const nowInit = new Date();
+    let selectedYM = `${nowInit.getFullYear()}-${String(nowInit.getMonth()+1).padStart(2,'0')}`;
+    let curTab = 'overview';
+    let editingExpenseGroupId = null;
+    let editingCardId = null;
+    let editingBankId = null;
+
+    function shiftYM(ym, deltaMonths) {
+        const [y, m] = ym.split('-').map(Number);
+        const d = new Date(y, (m - 1) + deltaMonths, 1);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+    function formatYM(ym) {
+        const [y, m] = ym.split('-').map(Number);
+        return `${MONTH_NAMES[(m - 1 + 12) % 12]} ${y}`;
+    }
 
     function loadFin() {
         try {
-            const raw = JSON.parse(localStorage.getItem(FIN_KEY) || 'null');
-            if (raw && typeof raw === 'object') return raw;
+            const v2 = JSON.parse(localStorage.getItem(FIN_KEY) || 'null');
+            if (v2 && typeof v2 === 'object') return ensureDefaults(v2);
+            // Migra da v1 se existir
+            const v1 = JSON.parse(localStorage.getItem('aerosync.finances.v1') || 'null');
+            if (v1 && typeof v1 === 'object') return ensureDefaults(v1);
         } catch(e) {}
+        return ensureDefaults({});
+    }
+
+    function ensureDefaults(obj) {
         return {
-            banks: [
+            salaryBase: Number.isFinite(obj.salaryBase) ? obj.salaryBase : 0,
+            salaryUsable: obj.salaryUsable !== undefined ? !!obj.salaryUsable : true,
+            salaryOverrides: (obj.salaryOverrides && typeof obj.salaryOverrides === 'object') ? obj.salaryOverrides : {},
+            incomes: Array.isArray(obj.incomes) ? obj.incomes : [],
+            banks: Array.isArray(obj.banks) && obj.banks.length ? obj.banks : [
                 { id: 'b1', name: 'Conta Principal', balance: 0, color: '#a78bfa', icon: 'fa-building-columns', usable: true },
                 { id: 'b2', name: 'Reserva Guardada', balance: 0, color: '#34d399', icon: 'fa-piggy-bank', usable: false }
             ],
-            categories: [
+            cards: Array.isArray(obj.cards) && obj.cards.length ? obj.cards : [
+                { id: 'card1', name: 'Nubank', closingDay: 20, dueDay: 5, color: '#a78bfa', active: true },
+                { id: 'card2', name: 'Cartão Secundário', closingDay: 10, dueDay: 17, color: '#f472b6', active: true }
+            ],
+            categories: Array.isArray(obj.categories) && obj.categories.length ? obj.categories : [
                 { id: 'c1', name: 'Alimentação', color: '#fb7185', icon: 'fa-utensils' },
                 { id: 'c2', name: 'Lazer & Hobbies', color: '#a78bfa', icon: 'fa-gamepad' },
                 { id: 'c3', name: 'Compras', color: '#f472b6', icon: 'fa-bag-shopping' },
                 { id: 'c4', name: 'Pets & Casa', color: '#38bdf8', icon: 'fa-paw' },
                 { id: 'c5', name: 'Contas Fixas', color: '#fbbf24', icon: 'fa-bolt' }
             ],
-            expenses: [],
-            recurring: [],
-            simItems: []
+            expenses: Array.isArray(obj.expenses) ? obj.expenses : [],
+            recurring: Array.isArray(obj.recurring) ? obj.recurring : [],
+            simItems: Array.isArray(obj.simItems) ? obj.simItems : []
         };
     }
 
     let fin = loadFin();
-    let curTab = 'overview';
     const saveFin = () => { try { localStorage.setItem(FIN_KEY, JSON.stringify(fin)); } catch(e){} };
     const brl = (v) => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const esc = (s) => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const ymNow = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
     const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
     const nowHM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
 
     const sheet = document.getElementById('fin-sheet');
     const body = document.getElementById('fin-body');
+    const monthLabelEl = document.getElementById('fin-month-label');
 
-    function usableBalance() {
+    // =========================================================================
+    //  LÓGICA DE FATURA DO CARTÃO (SEMPRE PELO MÊS EM QUE VAI PAGAR A FATURA)
+    // =========================================================================
+    // Exemplo da Mari: fecha dia 20, vence dia 05.
+    // Compra feita em 22 de Novembro:
+    // - Como 22 >= 20 (dia de fechamento), já entrou no ciclo que fecha em 20 de Dezembro.
+    // - Como o vencimento (dia 05) é menor ou igual ao fechamento (dia 20), o pagamento
+    //   desse ciclo cai no mês seguinte ao fechamento -> ou seja, se fechou em 20/Nov, paga em 05/Dez!
+    //   Portanto:
+    //   - Quando dueDay <= closingDay: o pagamento de uma fatura que fecha no mês M ocorre sempre em M+1.
+    //     E se a compra for feita APÓS (ou no) dia de fechamento, ela vai para a fatura seguinte.
+    //   Vamos calibrar exatamente como a Mari pediu:
+    //   "Se um cartão fecha no dia 20 e vence no dia 05: uma compra feita no dia 22 de Novembro entra na fatura de Dezembro!"
+    function computeFirstBillingYM(purchaseDateISO, cardId, installmentOffset) {
+        const parts = (purchaseDateISO || todayISO()).split('-').map(Number);
+        const y = parts[0] || 2026, m = parts[1] || 1, day = parts[2] || 1;
+        let baseYM = `${y}-${String(m).padStart(2,'0')}`;
+
+        if (!cardId || cardId === 'pix') {
+            return shiftYM(baseYM, installmentOffset || 0);
+        }
+        const card = fin.cards.find(c => c.id === cardId);
+        if (!card) return shiftYM(baseYM, installmentOffset || 0);
+
+        const closeDay = Number(card.closingDay) || 20;
+        const dueDay = Number(card.dueDay) || 5;
+
+        // Se a compra foi feita depois do dia de fechamento (ex: dia 22 com fechamento dia 20),
+        // ela pula para a fatura do mês seguinte (Novembro -> Dezembro).
+        // Se foi feita antes ou no dia do fechamento e o vencimento é no próprio mês ou próximo,
+        // mantém no mês corrente de referência da fatura.
+        let monthShift = 0;
+        if (day > closeDay) {
+            monthShift = 1;
+        } else if (dueDay < closeDay && day <= closeDay) {
+            // Compra antes do fechamento: permanece na fatura atual
+            monthShift = 0;
+        }
+        return shiftYM(baseYM, monthShift + (installmentOffset || 0));
+    }
+
+    // Verifica se um gasto pertence ao mês selecionado (selectedYM) e se seu cartão está visível (active)
+    function getEffectiveBillingYM(exp) {
+        const offset = (Number(exp.instIndex) || 1) - 1;
+        const basePurchaseDate = exp.purchaseDate || exp.date || todayISO();
+        return computeFirstBillingYM(basePurchaseDate, exp.cardId || 'pix', offset);
+    }
+
+    function isCardVisible(cardId) {
+        if (!cardId || cardId === 'pix') return true;
+        const c = fin.cards.find(x => x.id === cardId);
+        return c ? !!c.active : true;
+    }
+
+    // Gastos do mês selecionado (filtrando cartões desligados)
+    function getMonthExpenses(ym, includeHiddenCards) {
+        return fin.expenses.filter(e => {
+            if (!includeHiddenCards && !isCardVisible(e.cardId)) return false;
+            return getEffectiveBillingYM(e) === ym;
+        });
+    }
+
+    function getSalaryForMonth(ym) {
+        if (fin.salaryOverrides && fin.salaryOverrides[ym] !== undefined && fin.salaryOverrides[ym] !== '') {
+            return Number(fin.salaryOverrides[ym]) || 0;
+        }
+        return Number(fin.salaryBase) || 0;
+    }
+
+    function getMonthExtraIncomes(ym) {
+        return fin.incomes.filter(inc => (inc.date || '').slice(0, 7) === ym);
+    }
+
+    function getMonthUsableIncomesTotal(ym) {
+        const sal = fin.salaryUsable ? getSalaryForMonth(ym) : 0;
+        const extras = getMonthExtraIncomes(ym).filter(i => i.usable !== false).reduce((s, i) => s + (Number(i.amount) || 0), 0);
+        return sal + extras;
+    }
+
+    function usableBanksBalance() {
         return fin.banks.filter(b => b.usable).reduce((s, b) => s + (Number(b.balance) || 0), 0);
     }
-    function totalSavedBalance() {
+    function totalSavedBanksBalance() {
         return fin.banks.reduce((s, b) => s + (Number(b.balance) || 0), 0);
     }
-    function monthExpenses(ym) {
-        return fin.expenses.filter(e => (e.date || '').slice(0, 7) === ym);
+
+    function totalUsableForMonth(ym) {
+        return usableBanksBalance() + getMonthUsableIncomesTotal(ym);
     }
-    function monthTotalSpent(ym) {
-        return monthExpenses(ym).reduce((s, e) => s + (Number(e.amount) || 0), 0);
+
+    function monthTotalSpent(ym, includeHiddenCards) {
+        return getMonthExpenses(ym, includeHiddenCards).reduce((s, e) => s + (Number(e.amount) || 0), 0);
     }
 
     function upcomingRecurring() {
@@ -7408,12 +7562,38 @@
         }).filter(r => r.diff <= (r.warnDays || 5)).sort((a,b) => a.diff - b.diff);
     }
 
+    // =========================================================================
+    //  ABA 1: VISÃO GERAL (MOSTRA TUDO DO MÊS SELECIONADO)
+    // =========================================================================
     function renderOverview() {
-        const ym = ymNow();
-        const usable = usableBalance();
-        const spent = monthTotalSpent(ym);
-        const remaining = usable - spent;
+        const ym = selectedYM;
+        const sal = getSalaryForMonth(ym);
+        const extrasTotal = getMonthExtraIncomes(ym).reduce((s, i) => s + (Number(i.amount)||0), 0);
+        const usableBanks = usableBanksBalance();
+        const allBanks = totalSavedBanksBalance();
+        const usableTotal = totalUsableForMonth(ym);
+        const spentVisible = monthTotalSpent(ym, false);
+        const remaining = usableTotal - spentVisible;
         const alerts = upcomingRecurring();
+        const curExpenses = getMonthExpenses(ym, false);
+
+        // Resumo por Cartão no mês
+        const cardBreakdown = fin.cards.map(c => {
+            const sum = fin.expenses
+                .filter(e => e.cardId === c.id && getEffectiveBillingYM(e) === ym)
+                .reduce((s, e) => s + (Number(e.amount) || 0), 0);
+            return { ...c, sum };
+        });
+        const pixSum = fin.expenses
+            .filter(e => (!e.cardId || e.cardId === 'pix') && getEffectiveBillingYM(e) === ym)
+            .reduce((s, e) => s + (Number(e.amount) || 0), 0);
+
+        // Resumo por Categoria no mês
+        const catBreakdown = fin.categories.map(cat => {
+            const sum = curExpenses.filter(e => e.catId === cat.id).reduce((s, e) => s + (Number(e.amount)||0), 0);
+            const pct = spentVisible > 0 ? Math.round((sum / spentVisible) * 100) : 0;
+            return { ...cat, sum, pct };
+        }).sort((a,b) => b.sum - a.sum);
 
         body.innerHTML = `
             ${alerts.map(a => `
@@ -7425,123 +7605,389 @@
                 </div>
             `).join('')}
 
+            <!-- Painel Hero: Mostra TUDO de forma clara -->
             <div class="fin-hero">
-                <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wider opacity-90">
-                    <span>Saldo Disponível no Mês</span>
-                    <span>Total guardado: ${brl(totalSavedBalance())}</span>
+                <div class="flex justify-between items-center text-[11px] font-extrabold uppercase tracking-wider opacity-90">
+                    <span>Saldo Livre em ${esc(formatYM(ym))}</span>
+                    <span>Patrimônio Guardado: ${brl(allBanks)}</span>
                 </div>
                 <div class="text-3xl font-extrabold mt-1">${brl(remaining)}</div>
-                <div class="flex justify-between text-xs font-bold mt-2 opacity-90">
-                    <span>Base usável: ${brl(usable)}</span>
-                    <span>Gasto no mês: ${brl(spent)}</span>
+                <div class="fin-subgrid mt-3 text-xs font-bold">
+                    <div class="fin-kv">
+                        <div class="opacity-80 text-[10px] uppercase">Salário (${fin.salaryUsable ? 'Ativo' : 'Oculto'})</div>
+                        <div class="text-sm font-extrabold">${brl(sal)}</div>
+                    </div>
+                    <div class="fin-kv">
+                        <div class="opacity-80 text-[10px] uppercase">Entradas no Mês</div>
+                        <div class="text-sm font-extrabold">${brl(extrasTotal)}</div>
+                    </div>
+                    <div class="fin-kv">
+                        <div class="opacity-80 text-[10px] uppercase">Cofres Usáveis</div>
+                        <div class="text-sm font-extrabold">${brl(usableBanks)}</div>
+                    </div>
+                    <div class="fin-kv">
+                        <div class="opacity-80 text-[10px] uppercase">Faturas & Gastos</div>
+                        <div class="text-sm font-extrabold">-${brl(spentVisible)}</div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Gastos por Cartão (com botão liga/desliga rápido) -->
+            <div class="fin-card">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="modal-label m-0">Faturas de Cartão & Pix em ${esc(formatYM(ym))}</span>
+                    <div class="flex gap-1">
+                        <button type="button" data-fact="cards-all-on" class="fin-mini-pill">Ligar todos</button>
+                        <button type="button" data-fact="cards-all-off" class="fin-mini-pill">Desligar todos</button>
+                    </div>
+                </div>
+                ${cardBreakdown.map(c => `
+                    <div class="flex items-center gap-2.5 py-2 border-b border-gray-100 last:border-none" data-cid="${esc(c.id)}">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs flex-shrink-0" style="background:${esc(c.color)};opacity:${c.active?1:0.4}">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="flex-1 min-w-0" style="opacity:${c.active?1:0.5}">
+                            <p class="font-extrabold text-xs text-gray-800 truncate">${esc(c.name)} ${!c.active ? '(Oculto do cálculo)' : ''}</p>
+                            <p class="text-[10px] font-bold text-gray-400">Fecha dia ${c.closingDay} • Vence dia ${c.dueDay}</p>
+                        </div>
+                        <span class="font-extrabold text-xs text-gray-800" style="opacity:${c.active?1:0.45}">${brl(c.sum)}</span>
+                        <button type="button" class="fin-toggle ${c.active ? 'on' : ''}" data-fact="toggle-card-active" title="Ligar/Desligar visão deste cartão"></button>
+                    </div>
+                `).join('')}
+                <div class="flex items-center gap-2.5 pt-2">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs bg-emerald-400 flex-shrink-0">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-extrabold text-xs text-gray-800">Pix / Saldo em Conta (À vista)</p>
+                        <p class="text-[10px] font-bold text-gray-400">Descontado direto no mês da compra</p>
+                    </div>
+                    <span class="font-extrabold text-xs text-gray-800">${brl(pixSum)}</span>
+                </div>
+            </div>
+
+            <!-- Divisão de Gastos por Categoria no Mês -->
+            <div class="fin-card">
+                <span class="modal-label">Todas as Categorias de Gastos (${esc(formatYM(ym))})</span>
+                ${catBreakdown.map(c => `
+                    <div class="mb-2.5 last:mb-0">
+                        <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
+                            <span><i class="fas ${esc(c.icon)} mr-1" style="color:${esc(c.color)}"></i>${esc(c.name)} (${c.pct}%)</span>
+                            <span>${brl(c.sum)}</span>
+                        </div>
+                        <div class="fin-bar-track">
+                            <div class="h-full rounded-full" style="width:${c.pct}%;background:${esc(c.color)}"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <!-- Cofres / Dinheiro Guardado em Bancos -->
             <div class="flex justify-between items-center mb-2">
                 <span class="modal-label m-0">Dinheiro Guardado em Bancos / Cofres</span>
-                <button data-fact="add-bank-toggle" class="accent-pill text-xs font-bold px-3 py-1 rounded-full"><i class="fas fa-plus mr-1"></i>Novo Cofre</button>
+                <button type="button" data-fact="add-bank-toggle" class="accent-pill text-xs font-bold px-3 py-1 rounded-full"><i class="fas fa-plus mr-1"></i>Novo Cofre</button>
             </div>
 
-            <div id="bank-form" class="fin-card hidden">
-                <label class="modal-label">Nome do Banco / Cofre</label>
-                <input id="bf-name" class="task-input mb-2" placeholder="Ex: Nubank, Caixinha Reserva...">
+            <div id="bank-form" class="fin-card ${editingBankId ? '' : 'hidden'}">
+                <label class="modal-label">${editingBankId ? 'Editar Cofre / Banco' : 'Novo Cofre / Banco'}</label>
+                <input id="bf-name" class="task-input mb-2" placeholder="Ex: Nubank, Caixinha Reserva..." value="${editingBankId ? esc((fin.banks.find(x=>x.id===editingBankId)||{}).name) : ''}">
                 <label class="modal-label">Valor Guardado (R$)</label>
-                <input id="bf-val" type="number" step="0.01" class="task-input mb-2" placeholder="0.00">
+                <input id="bf-val" type="number" step="0.01" class="task-input mb-2" placeholder="0.00" value="${editingBankId ? Number((fin.banks.find(x=>x.id===editingBankId)||{}).balance||0) : ''}">
                 <label class="modal-label">Cor & Ícone</label>
                 <div class="flex gap-1.5 flex-wrap mb-2" id="bf-colors">
-                    ${PALETTE.map((c,i) => `<button type="button" class="fin-chip-pick ${i===0?'selected':''}" data-color="${c}" style="background:${c};color:#fff"><i class="fas fa-check text-[10px]"></i></button>`).join('')}
+                    ${PALETTE.map((c,i) => {
+                        const sel = editingBankId ? ((fin.banks.find(x=>x.id===editingBankId)||{}).color === c) : (i===0);
+                        return `<button type="button" class="fin-chip-pick ${sel?'selected':''}" data-color="${c}" style="background:${c};color:#fff"><i class="fas fa-check text-[10px]"></i></button>`;
+                    }).join('')}
                 </div>
                 <div class="flex gap-1.5 flex-wrap mb-3" id="bf-icons">
-                    ${ICONS.slice(0,6).map((ic,i) => `<button type="button" class="fin-chip-pick bg-gray-100 text-gray-700 ${i===0?'selected':''}" data-icon="${ic}"><i class="fas ${ic}"></i></button>`).join('')}
+                    ${ICONS.slice(0,8).map((ic,i) => {
+                        const sel = editingBankId ? ((fin.banks.find(x=>x.id===editingBankId)||{}).icon === ic) : (i===0);
+                        return `<button type="button" class="fin-chip-pick bg-gray-100 text-gray-700 ${sel?'selected':''}" data-icon="${ic}"><i class="fas ${ic}"></i></button>`;
+                    }).join('')}
                 </div>
-                <button data-fact="save-bank" class="pill-btn primary w-full">Salvar Cofre</button>
+                <div class="flex gap-2">
+                    <button type="button" data-fact="save-bank" class="pill-btn primary flex-1">Salvar Cofre</button>
+                    ${editingBankId ? `<button type="button" data-fact="cancel-bank" class="pill-btn ghost">Cancelar</button>` : ''}
+                </div>
             </div>
 
             ${fin.banks.map(b => `
                 <div class="fin-card flex items-center gap-3" data-bid="${esc(b.id)}">
-                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white text-lg flex-shrink-0" style="background:${esc(b.color)}">
+                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-base flex-shrink-0" style="background:${esc(b.color)}">
                         <i class="fas ${esc(b.icon)}"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-extrabold text-sm text-gray-800 truncate">${esc(b.name)}</p>
-                        <p class="text-xs font-bold text-gray-500">${brl(b.balance)} • ${b.usable ? 'Conta no saldo usável' : 'Apenas guardado'}</p>
+                        <p class="text-xs font-bold text-gray-500">${brl(b.balance)} • ${b.usable ? 'Somado no saldo usável' : 'Apenas guardado'}</p>
                     </div>
-                    <button class="row-btn" data-fact="edit-bank-val" title="Alterar saldo"><i class="fas fa-pen"></i></button>
-                    <button class="fin-toggle ${b.usable ? 'on' : ''}" data-fact="toggle-bank" title="Incluir/excluir do saldo usável do mês"></button>
-                    <button class="row-btn row-danger" data-fact="del-bank" title="Excluir"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="row-btn" data-fact="edit-bank" title="Editar cofre"><i class="fas fa-pen"></i></button>
+                    <button type="button" class="fin-toggle ${b.usable ? 'on' : ''}" data-fact="toggle-bank" title="Incluir/excluir do saldo usável do mês"></button>
+                    <button type="button" class="row-btn row-danger" data-fact="del-bank" title="Excluir"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('')}
         `;
     }
 
+    // =========================================================================
+    //  ABA 2: CARTÕES DE CRÉDITO (CADASTRO, FECHAMENTO, VENCIMENTO, LIGA/DESLIGA)
+    // =========================================================================
+    function renderCards() {
+        const ym = selectedYM;
+        const editingCard = editingCardId ? fin.cards.find(c => c.id === editingCardId) : null;
+
+        body.innerHTML = `
+            <div class="fin-card">
+                <span class="modal-label">${editingCard ? 'Editar Cartão de Crédito' : 'Adicionar Cartão de Crédito'}</span>
+                <input id="cd-name" class="task-input mb-2" placeholder="Nome do Cartão (ex: Nubank, Inter, Itaú)" value="${editingCard ? esc(editingCard.name) : ''}">
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Dia de Fechamento</label>
+                        <input id="cd-close" type="number" min="1" max="31" class="task-input" placeholder="Ex: 20" value="${editingCard ? editingCard.closingDay : 20}">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Dia de Vencimento</label>
+                        <input id="cd-due" type="number" min="1" max="31" class="task-input" placeholder="Ex: 5" value="${editingCard ? editingCard.dueDay : 5}">
+                    </div>
+                </div>
+                <label class="modal-label">Cor do Cartão</label>
+                <div class="flex gap-1.5 flex-wrap mb-3" id="cd-colors">
+                    ${PALETTE.map((c,i) => {
+                        const sel = editingCard ? (editingCard.color === c) : (i === 1);
+                        return `<button type="button" class="fin-chip-pick ${sel?'selected':''}" data-color="${c}" style="background:${c};color:#fff"><i class="fas fa-check text-[10px]"></i></button>`;
+                    }).join('')}
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" data-fact="save-card" class="pill-btn primary flex-1">${editingCard ? 'Salvar Alterações' : 'Adicionar Cartão'}</button>
+                    ${editingCard ? `<button type="button" data-fact="cancel-card" class="pill-btn ghost">Cancelar</button>` : ''}
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-2">
+                <span class="modal-label m-0">Seus Cartões (${fin.cards.length})</span>
+                <div class="flex gap-1">
+                    <button type="button" data-fact="cards-all-on" class="fin-mini-pill">Mostrar todos</button>
+                    <button type="button" data-fact="cards-all-off" class="fin-mini-pill">Ocultar todos</button>
+                </div>
+            </div>
+
+            ${fin.cards.map(c => {
+                const faturaMes = fin.expenses
+                    .filter(e => e.cardId === c.id && getEffectiveBillingYM(e) === ym)
+                    .reduce((s, e) => s + (Number(e.amount) || 0), 0);
+                return `
+                    <div class="fin-card flex items-center gap-3" data-cid="${esc(c.id)}">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white text-lg flex-shrink-0" style="background:${esc(c.color)};opacity:${c.active?1:0.4}">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-extrabold text-sm text-gray-800 truncate">${esc(c.name)}</p>
+                            <p class="text-xs font-bold text-gray-400">Fecha dia <b>${c.closingDay}</b> • Vence dia <b>${c.dueDay}</b></p>
+                            <p class="text-xs font-extrabold mt-0.5" style="color:${esc(c.color)}">Fatura em ${esc(formatYM(ym))}: ${brl(faturaMes)}</p>
+                        </div>
+                        <button type="button" class="row-btn" data-fact="edit-card" title="Editar nome, fechamento e vencimento"><i class="fas fa-pen"></i></button>
+                        <button type="button" class="fin-toggle ${c.active ? 'on' : ''}" data-fact="toggle-card-active" title="Ligar/Desligar este cartão da visão geral"></button>
+                        <button type="button" class="row-btn row-danger" data-fact="del-card" title="Excluir cartão"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('')}
+        `;
+    }
+
+    // =========================================================================
+    //  ABA 3: COMPRAS & GASTOS (PARCELAMENTO, EDIÇÃO COMPLETA, IMPORTAÇÃO)
+    // =========================================================================
     function renderExpenses() {
-        const ym = ymNow();
-        const list = [...fin.expenses].sort((a,b) => ((b.date||'')+(b.time||'')).localeCompare((a.date||'')+(a.time||'')));
+        const ym = selectedYM;
+        const list = getMonthExpenses(ym, false).sort((a,b) => ((b.purchaseDate||b.date||'')+(b.time||'')).localeCompare((a.purchaseDate||a.date||'')+(a.time||'')));
+
+        // Se estiver editando uma compra (ou série parcelada)
+        let editTarget = null;
+        let editGroupTotal = 0;
+        if (editingExpenseGroupId) {
+            const groupItems = fin.expenses.filter(e => (e.groupId || e.id) === editingExpenseGroupId).sort((a,b) => (a.instIndex||1) - (b.instIndex||1));
+            if (groupItems.length) {
+                editTarget = groupItems[0];
+                editGroupTotal = groupItems.reduce((s, x) => s + (Number(x.amount)||0), 0);
+            } else {
+                editingExpenseGroupId = null;
+            }
+        }
+
+        const selectedCardId = editTarget ? (editTarget.cardId || 'pix') : (fin.cards[0]?.id || 'pix');
+        const selectedCatId = editTarget ? editTarget.catId : (fin.categories[0]?.id || 'c1');
+
         body.innerHTML = `
             <div class="fin-card">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="modal-label m-0">Registrar Gasto</span>
-                    <button data-fact="new-cat" class="text-xs font-bold accent-text">+ Nova Categoria</button>
+                    <span class="modal-label m-0">${editTarget ? '✏️ Editando Compra (atualiza todas as parcelas)' : 'Registrar Nova Compra / Gasto'}</span>
+                    <button type="button" data-fact="new-cat" class="text-xs font-bold accent-text">+ Nova Categoria</button>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-2">
-                    <input id="ex-desc" class="task-input" placeholder="Descrição (ex: Almoço)">
-                    <input id="ex-val" type="number" step="0.01" class="task-input" placeholder="Valor R$ 0,00">
+                    <input id="ex-desc" class="task-input" placeholder="Descrição (ex: Supermercado)" value="${editTarget ? esc(editTarget.desc) : ''}">
+                    <input id="ex-val" type="number" step="0.01" class="task-input" placeholder="Valor Total R$ 0,00" value="${editTarget ? Number(editGroupTotal.toFixed(2)) : ''}">
                 </div>
-                <div class="grid grid-cols-2 gap-2 mb-2">
-                    <input id="ex-date" type="date" class="task-input" value="${todayISO()}">
-                    <input id="ex-time" type="time" class="task-input" value="${nowHM()}">
+                <div class="grid grid-cols-3 gap-2 mb-2">
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Data da Compra</label>
+                        <input id="ex-date" type="date" class="task-input text-xs" value="${editTarget ? esc(editTarget.purchaseDate || editTarget.date) : todayISO()}">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Horário</label>
+                        <input id="ex-time" type="time" class="task-input text-xs" value="${editTarget ? esc(editTarget.time || '12:00') : nowHM()}">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Parcelas</label>
+                        <input id="ex-inst" type="number" min="1" max="48" class="task-input text-xs" value="${editTarget ? (editTarget.instTotal || 1) : 1}">
+                    </div>
                 </div>
-                <div class="flex gap-1.5 flex-wrap my-2" id="ex-cats">
-                    ${fin.categories.map((c,i) => `
-                        <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${i===0?'selected':''}" style="--pill:${esc(c.color)}">
+
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Forma de Pagamento / Cartão</label>
+                <div class="flex gap-1.5 flex-wrap mb-2" id="ex-cards">
+                    <button type="button" data-payid="pix" class="tag-pill ${selectedCardId==='pix'?'selected':''}" style="--pill:#10b981">
+                        <i class="fas fa-bolt mr-1"></i>Pix / Conta
+                    </button>
+                    ${fin.cards.map(c => `
+                        <button type="button" data-payid="${esc(c.id)}" class="tag-pill ${selectedCardId===c.id?'selected':''}" style="--pill:${esc(c.color)}">
+                            <i class="fas fa-credit-card mr-1"></i>${esc(c.name)}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria</label>
+                <div class="flex gap-1.5 flex-wrap mb-3" id="ex-cats">
+                    ${fin.categories.map(c => `
+                        <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${selectedCatId===c.id?'selected':''}" style="--pill:${esc(c.color)}">
                             <i class="fas ${esc(c.icon)} mr-1"></i>${esc(c.name)}
                         </button>
                     `).join('')}
                 </div>
-                <button data-fact="add-expense" class="pill-btn primary w-full mt-2">Adicionar Gasto</button>
-            </div>
 
-            <div class="fin-card">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="modal-label m-0">Importar Fatura / Lista Rápida (100% Offline)</span>
+                <div class="flex gap-2">
+                    <button type="button" data-fact="save-expense" class="pill-btn primary flex-1">${editTarget ? 'Salvar Edição' : 'Adicionar Compra'}</button>
+                    ${editTarget ? `<button type="button" data-fact="cancel-expense-edit" class="pill-btn ghost">Cancelar</button>` : ''}
                 </div>
-                <p class="text-xs text-gray-400 font-semibold mb-2">Cole linhas do extrato do cartão no formato: <b>Nome;Valor;AAAA-MM-DD</b></p>
-                <textarea id="ex-bulk" class="task-input text-xs" rows="2" placeholder="iFood;45.90;${todayISO()}&#10;Farmácia;28.50;${todayISO()}"></textarea>
-                <button data-fact="import-bulk" class="pill-btn ghost w-full mt-2 text-xs">Importar linhas coladas</button>
             </div>
 
-            <span class="modal-label">Histórico (${list.length})</span>
-            ${list.length ? list.slice(0, 60).map(e => {
+            <!-- Importação em Lote escolhendo Cartão e Categoria -->
+            <div class="fin-card">
+                <span class="modal-label">Importar Fatura / Extrato Colado (100% Offline)</span>
+                <p class="text-[11px] text-gray-400 font-semibold mb-2">
+                    Cole linhas no formato: <b>Nome;Valor;AAAA-MM-DD;Parcelas(opcional)</b><br>
+                    Elas usarão o Cartão e a Categoria selecionados acima (e você pode editar qualquer uma depois!).
+                </p>
+                <textarea id="ex-bulk" class="task-input text-xs" rows="2" placeholder="iFood;45.90;${todayISO()}&#10;Vet Mocca;300.00;${todayISO()};3"></textarea>
+                <button type="button" data-fact="import-bulk" class="pill-btn ghost w-full mt-2 text-xs">Importar compras para o cartão selecionado</button>
+            </div>
+
+            <span class="modal-label">Fatura & Gastos em ${esc(formatYM(ym))} (${list.length})</span>
+            ${list.length ? list.map(e => {
                 const cat = fin.categories.find(c => c.id === e.catId) || fin.categories[0] || { name: 'Geral', color: '#94a3b8', icon: 'fa-tag' };
+                const cardObj = (!e.cardId || e.cardId === 'pix')
+                    ? { name: 'Pix / Conta', color: '#10b981', icon: 'fa-bolt' }
+                    : (fin.cards.find(x => x.id === e.cardId) || { name: 'Cartão', color: '#64748b', icon: 'fa-credit-card' });
+                const instBadge = (e.instTotal && e.instTotal > 1) ? `<span class="fin-mini-pill">${e.instIndex}/${e.instTotal}</span>` : '';
                 return `
-                    <div class="agenda-row" data-eid="${esc(e.id)}">
+                    <div class="agenda-row" data-eid="${esc(e.id)}" data-gid="${esc(e.groupId || e.id)}">
                         <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs flex-shrink-0" style="background:${esc(cat.color)}">
                             <i class="fas ${esc(cat.icon)}"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-bold text-sm text-gray-800 truncate">${esc(e.desc)}</p>
-                            <p class="text-xs font-semibold text-gray-400">${esc(e.date)} às ${esc(e.time || '--:--')} • ${esc(cat.name)}</p>
+                            <p class="font-bold text-sm text-gray-800 truncate">${esc(e.desc)} ${instBadge}</p>
+                            <p class="text-[11px] font-semibold text-gray-400">
+                                Compra: ${esc(e.purchaseDate || e.date)} às ${esc(e.time || '--:--')} •
+                                <span style="color:${esc(cardObj.color)};font-weight:800">${esc(cardObj.name)}</span> • ${esc(cat.name)}
+                            </p>
                         </div>
                         <span class="font-extrabold text-sm text-gray-800">${brl(e.amount)}</span>
-                        <button class="row-btn row-danger" data-fact="del-expense"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="row-btn" data-fact="edit-expense" title="Editar compra"><i class="fas fa-pen"></i></button>
+                        <button type="button" class="row-btn row-danger" data-fact="del-expense" title="Excluir compra"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
-            }).join('') : '<p class="text-sm text-gray-400 font-semibold text-center py-4">Nenhum gasto registrado ainda.</p>'}
+            }).join('') : `<p class="text-sm text-gray-400 font-semibold text-center py-4">Nenhum gasto caindo em ${esc(formatYM(ym))}.</p>`}
         `;
     }
 
-    function renderStats() {
-        const ym = ymNow();
-        const dPrev = new Date(); dPrev.setMonth(dPrev.getMonth() - 1);
-        const ymPrev = `${dPrev.getFullYear()}-${String(dPrev.getMonth()+1).padStart(2,'0')}`;
+    // =========================================================================
+    //  ABA 4: SALÁRIO FIXO (VARIÁVEL POR MÊS) & ENTRADAS DE DINHEIRO
+    // =========================================================================
+    function renderIncome() {
+        const ym = selectedYM;
+        const effectiveSal = getSalaryForMonth(ym);
+        const hasOverride = fin.salaryOverrides && fin.salaryOverrides[ym] !== undefined && fin.salaryOverrides[ym] !== '';
+        const monthIncomes = getMonthExtraIncomes(ym);
 
-        const curList = monthExpenses(ym);
-        const prevList = monthExpenses(ymPrev);
-        const curTotal = monthTotalSpent(ym);
-        const prevTotal = monthTotalSpent(ymPrev);
+        body.innerHTML = `
+            <div class="fin-card">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <span class="modal-label m-0">Salário Mensal</span>
+                        <p class="text-[11px] font-semibold text-gray-400">Valor fixo padrão, mas ajustável se variar neste mês</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-extrabold text-gray-400 uppercase">${fin.salaryUsable ? 'Usar no mês' : 'Desligado'}</span>
+                        <button type="button" class="fin-toggle ${fin.salaryUsable ? 'on' : ''}" data-fact="toggle-salary"></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Salário Fixo Padrão (R$)</label>
+                        <input id="sal-base" type="number" step="0.01" class="task-input" placeholder="0.00" value="${Number(fin.salaryBase||0)}">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Salário em ${esc(formatYM(ym))}</label>
+                        <input id="sal-override" type="number" step="0.01" class="task-input" placeholder="${Number(fin.salaryBase||0)}" value="${hasOverride ? Number(fin.salaryOverrides[ym]) : ''}">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" data-fact="save-salary" class="pill-btn primary flex-1">Salvar Salário</button>
+                    ${hasOverride ? `<button type="button" data-fact="reset-salary-month" class="pill-btn ghost text-xs">Voltar ao fixo em ${esc(formatYM(ym))}</button>` : ''}
+                </div>
+                <p class="text-xs font-bold text-gray-500 mt-2">
+                    Salário ativo considerado em <b>${esc(formatYM(ym))}</b>: <b>${brl(effectiveSal)}</b> ${hasOverride ? '<span class="fin-mini-pill">Valor específico deste mês</span>' : '<span class="fin-mini-pill">Valor fixo padrão</span>'}
+                </p>
+            </div>
+
+            <div class="fin-card">
+                <span class="modal-label">Adicionar Entrada Extra de Dinheiro</span>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="inc-desc" class="task-input" placeholder="Descrição (ex: Freela, Reembolso, Venda)">
+                    <input id="inc-val" type="number" step="0.01" class="task-input" placeholder="Valor R$ 0,00">
+                </div>
+                <input id="inc-date" type="date" class="task-input mb-2" value="${ym === todayISO().slice(0,7) ? todayISO() : ym + '-05'}">
+                <button type="button" data-fact="add-income" class="pill-btn primary w-full">Registrar Entrada</button>
+            </div>
+
+            <span class="modal-label">Entradas Extras em ${esc(formatYM(ym))} (${monthIncomes.length})</span>
+            ${monthIncomes.length ? monthIncomes.map(inc => `
+                <div class="agenda-row" data-iid="${esc(inc.id)}">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fas fa-arrow-trend-up"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sm text-gray-800 truncate">${esc(inc.desc)}</p>
+                        <p class="text-xs font-semibold text-gray-400">${esc(inc.date)} • ${inc.usable !== false ? 'Somado no saldo do mês' : 'Ignorado'}</p>
+                    </div>
+                    <span class="font-extrabold text-sm text-emerald-600">+${brl(inc.amount)}</span>
+                    <button type="button" class="fin-toggle ${inc.usable !== false ? 'on' : ''}" data-fact="toggle-income"></button>
+                    <button type="button" class="row-btn row-danger" data-fact="del-income"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('') : '<p class="text-sm text-gray-400 font-semibold text-center py-4">Nenhuma entrada extra registrada neste mês.</p>'}
+        `;
+    }
+
+    // =========================================================================
+    //  ABA 5: ESTATÍSTICAS DETALHADÍSSIMAS
+    // =========================================================================
+    function renderStats() {
+        const ym = selectedYM;
+        const ymPrev = shiftYM(ym, -1);
+
+        const curList = getMonthExpenses(ym, false);
+        const prevList = getMonthExpenses(ymPrev, false);
+        const curTotal = monthTotalSpent(ym, false);
+        const prevTotal = monthTotalSpent(ymPrev, false);
         const diffPct = prevTotal > 0 ? Math.round(((curTotal - prevTotal) / prevTotal) * 100) : 0;
 
-        // Por categoria
         const catTotals = fin.categories.map(c => {
             const sum = curList.filter(e => e.catId === c.id).reduce((s,e) => s + Number(e.amount||0), 0);
             const prevSum = prevList.filter(e => e.catId === c.id).reduce((s,e) => s + Number(e.amount||0), 0);
@@ -7549,7 +7995,6 @@
             return { ...c, sum, prevSum, pct };
         }).sort((a,b) => b.sum - a.sum);
 
-        // Período do dia e dia do mês com mais gasto
         const periods = { 'Manhã (06h-12h)': 0, 'Tarde (12h-18h)': 0, 'Noite (18h-00h)': 0, 'Madrugada (00h-06h)': 0 };
         const byDate = {};
         curList.forEach(e => {
@@ -7559,7 +8004,8 @@
             else if (h >= 12 && h < 18) periods['Tarde (12h-18h)'] += val;
             else if (h >= 18) periods['Noite (18h-00h)'] += val;
             else periods['Madrugada (00h-06h)'] += val;
-            byDate[e.date] = (byDate[e.date] || 0) + val;
+            const dKey = e.purchaseDate || e.date;
+            byDate[dKey] = (byDate[dKey] || 0) + val;
         });
         const topPeriod = Object.entries(periods).sort((a,b) => b[1] - a[1])[0];
         const topDate = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
@@ -7568,37 +8014,37 @@
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <div class="stat-box">
                     <div class="text-lg font-extrabold text-gray-800">${brl(curTotal)}</div>
-                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">Mês Atual (${ym})</div>
+                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">${esc(formatYM(ym))}</div>
                 </div>
                 <div class="stat-box">
                     <div class="text-lg font-extrabold text-gray-800">${brl(prevTotal)}</div>
-                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">Mês Anterior (${ymPrev})</div>
+                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">${esc(formatYM(ymPrev))}</div>
                 </div>
             </div>
 
             <div class="fin-card">
-                <span class="modal-label">Padrões de Comportamento (Mês Atual)</span>
+                <span class="modal-label">Padrões de Comportamento (${esc(formatYM(ym))})</span>
                 <p class="text-xs font-bold text-gray-700 mb-1">
                     <i class="fas fa-clock accent-text mr-1"></i>Horário de maior gasto:
                     <b>${topPeriod && topPeriod[1] > 0 ? `${topPeriod[0]} (${brl(topPeriod[1])})` : 'Sem dados'}</b>
                 </p>
                 <p class="text-xs font-bold text-gray-700 mb-1">
-                    <i class="fas fa-calendar-day accent-text mr-1"></i>Data de pico:
+                    <i class="fas fa-calendar-day accent-text mr-1"></i>Data de pico de compras:
                     <b>${topDate ? `${topDate[0]} (${brl(topDate[1])})` : 'Sem dados'}</b>
                 </p>
                 <p class="text-xs font-bold text-gray-700">
                     <i class="fas fa-scale-balanced accent-text mr-1"></i>Comparação mensal:
-                    <b>${prevTotal === 0 ? 'Sem base no mês anterior' : (diffPct > 0 ? `+${diffPct}% acima do mês passado` : `${diffPct}% abaixo do mês passado`)}</b>
+                    <b>${prevTotal === 0 ? 'Sem base no mês anterior' : (diffPct > 0 ? `+${diffPct}% acima de ${formatYM(ymPrev)}` : `${diffPct}% abaixo de ${formatYM(ymPrev)}`)}</b>
                 </p>
             </div>
 
             <div class="fin-card">
-                <span class="modal-label">Porcentagem por Categoria & Comparação</span>
+                <span class="modal-label">Porcentagem por Categoria & Comparação Mensal</span>
                 ${catTotals.map(c => `
                     <div class="mb-3">
                         <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
                             <span><i class="fas ${esc(c.icon)} mr-1" style="color:${esc(c.color)}"></i>${esc(c.name)} (${c.pct}%)</span>
-                            <span>${brl(c.sum)} <small class="text-gray-400">(Mês ant: ${brl(c.prevSum)})</small></span>
+                            <span>${brl(c.sum)} <small class="text-gray-400">(Ant: ${brl(c.prevSum)})</small></span>
                         </div>
                         <div class="fin-bar-track">
                             <div class="h-full rounded-full" style="width:${c.pct}%;background:${esc(c.color)}"></div>
@@ -7609,8 +8055,12 @@
         `;
     }
 
+    // =========================================================================
+    //  ABA 6: SIMULADOR DE COMPRAS (SANDBOX)
+    // =========================================================================
     function renderSim() {
-        const usable = usableBalance() - monthTotalSpent(ymNow());
+        const ym = selectedYM;
+        const usable = totalUsableForMonth(ym) - monthTotalSpent(ym, false);
         const monthlyImpact = fin.simItems.reduce((s, it) => s + Number(it.monthly || 0), 0);
         const totalSim = fin.simItems.reduce((s, it) => s + Number(it.totalWithInterest || 0), 0);
 
@@ -7618,20 +8068,20 @@
             <div class="fin-card">
                 <span class="modal-label">Simulador de Compras & Parcelamento</span>
                 <div class="grid grid-cols-2 gap-2 mb-2">
-                    <input id="sim-name" class="task-input" placeholder="Item (ex: Tablet, Roupa)">
+                    <input id="sim-name" class="task-input" placeholder="Item (ex: Comprinhas, Jogo)">
                     <input id="sim-val" type="number" step="0.01" class="task-input" placeholder="Valor Total R$">
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-2">
                     <input id="sim-inst" type="number" min="1" max="48" class="task-input" value="1" placeholder="Nº Parcelas (ex: 6)">
-                    <input id="sim-rate" type="number" step="0.1" min="0" class="task-input" value="0" placeholder="Juros % ao mês (0 = sem juros)">
+                    <input id="sim-rate" type="number" step="0.1" min="0" class="task-input" value="0" placeholder="Juros % a.m. (0 = sem juros)">
                 </div>
-                <button data-fact="add-sim" class="pill-btn primary w-full">Adicionar à Simulação</button>
+                <button type="button" data-fact="add-sim" class="pill-btn primary w-full">Adicionar à Simulação</button>
             </div>
 
             <div class="fin-card">
-                <span class="modal-label">Impacto no seu Saldo Disponível</span>
+                <span class="modal-label">Impacto no Saldo de ${esc(formatYM(ym))}</span>
                 <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
-                    <span>Saldo livre hoje:</span><b>${brl(usable)}</b>
+                    <span>Saldo livre atual no mês:</span><b>${brl(usable)}</b>
                 </div>
                 <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
                     <span>Soma das parcelas/mês simuladas:</span><b class="text-red-500">-${brl(monthlyImpact)}</b>
@@ -7645,7 +8095,7 @@
 
             <div class="flex justify-between items-center mb-2">
                 <span class="modal-label m-0">Itens na Simulação (${fin.simItems.length})</span>
-                ${fin.simItems.length ? `<button data-fact="clear-sim" class="text-xs font-bold text-red-500">Limpar tudo</button>` : ''}
+                ${fin.simItems.length ? `<button type="button" data-fact="clear-sim" class="text-xs font-bold text-red-500">Limpar tudo</button>` : ''}
             </div>
             ${fin.simItems.map(it => `
                 <div class="agenda-row" data-sid="${esc(it.id)}">
@@ -7653,25 +8103,28 @@
                         <p class="font-bold text-sm text-gray-800">${esc(it.name)}</p>
                         <p class="text-xs font-semibold text-gray-400">${it.inst}x de ${brl(it.monthly)} ${it.rate > 0 ? `(c/ ${it.rate}% a.m. • Total ${brl(it.totalWithInterest)})` : '(sem juros)'}</p>
                     </div>
-                    <button class="row-btn row-danger" data-fact="del-sim"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="row-btn row-danger" data-fact="del-sim"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('')}
         `;
     }
 
+    // =========================================================================
+    //  ABA 7: GASTOS RECORRENTES / ASSINATURAS
+    // =========================================================================
     function renderRecurring() {
         body.innerHTML = `
             <div class="fin-card">
                 <span class="modal-label">Novo Gasto Recorrente / Assinatura</span>
                 <div class="grid grid-cols-2 gap-2 mb-2">
-                    <input id="rc-name" class="task-input" placeholder="Ex: Seguro Pet, Internet">
+                    <input id="rc-name" class="task-input" placeholder="Ex: Petlove Saúde, Tarot">
                     <input id="rc-val" type="number" step="0.01" class="task-input" placeholder="Valor R$">
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-2">
                     <input id="rc-day" type="number" min="1" max="31" class="task-input" placeholder="Dia do vencimento (1-31)">
                     <input id="rc-warn" type="number" min="1" max="15" class="task-input" value="5" placeholder="Avisar X dias antes">
                 </div>
-                <button data-fact="add-rec" class="pill-btn primary w-full">Salvar Recorrência</button>
+                <button type="button" data-fact="add-rec" class="pill-btn primary w-full">Salvar Recorrência</button>
             </div>
 
             <span class="modal-label">Seus Gastos Recorrentes (${fin.recurring.length})</span>
@@ -7683,16 +8136,35 @@
                         <p class="text-xs font-semibold text-gray-400">Todo dia ${r.day} • Avisa ${r.warnDays}d antes</p>
                     </div>
                     <span class="font-extrabold text-sm text-gray-800">${brl(r.amount)}</span>
-                    <button class="row-btn row-danger" data-fact="del-rec"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="row-btn row-danger" data-fact="del-rec"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('')}
         `;
     }
 
     function renderFin() {
-        const map = { overview: renderOverview, expenses: renderExpenses, stats: renderStats, sim: renderSim, rec: renderRecurring };
+        if (monthLabelEl) monthLabelEl.textContent = formatYM(selectedYM);
+        const map = {
+            overview: renderOverview,
+            cards: renderCards,
+            expenses: renderExpenses,
+            income: renderIncome,
+            stats: renderStats,
+            sim: renderSim,
+            rec: renderRecurring
+        };
         (map[curTab] || renderOverview)();
     }
+
+    // Navegação de Mês
+    document.getElementById('fin-prev-m').addEventListener('click', () => {
+        selectedYM = shiftYM(selectedYM, -1);
+        renderFin();
+    });
+    document.getElementById('fin-next-m').addEventListener('click', () => {
+        selectedYM = shiftYM(selectedYM, 1);
+        renderFin();
+    });
 
     // Eventos das abas
     document.getElementById('fin-tabs').addEventListener('click', (e) => {
@@ -7705,9 +8177,10 @@
 
     // Delegação de cliques no corpo de Finanças
     body.addEventListener('click', (e) => {
-        const colorPick = e.target.closest('#bf-colors [data-color]');
+        const colorPick = e.target.closest('#bf-colors [data-color], #cd-colors [data-color]');
         if (colorPick) {
-            body.querySelectorAll('#bf-colors .fin-chip-pick').forEach(x => x.classList.remove('selected'));
+            const parent = colorPick.parentElement;
+            parent.querySelectorAll('.fin-chip-pick').forEach(x => x.classList.remove('selected'));
             colorPick.classList.add('selected');
             return;
         }
@@ -7715,6 +8188,12 @@
         if (iconPick) {
             body.querySelectorAll('#bf-icons .fin-chip-pick').forEach(x => x.classList.remove('selected'));
             iconPick.classList.add('selected');
+            return;
+        }
+        const payPick = e.target.closest('#ex-cards [data-payid]');
+        if (payPick) {
+            body.querySelectorAll('#ex-cards .tag-pill').forEach(x => x.classList.remove('selected'));
+            payPick.classList.add('selected');
             return;
         }
         const catPick = e.target.closest('#ex-cats [data-cid]');
@@ -7728,62 +8207,210 @@
         if (!btn) return;
         const act = btn.dataset.fact;
 
+        // Cofres / Bancos
         if (act === 'add-bank-toggle') {
+            editingBankId = null;
             document.getElementById('bank-form').classList.toggle('hidden');
+        } else if (act === 'cancel-bank') {
+            editingBankId = null;
+            renderFin();
+        } else if (act === 'edit-bank') {
+            editingBankId = btn.closest('[data-bid]').dataset.bid;
+            renderFin();
         } else if (act === 'save-bank') {
             const name = document.getElementById('bf-name').value.trim();
             const balance = parseFloat(document.getElementById('bf-val').value) || 0;
             if (!name) return;
             const color = (body.querySelector('#bf-colors .selected') || {}).dataset?.color || PALETTE[0];
             const icon = (body.querySelector('#bf-icons .selected') || {}).dataset?.icon || ICONS[0];
-            fin.banks.push({ id: 'b'+Date.now(), name, balance, color, icon, usable: true });
+            if (editingBankId) {
+                const b = fin.banks.find(x => x.id === editingBankId);
+                if (b) { b.name = name; b.balance = balance; b.color = color; b.icon = icon; }
+                editingBankId = null;
+            } else {
+                fin.banks.push({ id: 'b'+Date.now(), name, balance, color, icon, usable: true });
+            }
             saveFin(); renderFin();
         } else if (act === 'toggle-bank') {
             const b = fin.banks.find(x => x.id === btn.closest('[data-bid]').dataset.bid);
             if (b) { b.usable = !b.usable; saveFin(); renderFin(); }
-        } else if (act === 'edit-bank-val') {
-            const b = fin.banks.find(x => x.id === btn.closest('[data-bid]').dataset.bid);
-            if (b) {
-                const nv = prompt(`Novo saldo para "${b.name}" (R$):`, b.balance);
-                if (nv !== null && !isNaN(parseFloat(nv))) { b.balance = parseFloat(nv); saveFin(); renderFin(); }
-            }
         } else if (act === 'del-bank') {
             const id = btn.closest('[data-bid]').dataset.bid;
             fin.banks = fin.banks.filter(x => x.id !== id);
             saveFin(); renderFin();
-        } else if (act === 'new-cat') {
+        }
+
+        // Cartões de Crédito
+        else if (act === 'save-card') {
+            const name = document.getElementById('cd-name').value.trim();
+            const closingDay = Math.min(31, Math.max(1, parseInt(document.getElementById('cd-close').value, 10) || 20));
+            const dueDay = Math.min(31, Math.max(1, parseInt(document.getElementById('cd-due').value, 10) || 5));
+            const color = (body.querySelector('#cd-colors .selected') || {}).dataset?.color || PALETTE[1];
+            if (!name) return;
+            if (editingCardId) {
+                const c = fin.cards.find(x => x.id === editingCardId);
+                if (c) { c.name = name; c.closingDay = closingDay; c.dueDay = dueDay; c.color = color; }
+                editingCardId = null;
+            } else {
+                fin.cards.push({ id: 'card'+Date.now(), name, closingDay, dueDay, color, active: true });
+            }
+            saveFin(); renderFin();
+        } else if (act === 'edit-card') {
+            editingCardId = btn.closest('[data-cid]').dataset.cid;
+            curTab = 'cards';
+            renderFin();
+        } else if (act === 'cancel-card') {
+            editingCardId = null;
+            renderFin();
+        } else if (act === 'toggle-card-active') {
+            const cid = btn.closest('[data-cid]').dataset.cid;
+            const c = fin.cards.find(x => x.id === cid);
+            if (c) { c.active = !c.active; saveFin(); renderFin(); }
+        } else if (act === 'cards-all-on') {
+            fin.cards.forEach(c => c.active = true);
+            saveFin(); renderFin();
+        } else if (act === 'cards-all-off') {
+            fin.cards.forEach(c => c.active = false);
+            saveFin(); renderFin();
+        } else if (act === 'del-card') {
+            const cid = btn.closest('[data-cid]').dataset.cid;
+            fin.cards = fin.cards.filter(x => x.id !== cid);
+            saveFin(); renderFin();
+        }
+
+        // Categorias e Compras (com suporte a parcelas e edição em grupo)
+        else if (act === 'new-cat') {
             const name = prompt('Nome da nova categoria:');
             if (!name || !name.trim()) return;
             const color = PALETTE[fin.categories.length % PALETTE.length];
             const icon = ICONS[fin.categories.length % ICONS.length];
             fin.categories.push({ id: 'c'+Date.now(), name: name.trim(), color, icon });
             saveFin(); renderFin();
-        } else if (act === 'add-expense') {
+        } else if (act === 'save-expense') {
             const desc = document.getElementById('ex-desc').value.trim();
-            const amount = parseFloat(document.getElementById('ex-val').value);
-            if (!desc || !(amount > 0)) return;
-            const date = document.getElementById('ex-date').value || todayISO();
+            const totalAmount = parseFloat(document.getElementById('ex-val').value);
+            if (!desc || !(totalAmount > 0)) return;
+            const purchaseDate = document.getElementById('ex-date').value || todayISO();
             const time = document.getElementById('ex-time').value || nowHM();
+            const instTotal = Math.max(1, Math.min(48, parseInt(document.getElementById('ex-inst').value, 10) || 1));
+            const cardId = (body.querySelector('#ex-cards .selected') || {}).dataset?.payid || 'pix';
             const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id);
-            fin.expenses.push({ id: 'e'+Date.now(), desc, amount, date, time, catId });
+
+            const groupId = editingExpenseGroupId || ('grp' + Date.now() + Math.random().toString(36).slice(2,5));
+            if (editingExpenseGroupId) {
+                fin.expenses = fin.expenses.filter(e => (e.groupId || e.id) !== editingExpenseGroupId);
+                editingExpenseGroupId = null;
+            }
+
+            const perInstallment = Number((totalAmount / instTotal).toFixed(2));
+            for (let i = 1; i <= instTotal; i++) {
+                fin.expenses.push({
+                    id: groupId + '_' + i,
+                    groupId,
+                    desc,
+                    amount: perInstallment,
+                    purchaseDate,
+                    date: purchaseDate,
+                    time,
+                    cardId,
+                    catId,
+                    instIndex: i,
+                    instTotal
+                });
+            }
+            saveFin(); renderFin();
+        } else if (act === 'edit-expense') {
+            const row = btn.closest('[data-gid]');
+            editingExpenseGroupId = row.dataset.gid;
+            renderFin();
+        } else if (act === 'cancel-expense-edit') {
+            editingExpenseGroupId = null;
+            renderFin();
+        } else if (act === 'del-expense') {
+            const row = btn.closest('[data-gid]');
+            const gid = row.dataset.gid;
+            const eid = row.dataset.eid;
+            const groupCount = fin.expenses.filter(x => (x.groupId || x.id) === gid).length;
+            if (groupCount > 1) {
+                if (confirm(`Esta compra possui ${groupCount} parcelas. Deseja excluir TODAS as parcelas desta compra?`)) {
+                    fin.expenses = fin.expenses.filter(x => (x.groupId || x.id) !== gid);
+                } else {
+                    fin.expenses = fin.expenses.filter(x => x.id !== eid);
+                }
+            } else {
+                fin.expenses = fin.expenses.filter(x => x.id !== eid);
+            }
             saveFin(); renderFin();
         } else if (act === 'import-bulk') {
             const raw = document.getElementById('ex-bulk').value.trim();
             if (!raw) return;
-            const catId = (fin.categories[0] && fin.categories[0].id) || 'c1';
+            const cardId = (body.querySelector('#ex-cards .selected') || {}).dataset?.payid || 'pix';
+            const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id) || 'c1';
             raw.split('\n').forEach((line, idx) => {
-                const [d, v, dt] = line.split(';').map(s => (s||'').trim());
-                const amount = parseFloat((v||'').replace(',','.'));
-                if (d && amount > 0) {
-                    fin.expenses.push({ id: 'e'+Date.now()+idx, desc: d, amount, date: dt || todayISO(), time: nowHM(), catId });
+                const [d, v, dt, instStr] = line.split(';').map(s => (s||'').trim());
+                const totalAmount = parseFloat((v||'').replace(',','.'));
+                const instTotal = Math.max(1, Math.min(48, parseInt(instStr, 10) || 1));
+                if (d && totalAmount > 0) {
+                    const groupId = 'grp' + Date.now() + '_' + idx;
+                    const pDate = dt || todayISO();
+                    const perInst = Number((totalAmount / instTotal).toFixed(2));
+                    for (let i = 1; i <= instTotal; i++) {
+                        fin.expenses.push({
+                            id: groupId + '_' + i,
+                            groupId,
+                            desc: d,
+                            amount: perInst,
+                            purchaseDate: pDate,
+                            date: pDate,
+                            time: nowHM(),
+                            cardId,
+                            catId,
+                            instIndex: i,
+                            instTotal
+                        });
+                    }
                 }
             });
             saveFin(); renderFin();
-        } else if (act === 'del-expense') {
-            const id = btn.closest('[data-eid]').dataset.eid;
-            fin.expenses = fin.expenses.filter(x => x.id !== id);
+        }
+
+        // Salário e Entradas
+        else if (act === 'toggle-salary') {
+            fin.salaryUsable = !fin.salaryUsable;
             saveFin(); renderFin();
-        } else if (act === 'add-sim') {
+        } else if (act === 'save-salary') {
+            const baseVal = parseFloat(document.getElementById('sal-base').value);
+            const ovRaw = document.getElementById('sal-override').value.trim();
+            if (!isNaN(baseVal) && baseVal >= 0) fin.salaryBase = baseVal;
+            if (!fin.salaryOverrides) fin.salaryOverrides = {};
+            if (ovRaw !== '' && !isNaN(parseFloat(ovRaw))) {
+                fin.salaryOverrides[selectedYM] = parseFloat(ovRaw);
+            } else {
+                delete fin.salaryOverrides[selectedYM];
+            }
+            saveFin(); renderFin();
+        } else if (act === 'reset-salary-month') {
+            if (fin.salaryOverrides) delete fin.salaryOverrides[selectedYM];
+            saveFin(); renderFin();
+        } else if (act === 'add-income') {
+            const desc = document.getElementById('inc-desc').value.trim();
+            const amount = parseFloat(document.getElementById('inc-val').value);
+            const date = document.getElementById('inc-date').value || todayISO();
+            if (!desc || !(amount > 0)) return;
+            fin.incomes.push({ id: 'inc'+Date.now(), desc, amount, date, usable: true });
+            saveFin(); renderFin();
+        } else if (act === 'toggle-income') {
+            const id = btn.closest('[data-iid]').dataset.iid;
+            const inc = fin.incomes.find(x => x.id === id);
+            if (inc) { inc.usable = !(inc.usable !== false); saveFin(); renderFin(); }
+        } else if (act === 'del-income') {
+            const id = btn.closest('[data-iid]').dataset.iid;
+            fin.incomes = fin.incomes.filter(x => x.id !== id);
+            saveFin(); renderFin();
+        }
+
+        // Simulador
+        else if (act === 'add-sim') {
             const name = document.getElementById('sim-name').value.trim() || 'Item simulado';
             const val = parseFloat(document.getElementById('sim-val').value);
             const inst = Math.max(1, parseInt(document.getElementById('sim-inst').value, 10) || 1);
@@ -7802,7 +8429,10 @@
             saveFin(); renderFin();
         } else if (act === 'clear-sim') {
             fin.simItems = []; saveFin(); renderFin();
-        } else if (act === 'add-rec') {
+        }
+
+        // Recorrentes
+        else if (act === 'add-rec') {
             const name = document.getElementById('rc-name').value.trim();
             const amount = parseFloat(document.getElementById('rc-val').value);
             const day = Math.min(31, Math.max(1, parseInt(document.getElementById('rc-day').value, 10) || 1));
@@ -7832,6 +8462,7 @@
     });
 })();
 </script>
-<!-- ==================== FIM DO MÓDULO DE FINANÇAS ==================== -->
+<!-- ==================== FIM DO MÓDULO DE FINANÇAS V2 ==================== -->
+
 </body>
 </html>
