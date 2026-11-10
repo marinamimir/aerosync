@@ -7245,7 +7245,8 @@
 
     </script>
 
-<!-- ==================== MÓDULO DE FINANÇAS V4 (CATEGORIAS ESTILO PRESET + LIXEIRA) ==================== -->
+
+<!-- ==================== MÓDULO DE FINANÇAS V5 (ESTATÍSTICAS NA VISÃO GERAL, GRÁFICO PIE, GRÁFICO DE BARRAS & ABA COMPARATIVO 5 MESES COM LINE GRAPH) ==================== -->
 <style>
     /* Oculta o modal antigo de finanças caso acionado */
     #fin-modal { display: none !important; }
@@ -7359,6 +7360,21 @@
         display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px;
     }
 
+    /* Gráfico de barras verticais e componentes visuais */
+    .fin-vbar-container {
+        display: flex; align-items: flex-end; justify-content: space-around;
+        gap: 6px; height: 130px; padding-top: 14px; margin-top: 6px;
+    }
+    .fin-vbar-col {
+        display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end;
+    }
+    .fin-vbar-bar {
+        width: 100%; max-width: 38px; border-radius: 10px 10px 4px 4px;
+        transition: height 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+        position: relative;
+    }
+    .fin-vbar-bar:hover { filter: brightness(1.1); transform: scaleY(1.02); }
+
     /* Bolinha de seleção em massa */
     .fin-select-dot {
         width: 24px; height: 24px; border-radius: 50%;
@@ -7433,14 +7449,14 @@
             <button type="button" class="fin-month-nav" id="fin-next-m" title="Próximo mês"><i class="fas fa-chevron-right"></i></button>
         </div>
 
-        <!-- Abas (com a nova aba 'Categorias' e 'Lixeira') -->
+        <!-- Abas: Visão Geral, Cartões, Compras, Categorias, Salário, Comparativo (nova!), Simulador, Recorrentes, Lixeira -->
         <div class="fin-tabs no-scrollbar" id="fin-tabs">
             <button class="fin-tab active" data-ftab="overview"><i class="fas fa-layer-group mr-1"></i>Visão Geral</button>
             <button class="fin-tab" data-ftab="cards"><i class="fas fa-credit-card mr-1"></i>Cartões</button>
             <button class="fin-tab" data-ftab="expenses"><i class="fas fa-receipt mr-1"></i>Compras</button>
             <button class="fin-tab" data-ftab="categories"><i class="fas fa-tags mr-1"></i>Categorias</button>
             <button class="fin-tab" data-ftab="income"><i class="fas fa-money-bill-trend-up mr-1"></i>Salário</button>
-            <button class="fin-tab" data-ftab="stats"><i class="fas fa-chart-pie mr-1"></i>Estatísticas</button>
+            <button class="fin-tab" data-ftab="comparative"><i class="fas fa-chart-line mr-1"></i>Comparativo</button>
             <button class="fin-tab" data-ftab="sim"><i class="fas fa-calculator mr-1"></i>Simulador</button>
             <button class="fin-tab" data-ftab="rec"><i class="fas fa-bell mr-1"></i>Recorrentes</button>
             <button class="fin-tab" data-ftab="trash"><i class="fas fa-trash-can mr-1"></i>Lixeira</button>
@@ -7467,7 +7483,7 @@
     let curTab = 'overview';
     let editingCardId = null;
     let editingBankId = null;
-    let editingCatDraft = null; // edição de categoria estilo preset
+    let editingCatDraft = null;
 
     // Estado da Seleção em Massa
     let bulkSelectMode = false;
@@ -7481,6 +7497,10 @@
     function formatYM(ym) {
         const [y, m] = ym.split('-').map(Number);
         return `${MONTH_NAMES[(m - 1 + 12) % 12]} ${y}`;
+    }
+    function shortYM(ym) {
+        const [y, m] = ym.split('-').map(Number);
+        return `${MONTH_NAMES[(m - 1 + 12) % 12].slice(0, 3)}/${String(y).slice(2)}`;
     }
 
     function loadFin() {
@@ -7627,6 +7647,136 @@
             return { name: e.catNameSnapshot, color: e.catColorSnapshot || '#94a3b8', icon: e.catIconSnapshot || 'fa-tag' };
         }
         return { name: 'Outros', color: '#94a3b8', icon: 'fa-tag' };
+    }
+
+    // =========================================================================
+    //  GERADORES VISUAIS DE GRÁFICO (PIE CHART DONUT, BAR CHART & LINE GRAPH)
+    // =========================================================================
+    function buildPieChartHTML(segments, totalVal) {
+        if (!segments || !segments.length || !(totalVal > 0)) {
+            return `
+                <div class="flex flex-col items-center justify-center py-6 text-gray-400 text-xs font-bold">
+                    <i class="fas fa-chart-pie text-3xl mb-1.5 opacity-40"></i>
+                    Sem gastos para exibir no gráfico neste mês
+                </div>
+            `;
+        }
+        const size = 150;
+        const strokeW = 22;
+        const r = (size - strokeW) / 2;
+        const cx = size / 2;
+        const cy = size / 2;
+        const circ = 2 * Math.PI * r;
+
+        let accumPct = 0;
+        const circlesHTML = segments.filter(s => s.pct > 0).map(s => {
+            const dash = (s.pct / 100) * circ;
+            const offset = -(accumPct / 100) * circ;
+            accumPct += s.pct;
+            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${esc(s.color)}" stroke-width="${strokeW}" stroke-dasharray="${dash.toFixed(2)} ${(circ - dash).toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="round" />`;
+        }).join('');
+
+        return `
+            <div class="flex items-center justify-between gap-3 my-2">
+                <div class="relative flex-shrink-0" style="width:${size}px; height:${size}px;">
+                    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+                        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="${strokeW}" />
+                        ${circlesHTML}
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-1">
+                        <span class="text-[9px] font-extrabold uppercase text-gray-400">Total</span>
+                        <span class="text-xs font-black text-gray-800 truncate max-w-[85px]">${brl(totalVal)}</span>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0 space-y-1.5 max-h-[140px] overflow-y-auto no-scrollbar pr-1">
+                    ${segments.filter(s => s.pct > 0).map(s => `
+                        <div class="flex items-center justify-between text-xs font-bold">
+                            <span class="flex items-center gap-1.5 truncate">
+                                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${esc(s.color)}"></span>
+                                <span class="text-gray-700 truncate text-[11px]">${esc(s.name)}</span>
+                            </span>
+                            <span class="text-gray-500 font-extrabold text-[11px] ml-1">${s.pct}%</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function buildCategoryBarChartHTML(segments) {
+        const topSegments = (segments || []).filter(s => s.sum > 0).slice(0, 5);
+        if (!topSegments.length) return '';
+        const maxVal = Math.max(...topSegments.map(s => s.sum), 1);
+
+        return `
+            <div class="fin-vbar-container">
+                ${topSegments.map(s => {
+                    const hPct = Math.max(12, Math.round((s.sum / maxVal) * 100));
+                    return `
+                        <div class="fin-vbar-col">
+                            <span class="text-[9px] font-extrabold text-gray-500 mb-1 truncate max-w-[42px]">${brl(s.sum).replace('R$', '').trim()}</span>
+                            <div class="fin-vbar-bar" style="height:${hPct}%;background:${esc(s.color)};box-shadow:0 3px 8px ${esc(s.color)}44" title="${esc(s.name)}: ${brl(s.sum)}"></div>
+                            <span class="text-[10px] font-extrabold text-gray-600 mt-1.5 truncate max-w-[46px] text-center"><i class="fas ${esc(s.icon)} mr-0.5" style="color:${esc(s.color)}"></i>${esc(s.name)}</span>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function buildFiveMonthsComparison(currentYM) {
+        // Coleta 5 meses (4 anteriores + o atual selecionado)
+        const months = [];
+        for (let i = 4; i >= 0; i--) {
+            const ym = shiftYM(currentYM, -i);
+            const spent = monthTotalSpent(ym, false);
+            const salary = getSalaryForMonth(ym);
+            const usable = totalUsableForMonth(ym);
+            months.push({ ym, spent, salary, usable, label: shortYM(ym), fullLabel: formatYM(ym), isCurrent: i === 0 });
+        }
+
+        const maxSpent = Math.max(...months.map(m => m.spent), 10);
+        const avgSpent = months.slice(0, 4).reduce((s, m) => s + m.spent, 0) / 4;
+        const curSpent = months[4].spent;
+        const diffFromAvg = avgSpent > 0 ? Math.round(((curSpent - avgSpent) / avgSpent) * 100) : 0;
+
+        // SVG Line Graph (curva suave de tendência com pontos interativos e preenchimento gradiente)
+        const svgW = 320;
+        const svgH = 120;
+        const padX = 26;
+        const padY = 22;
+        const plotW = svgW - (padX * 2);
+        const plotH = svgH - (padY * 2);
+
+        const pts = months.map((m, idx) => {
+            const x = padX + (idx * (plotW / 4));
+            const y = (svgH - padY) - ((m.spent / maxSpent) * plotH);
+            return { x, y, m };
+        });
+
+        const linePath = pts.reduce((acc, pt, idx, arr) => {
+            if (idx === 0) return `M ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
+            const prev = arr[idx - 1];
+            const cx1 = (prev.x + pt.x) / 2;
+            return `${acc} C ${cx1.toFixed(1)} ${prev.y.toFixed(1)}, ${cx1.toFixed(1)} ${pt.y.toFixed(1)}, ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
+        }, '');
+
+        const areaPath = `${linePath} L ${pts[pts.length - 1].x.toFixed(1)} ${(svgH - padY).toFixed(1)} L ${pts[0].x.toFixed(1)} ${(svgH - padY).toFixed(1)} Z`;
+
+        return {
+            months,
+            maxSpent,
+            avgSpent,
+            curSpent,
+            diffFromAvg,
+            svgW,
+            svgH,
+            padX,
+            padY,
+            pts,
+            linePath,
+            areaPath
+        };
     }
 
     // =========================================================================
@@ -7779,7 +7929,7 @@
             for (let i = 1; i <= instTotal; i++) {
                 fin.expenses.push({
                     id: gid + '_' + i,
-                    groupId: gid,
+                    groupId,
                     desc,
                     amount: perInst,
                     purchaseDate,
@@ -7831,16 +7981,19 @@
     });
 
     // =========================================================================
-    //  ABA 1: VISÃO GERAL
+    //  ABA 1: VISÃO GERAL (INCLUI ESTATÍSTICAS, PIE CHART E BAR CHART ABAIXO DAS CATEGORIAS)
     // =========================================================================
     function renderOverview() {
         const ym = selectedYM;
+        const ymPrev = shiftYM(ym, -1);
         const sal = getSalaryForMonth(ym);
         const extrasTotal = getMonthExtraIncomes(ym).reduce((s, i) => s + (Number(i.amount)||0), 0);
         const usableBanks = usableBanksBalance();
         const allBanks = totalSavedBanksBalance();
         const usableTotal = totalUsableForMonth(ym);
         const spentVisible = monthTotalSpent(ym, false);
+        const prevTotal = monthTotalSpent(ymPrev, false);
+        const diffPct = prevTotal > 0 ? Math.round(((spentVisible - prevTotal) / prevTotal) * 100) : 0;
         const remaining = usableTotal - spentVisible;
         const alerts = upcomingRecurring();
         const curExpenses = getMonthExpenses(ym, false);
@@ -7868,6 +8021,22 @@
             const pct = spentVisible > 0 ? Math.round((c.sum / spentVisible) * 100) : 0;
             return { ...c, pct };
         }).sort((a,b) => b.sum - a.sum);
+
+        // Padrões de comportamento (horário e pico de compras)
+        const periods = { 'Manhã (06h-12h)': 0, 'Tarde (12h-18h)': 0, 'Noite (18h-00h)': 0, 'Madrugada (00h-06h)': 0 };
+        const byDate = {};
+        curExpenses.forEach(e => {
+            const h = parseInt((e.time || '12:00').split(':')[0], 10) || 12;
+            const val = Number(e.amount || 0);
+            if (h >= 6 && h < 12) periods['Manhã (06h-12h)'] += val;
+            else if (h >= 12 && h < 18) periods['Tarde (12h-18h)'] += val;
+            else if (h >= 18) periods['Noite (18h-00h)'] += val;
+            else periods['Madrugada (00h-06h)'] += val;
+            const dKey = e.purchaseDate || e.date;
+            byDate[dKey] = (byDate[dKey] || 0) + val;
+        });
+        const topPeriod = Object.entries(periods).sort((a,b) => b[1] - a[1])[0];
+        const topDate = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
 
         body.innerHTML = `
             ${alerts.map(a => `
@@ -7938,6 +8107,7 @@
                 </div>
             </div>
 
+            <!-- Seção de Categorias -->
             <div class="fin-card">
                 <span class="modal-label">Todas as Categorias de Gastos (${esc(formatYM(ym))})</span>
                 ${catBreakdown.map(c => `
@@ -7951,6 +8121,39 @@
                         </div>
                     </div>
                 `).join('')}
+            </div>
+
+            <!-- ESTATÍSTICAS INTEGRADAS NA VISÃO GERAL (ABAIXO DE TODAS AS CATEGORIAS) -->
+            <div class="fin-card">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="modal-label m-0">Estatísticas do Mês (${esc(formatYM(ym))})</span>
+                    <button type="button" data-fact="goto-comparative" class="text-xs font-bold accent-text"><i class="fas fa-chart-line mr-1"></i>Ver Comparativo</button>
+                </div>
+                
+                <!-- Gráfico de Pizza (Donut / Pie Chart) -->
+                ${buildPieChartHTML(catBreakdown, spentVisible)}
+
+                <!-- Gráfico de Barras por Categoria -->
+                <div class="mt-4 pt-3 border-t border-gray-100">
+                    <span class="text-[11px] font-extrabold uppercase text-gray-400 block mb-1">Top Categorias (Gráfico de Barras)</span>
+                    ${buildCategoryBarChartHTML(catBreakdown)}
+                </div>
+
+                <!-- Métricas e Padrões de Gasto -->
+                <div class="mt-4 pt-3 border-t border-gray-100 space-y-1.5">
+                    <p class="text-xs font-bold text-gray-700">
+                        <i class="fas fa-clock accent-text mr-1.5"></i>Horário de maior gasto:
+                        <b>${topPeriod && topPeriod[1] > 0 ? `${topPeriod[0]} (${brl(topPeriod[1])})` : 'Sem dados'}</b>
+                    </p>
+                    <p class="text-xs font-bold text-gray-700">
+                        <i class="fas fa-calendar-day accent-text mr-1.5"></i>Data de pico de compras:
+                        <b>${topDate ? `${topDate[0]} (${brl(topDate[1])})` : 'Sem dados'}</b>
+                    </p>
+                    <p class="text-xs font-bold text-gray-700">
+                        <i class="fas fa-scale-balanced accent-text mr-1.5"></i>Variação em relação a ${shortYM(ymPrev)}:
+                        <b class="${diffPct > 0 ? 'text-red-500' : 'text-green-500'}">${prevTotal === 0 ? 'Sem base anterior' : (diffPct > 0 ? `+${diffPct}% acima` : `${diffPct}% abaixo`)}</b>
+                    </p>
+                </div>
             </div>
 
             <div class="flex justify-between items-center mb-2">
@@ -8111,8 +8314,7 @@
                     `).join('')}
                 </div>
 
-                <!-- Categorias em Pílulas Horizontais -->
-                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria</label>
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria (Pílulas Horizontais)</label>
                 <div class="fin-pills-scroll no-scrollbar mb-3" id="ex-cats">
                     ${fin.categories.map(c => `
                         <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${selectedCatId===c.id?'selected':''}" style="--pill:${esc(c.color)}">
@@ -8199,7 +8401,7 @@
     }
 
     // =========================================================================
-    //  NOVA ABA: CATEGORIAS (ESTILO PRESETS, CARDS TÁTEIS E LISTAGEM DIRETA)
+    //  ABA 4: CATEGORIAS (ESTILO PRESETS, CARDS TÁTEIS E LISTAGEM DIRETA)
     // =========================================================================
     function renderCategories() {
         const d = editingCatDraft;
@@ -8207,7 +8409,6 @@
         body.innerHTML = `
             <div class="fin-card">
                 <span class="modal-label">${d ? 'Editar Categoria' : 'Nova Categoria'}</span>
-                <!-- Linha estilo Presets: Ícone à esquerda com botão tátil + Nome -->
                 <div class="name-row mb-3">
                     <button type="button" data-fact="cat-pick-icon" class="icon-pick-btn ${d?.icon ? 'has-icon' : ''}" style="border-color:${d?.color || 'var(--theme-accent, #3b82f6)'}">
                         <i class="fas ${d?.icon || 'fa-tag'}" style="color:${d?.color || 'var(--theme-accent, #3b82f6)'}"></i>
@@ -8248,49 +8449,7 @@
     }
 
     // =========================================================================
-    //  NOVA ABA: LIXEIRA (RESTAURAR OU EXCLUIR PERMANENTE)
-    // =========================================================================
-    function renderTrash() {
-        const trashList = Array.isArray(fin.trash) ? fin.trash : [];
-
-        body.innerHTML = `
-            <div class="flex justify-between items-center mb-3">
-                <div>
-                    <span class="modal-label m-0">Lixeira de Compras (${trashList.length})</span>
-                    <p class="text-[11px] font-semibold text-gray-400">Itens excluídos ficam aqui caso precise restaurar</p>
-                </div>
-                ${trashList.length ? `
-                    <button type="button" data-fact="empty-trash" class="fin-mini-pill text-red-500 font-extrabold">Esvaziar Lixeira</button>
-                ` : ''}
-            </div>
-
-            ${trashList.length ? trashList.map(item => {
-                const cat = resolveExpenseCat(item);
-                const instBadge = (item.instTotal && item.instTotal > 1) ? `<span class="fin-mini-pill">${item.instIndex}/${item.instTotal}</span>` : '';
-                return `
-                    <div class="agenda-row" data-tid="${esc(item.id)}" data-tgid="${esc(item.groupId || item.id)}">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs flex-shrink-0 opacity-70" style="background:${esc(cat.color)}">
-                            <i class="fas ${esc(cat.icon)}"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-bold text-sm text-gray-700 truncate line-through opacity-75">${esc(item.desc)} ${instBadge}</p>
-                            <p class="text-[11px] font-semibold text-gray-400">Compra de ${esc(item.purchaseDate || item.date)} • ${brl(item.amount)}</p>
-                        </div>
-                        <button type="button" class="row-btn" data-fact="restore-trash" title="Restaurar compra"><i class="fas fa-rotate-left text-green-500"></i></button>
-                        <button type="button" class="row-btn row-danger" data-fact="purge-trash" title="Excluir permanentemente"><i class="fas fa-xmark"></i></button>
-                    </div>
-                `;
-            }).join('') : `
-                <div class="text-center py-8">
-                    <i class="fas fa-trash-can text-3xl text-gray-300 mb-2"></i>
-                    <p class="text-sm font-bold text-gray-400">A lixeira está vazia!</p>
-                </div>
-            `}
-        `;
-    }
-
-    // =========================================================================
-    //  ABA 4: SALÁRIO FIXO (VARIÁVEL POR MÊS) & ENTRADAS
+    //  ABA 5: SALÁRIO FIXO (VARIÁVEL POR MÊS) & ENTRADAS
     // =========================================================================
     function renderIncome() {
         const ym = selectedYM;
@@ -8357,87 +8516,118 @@
     }
 
     // =========================================================================
-    //  ABA 5: ESTATÍSTICAS
+    //  ABA 6: NOVA ABA COMPARATIVO (HISTÓRICO COM 4 MESES ANTERIORES + LINE GRAPH + BARRAS + PIE)
     // =========================================================================
-    function renderStats() {
+    function renderComparative() {
         const ym = selectedYM;
-        const ymPrev = shiftYM(ym, -1);
+        const comp = buildFiveMonthsComparison(ym);
 
-        const curList = getMonthExpenses(ym, false);
-        const prevList = getMonthExpenses(ymPrev, false);
-        const curTotal = monthTotalSpent(ym, false);
-        const prevTotal = monthTotalSpent(ymPrev, false);
-        const diffPct = prevTotal > 0 ? Math.round(((curTotal - prevTotal) / prevTotal) * 100) : 0;
-
-        const catTotals = fin.categories.map(c => {
-            const sum = curList.filter(e => e.catId === c.id).reduce((s,e) => s + Number(e.amount||0), 0);
-            const prevSum = prevList.filter(e => e.catId === c.id).reduce((s,e) => s + Number(e.amount||0), 0);
-            const pct = curTotal > 0 ? Math.round((sum / curTotal) * 100) : 0;
-            return { ...c, sum, prevSum, pct };
+        // Agrupamento de categorias acumulado dos 5 meses para o Pie Chart comparativo
+        const all5Expenses = fin.expenses.filter(e => {
+            const bYM = getEffectiveBillingYM(e);
+            return comp.months.some(m => m.ym === bYM);
+        });
+        const total5Spent = all5Expenses.reduce((s, e) => s + Number(e.amount || 0), 0);
+        const catMap5 = {};
+        all5Expenses.forEach(e => {
+            const cat = resolveExpenseCat(e);
+            if (!catMap5[cat.name]) {
+                catMap5[cat.name] = { name: cat.name, color: cat.color, icon: cat.icon, sum: 0 };
+            }
+            catMap5[cat.name].sum += Number(e.amount || 0);
+        });
+        const catBreakdown5 = Object.values(catMap5).map(c => {
+            const pct = total5Spent > 0 ? Math.round((c.sum / total5Spent) * 100) : 0;
+            return { ...c, pct };
         }).sort((a,b) => b.sum - a.sum);
 
-        const periods = { 'Manhã (06h-12h)': 0, 'Tarde (12h-18h)': 0, 'Noite (18h-00h)': 0, 'Madrugada (00h-06h)': 0 };
-        const byDate = {};
-        curList.forEach(e => {
-            const h = parseInt((e.time || '12:00').split(':')[0], 10) || 12;
-            const val = Number(e.amount || 0);
-            if (h >= 6 && h < 12) periods['Manhã (06h-12h)'] += val;
-            else if (h >= 12 && h < 18) periods['Tarde (12h-18h)'] += val;
-            else if (h >= 18) periods['Noite (18h-00h)'] += val;
-            else periods['Madrugada (00h-06h)'] += val;
-            const dKey = e.purchaseDate || e.date;
-            byDate[dKey] = (byDate[dKey] || 0) + val;
-        });
-        const topPeriod = Object.entries(periods).sort((a,b) => b[1] - a[1])[0];
-        const topDate = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
-
         body.innerHTML = `
+            <!-- Resumo dos Indicadores Comparativos -->
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <div class="stat-box">
-                    <div class="text-lg font-extrabold text-gray-800">${brl(curTotal)}</div>
-                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">${esc(formatYM(ym))}</div>
+                    <div class="text-lg font-black text-gray-800">${brl(comp.curSpent)}</div>
+                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">Gasto em ${esc(shortYM(ym))}</div>
                 </div>
                 <div class="stat-box">
-                    <div class="text-lg font-extrabold text-gray-800">${brl(prevTotal)}</div>
-                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">${esc(formatYM(ymPrev))}</div>
+                    <div class="text-lg font-black text-gray-800">${brl(comp.avgSpent)}</div>
+                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">Média dos 4 Meses Ant.</div>
                 </div>
             </div>
 
+            <!-- Gráfico de Linha (Line Graph) de Tendência nos 5 Meses -->
             <div class="fin-card">
-                <span class="modal-label">Padrões de Comportamento (${esc(formatYM(ym))})</span>
-                <p class="text-xs font-bold text-gray-700 mb-1">
-                    <i class="fas fa-clock accent-text mr-1"></i>Horário de maior gasto:
-                    <b>${topPeriod && topPeriod[1] > 0 ? `${topPeriod[0]} (${brl(topPeriod[1])})` : 'Sem dados'}</b>
-                </p>
-                <p class="text-xs font-bold text-gray-700 mb-1">
-                    <i class="fas fa-calendar-day accent-text mr-1"></i>Data de pico de compras:
-                    <b>${topDate ? `${topDate[0]} (${brl(topDate[1])})` : 'Sem dados'}</b>
-                </p>
-                <p class="text-xs font-bold text-gray-700">
-                    <i class="fas fa-scale-balanced accent-text mr-1"></i>Comparação mensal:
-                    <b>${prevTotal === 0 ? 'Sem base no mês anterior' : (diffPct > 0 ? `+${diffPct}% acima de ${formatYM(ymPrev)}` : `${diffPct}% abaixo de ${formatYM(ymPrev)}`)}</b>
-                </p>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="modal-label m-0">Tendência de Gastos (Line Graph)</span>
+                    <span class="text-[10px] font-extrabold ${comp.diffFromAvg > 0 ? 'text-red-500' : 'text-green-500'}">
+                        ${comp.avgSpent > 0 ? (comp.diffFromAvg > 0 ? `+${comp.diffFromAvg}% vs média` : `${comp.diffFromAvg}% vs média`) : 'Base inicial'}
+                    </span>
+                </div>
+                <p class="text-[11px] font-semibold text-gray-400 mb-2">Evolução do mês atual comparado aos 4 anteriores:</p>
+
+                <div class="relative w-full overflow-hidden flex justify-center my-1">
+                    <svg width="100%" height="${comp.svgH}" viewBox="0 0 ${comp.svgW} ${comp.svgH}" class="overflow-visible">
+                        <defs>
+                            <linearGradient id="finGradLine" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="var(--theme-accent, #3b82f6)" stop-opacity="0.32" />
+                                <stop offset="100%" stop-color="var(--theme-accent, #3b82f6)" stop-opacity="0.0" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Linha média tracejada de referência -->
+                        <line x1="${comp.padX}" y1="${((comp.svgH - comp.padY) - ((comp.avgSpent / comp.maxSpent) * (comp.svgH - comp.padY * 2))).toFixed(1)}" 
+                              x2="${comp.svgW - comp.padX}" y2="${((comp.svgH - comp.padY) - ((comp.avgSpent / comp.maxSpent) * (comp.svgH - comp.padY * 2))).toFixed(1)}" 
+                              stroke="#cbd5e1" stroke-dasharray="4 4" stroke-width="1.2" />
+                        
+                        <!-- Área preenchida sob a curva -->
+                        <path d="${comp.areaPath}" fill="url(#finGradLine)" />
+
+                        <!-- Linha principal suave -->
+                        <path d="${comp.linePath}" fill="none" stroke="var(--theme-accent, #3b82f6)" stroke-width="3" stroke-linecap="round" />
+
+                        <!-- Pontos dos 5 meses -->
+                        ${comp.pts.map(p => `
+                            <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.m.isCurrent ? 5.5 : 4}" fill="${p.m.isCurrent ? 'var(--theme-accent, #3b82f6)' : '#fff'}" stroke="var(--theme-accent, #3b82f6)" stroke-width="2.5" />
+                            <text x="${p.x.toFixed(1)}" y="${p.y < 35 ? (p.y + 16).toFixed(1) : (p.y - 10).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="#475569">
+                                ${brl(p.m.spent).replace('R$', '').trim()}
+                            </text>
+                            <text x="${p.x.toFixed(1)}" y="${(comp.svgH - 4).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="${p.m.isCurrent ? '800' : '600'}" fill="${p.m.isCurrent ? 'var(--theme-accent, #3b82f6)' : '#94a3b8'}">
+                                ${esc(p.m.label)}
+                            </text>
+                        `).join('')}
+                    </svg>
+                </div>
             </div>
 
+            <!-- Gráfico de Barras Comparativo dos 5 Meses -->
             <div class="fin-card">
-                <span class="modal-label">Porcentagem por Categoria & Comparação Mensal</span>
-                ${catTotals.map(c => `
-                    <div class="mb-3">
-                        <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
-                            <span><i class="fas ${esc(c.icon)} mr-1" style="color:${esc(c.color)}"></i>${esc(c.name)} (${c.pct}%)</span>
-                            <span>${brl(c.sum)} <small class="text-gray-400">(Ant: ${brl(c.prevSum)})</small></span>
-                        </div>
-                        <div class="fin-bar-track">
-                            <div class="h-full rounded-full" style="width:${c.pct}%;background:${esc(c.color)}"></div>
-                        </div>
-                    </div>
-                `).join('')}
+                <span class="modal-label">Comparativo Mensal (Gráfico de Barras)</span>
+                <p class="text-[11px] font-semibold text-gray-400 mb-2">Valores totais mês a mês lado a lado:</p>
+                <div class="fin-vbar-container" style="height:140px">
+                    ${comp.months.map(m => {
+                        const hPct = Math.max(12, Math.round((m.spent / comp.maxSpent) * 100));
+                        const isCur = m.isCurrent;
+                        const bColor = isCur ? 'var(--theme-accent, #3b82f6)' : '#cbd5e1';
+                        return `
+                            <div class="fin-vbar-col cursor-pointer" data-fact="select-comp-ym" data-ym="${esc(m.ym)}">
+                                <span class="text-[9px] font-extrabold ${isCur ? 'accent-text font-black' : 'text-gray-500'} mb-1">${brl(m.spent).replace('R$', '').trim()}</span>
+                                <div class="fin-vbar-bar" style="height:${hPct}%;background:${bColor};${isCur ? 'box-shadow:0 4px 12px var(--theme-glow, rgba(59,130,246,0.35))' : ''}" title="${esc(m.fullLabel)}: ${brl(m.spent)}"></div>
+                                <span class="text-[10px] font-extrabold mt-1.5 ${isCur ? 'accent-text font-black' : 'text-gray-500'}">${esc(m.label)}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+
+            <!-- Gráfico de Pizza (Pie Chart) Acumulado dos 5 Meses -->
+            <div class="fin-card">
+                <span class="modal-label">Distribuição de Gastos Acumulada no Período (Pie Chart)</span>
+                <p class="text-[11px] font-semibold text-gray-400 mb-1">Categorias que mais pesaram no seu orçamento nos últimos 5 meses:</p>
+                ${buildPieChartHTML(catBreakdown5, total5Spent)}
             </div>
         `;
     }
 
     // =========================================================================
-    //  ABA 6: SIMULADOR
+    //  ABA 7: SIMULADOR
     // =========================================================================
     function renderSim() {
         const ym = selectedYM;
@@ -8491,7 +8681,7 @@
     }
 
     // =========================================================================
-    //  ABA 7: RECORRENTES
+    //  ABA 8: RECORRENTES
     // =========================================================================
     function renderRecurring() {
         body.innerHTML = `
@@ -8523,6 +8713,48 @@
         `;
     }
 
+    // =========================================================================
+    //  ABA 9: LIXEIRA
+    // =========================================================================
+    function renderTrash() {
+        const trashList = Array.isArray(fin.trash) ? fin.trash : [];
+
+        body.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <span class="modal-label m-0">Lixeira de Compras (${trashList.length})</span>
+                    <p class="text-[11px] font-semibold text-gray-400">Itens excluídos ficam aqui caso precise restaurar</p>
+                </div>
+                ${trashList.length ? `
+                    <button type="button" data-fact="empty-trash" class="fin-mini-pill text-red-500 font-extrabold">Esvaziar Lixeira</button>
+                ` : ''}
+            </div>
+
+            ${trashList.length ? trashList.map(item => {
+                const cat = resolveExpenseCat(item);
+                const instBadge = (item.instTotal && item.instTotal > 1) ? `<span class="fin-mini-pill">${item.instIndex}/${item.instTotal}</span>` : '';
+                return `
+                    <div class="agenda-row" data-tid="${esc(item.id)}" data-tgid="${esc(item.groupId || item.id)}">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs flex-shrink-0 opacity-70" style="background:${esc(cat.color)}">
+                            <i class="fas ${esc(cat.icon)}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-sm text-gray-700 truncate line-through opacity-75">${esc(item.desc)} ${instBadge}</p>
+                            <p class="text-[11px] font-semibold text-gray-400">Compra de ${esc(item.purchaseDate || item.date)} • ${brl(item.amount)}</p>
+                        </div>
+                        <button type="button" class="row-btn" data-fact="restore-trash" title="Restaurar compra"><i class="fas fa-rotate-left text-green-500"></i></button>
+                        <button type="button" class="row-btn row-danger" data-fact="purge-trash" title="Excluir permanentemente"><i class="fas fa-xmark"></i></button>
+                    </div>
+                `;
+            }).join('') : `
+                <div class="text-center py-8">
+                    <i class="fas fa-trash-can text-3xl text-gray-300 mb-2"></i>
+                    <p class="text-sm font-bold text-gray-400">A lixeira está vazia!</p>
+                </div>
+            `}
+        `;
+    }
+
     function renderFin() {
         if (monthLabelEl) monthLabelEl.textContent = formatYM(selectedYM);
         const map = {
@@ -8531,7 +8763,7 @@
             expenses: renderExpenses,
             categories: renderCategories,
             income: renderIncome,
-            stats: renderStats,
+            comparative: renderComparative,
             sim: renderSim,
             rec: renderRecurring,
             trash: renderTrash
@@ -8590,12 +8822,22 @@
         if (!btn) return;
         const act = btn.dataset.fact;
 
-        // Categorias: Abertura e Gestão
-        if (act === 'goto-categories') {
+        // Atalhos de navegação
+        if (act === 'goto-comparative') {
+            curTab = 'comparative';
+            document.querySelectorAll('#fin-tabs .fin-tab').forEach(t => t.classList.toggle('active', t.dataset.ftab === 'comparative'));
+            renderFin();
+        } else if (act === 'select-comp-ym') {
+            selectedYM = btn.dataset.ym;
+            renderFin();
+        } else if (act === 'goto-categories') {
             curTab = 'categories';
             document.querySelectorAll('#fin-tabs .fin-tab').forEach(t => t.classList.toggle('active', t.dataset.ftab === 'categories'));
             renderFin();
-        } else if (act === 'cat-pick-icon') {
+        }
+
+        // Categorias: Abertura e Gestão
+        else if (act === 'cat-pick-icon') {
             const curIconName = editingCatDraft?.icon || 'fa-tag';
             const curColor = editingCatDraft?.color || PALETTE[0];
             if (typeof openIconPicker === 'function') {
@@ -8641,7 +8883,6 @@
             const cid = btn.closest('[data-cid]').dataset.cid;
             const catObj = fin.categories.find(x => x.id === cid);
             if (catObj) {
-                // Preserva o nome e ícone no histórico de compras!
                 fin.expenses.forEach(e => {
                     if (e.catId === cid) {
                         e.catNameSnapshot = catObj.name;
@@ -8958,7 +9199,7 @@
     });
 })();
 </script>
-<!-- ==================== FIM DO MÓDULO DE FINANÇAS V4 ==================== -->
+<!-- ==================== FIM DO MÓDULO DE FINANÇAS V5 ==================== -->
 
 </body>
 </html>
