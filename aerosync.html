@@ -343,6 +343,8 @@
         }
 
         /* Botão "+" de acrílico */
+<button class="nav-btn" id="open-finances-btn" aria-label="Finanças"><i class="fas fa-wallet"></i></button>
+        
         .acrylic-fab {
             width: 68px; height: 68px;
             background: linear-gradient(160deg, var(--accent-2), var(--accent) 70%);
@@ -7244,5 +7246,592 @@
         });
 
     </script>
-</body>
+<!-- ==================== MÓDULO DE FINANÇAS (ISOLADO) ==================== -->
+<style>
+    #fin-sheet {
+        position: absolute; inset: 0; z-index: 86;
+        background: rgba(15, 23, 42, 0.14);
+        backdrop-filter: blur(8px) brightness(0.92);
+        -webkit-backdrop-filter: blur(8px) brightness(0.92);
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #fin-sheet.open { opacity: 1; visibility: visible; }
+    #fin-sheet .fin-panel {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        height: calc(100% - 48px); display: flex; flex-direction: column;
+        padding: 12px 20px 24px; border-radius: 32px 32px 0 0;
+        background: linear-gradient(160deg, rgba(255,255,255,0.97), rgba(255,255,255,0.90));
+        border-top: 1px solid #fff;
+        box-shadow: inset 0 2px 0 #fff, 0 -20px 40px -10px rgba(0,0,0,0.18);
+        transform: translateY(100%);
+        transition: transform 0.38s cubic-bezier(0.34, 1.25, 0.64, 1);
+    }
+    #fin-sheet.open .fin-panel { transform: none; }
+    html.dark #fin-sheet .fin-panel {
+        background: linear-gradient(160deg, rgba(32,35,51,0.98), rgba(24,27,40,0.97));
+        border-top-color: rgba(255,255,255,0.08);
+    }
+    .fin-tabs {
+        display: flex; gap: 6px; padding: 4px; border-radius: 999px;
+        background: rgba(241,245,249,0.9); margin-bottom: 14px; overflow-x: auto;
+    }
+    html.dark .fin-tabs { background: #262a3b; }
+    .fin-tab {
+        flex: 1; white-space: nowrap; padding: 7px 12px; border-radius: 999px;
+        font-size: 12px; font-weight: 800; color: #6b7280; transition: all 0.2s;
+    }
+    .fin-tab.active {
+        background: #fff; color: var(--theme-accent, var(--accent, #3b82f6));
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    html.dark .fin-tab.active { background: #1e2130; color: #fff; }
+    .fin-card {
+        background: #fff; border: 1px solid #f1f5f9; border-radius: 22px;
+        padding: 14px; margin-bottom: 12px;
+        box-shadow: 0 8px 24px -8px rgba(0,0,0,0.05);
+    }
+    html.dark .fin-card { background: #1e2130; border-color: #2b2f42; }
+    .fin-hero {
+        background: linear-gradient(135deg, var(--theme-accent, var(--accent, #3b82f6)), var(--theme-accent-2, var(--accent-2, #22d3ee)));
+        color: #fff; border-radius: 24px; padding: 18px; margin-bottom: 14px;
+        box-shadow: inset 0 2px 6px rgba(255,255,255,0.5), 0 12px 26px var(--theme-glow, var(--accent-glow, rgba(59,130,246,0.3)));
+    }
+    .fin-toggle {
+        width: 42px; height: 24px; border-radius: 999px; background: #e2e8f0;
+        position: relative; transition: background 0.2s; flex-shrink: 0;
+    }
+    .fin-toggle::after {
+        content: ''; position: absolute; top: 3px; left: 3px;
+        width: 18px; height: 18px; border-radius: 50%; background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform 0.2s;
+    }
+    .fin-toggle.on { background: var(--theme-accent, var(--accent, #3b82f6)); }
+    .fin-toggle.on::after { transform: translateX(18px); }
+    .fin-pill-alert {
+        display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+        border-radius: 16px; background: #fff7ed; border: 1px solid #fed7aa;
+        color: #9a3412; font-size: 12px; font-weight: 700; margin-bottom: 10px;
+    }
+    html.dark .fin-pill-alert { background: rgba(251,146,60,0.12); border-color: rgba(251,146,60,0.3); color: #fdba74; }
+    .fin-bar-track { height: 8px; border-radius: 999px; background: #f1f5f9; overflow: hidden; }
+    html.dark .fin-bar-track { background: #262a3b; }
+    .fin-chip-pick {
+        width: 34px; height: 34px; border-radius: 12px; display: inline-flex;
+        align-items: center; justify-content: center; border: 2px solid transparent;
+        font-size: 14px; cursor: pointer; transition: transform 0.15s;
+    }
+    .fin-chip-pick.selected { border-color: #1f2937; transform: scale(1.1); }
+    html.dark .fin-chip-pick.selected { border-color: #fff; }
+</style>
+
+<div id="fin-sheet" aria-hidden="true">
+    <div class="fin-panel" role="dialog" aria-modal="true" aria-labelledby="fin-title">
+        <div class="sheet-grip"></div>
+        <div class="flex items-center justify-between mb-3">
+            <h2 id="fin-title" class="text-xl font-extrabold text-gray-800">Finanças</h2>
+            <button id="fin-close" class="modal-x" aria-label="Fechar Finanças"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="fin-tabs no-scrollbar" id="fin-tabs">
+            <button class="fin-tab active" data-ftab="overview"><i class="fas fa-wallet mr-1"></i>Resumo & Cofres</button>
+            <button class="fin-tab" data-ftab="expenses"><i class="fas fa-receipt mr-1"></i>Gastos</button>
+            <button class="fin-tab" data-ftab="stats"><i class="fas fa-chart-pie mr-1"></i>Estatísticas</button>
+            <button class="fin-tab" data-ftab="sim"><i class="fas fa-calculator mr-1"></i>Simulador</button>
+            <button class="fin-tab" data-ftab="rec"><i class="fas fa-bell mr-1"></i>Recorrentes</button>
+        </div>
+
+        <div id="fin-body" class="sheet-body no-scrollbar"></div>
+    </div>
+</div>
+
+<script>
+(function(){
+    const FIN_KEY = 'aerosync.finances.v1';
+    const PALETTE = ['#f472b6','#a78bfa','#38bdf8','#34d399','#fbbf24','#fb7185','#f97316','#818cf8'];
+    const ICONS = ['fa-piggy-bank','fa-building-columns','fa-vault','fa-credit-card','fa-utensils','fa-gamepad','fa-bag-shopping','fa-heart','fa-bolt','fa-paw','fa-house','fa-star'];
+
+    function loadFin() {
+        try {
+            const raw = JSON.parse(localStorage.getItem(FIN_KEY) || 'null');
+            if (raw && typeof raw === 'object') return raw;
+        } catch(e) {}
+        return {
+            banks: [
+                { id: 'b1', name: 'Conta Principal', balance: 0, color: '#a78bfa', icon: 'fa-building-columns', usable: true },
+                { id: 'b2', name: 'Reserva Guardada', balance: 0, color: '#34d399', icon: 'fa-piggy-bank', usable: false }
+            ],
+            categories: [
+                { id: 'c1', name: 'Alimentação', color: '#fb7185', icon: 'fa-utensils' },
+                { id: 'c2', name: 'Lazer & Hobbies', color: '#a78bfa', icon: 'fa-gamepad' },
+                { id: 'c3', name: 'Compras', color: '#f472b6', icon: 'fa-bag-shopping' },
+                { id: 'c4', name: 'Pets & Casa', color: '#38bdf8', icon: 'fa-paw' },
+                { id: 'c5', name: 'Contas Fixas', color: '#fbbf24', icon: 'fa-bolt' }
+            ],
+            expenses: [],
+            recurring: [],
+            simItems: []
+        };
+    }
+
+    let fin = loadFin();
+    let curTab = 'overview';
+    const saveFin = () => { try { localStorage.setItem(FIN_KEY, JSON.stringify(fin)); } catch(e){} };
+    const brl = (v) => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const esc = (s) => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const ymNow = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
+    const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+    const nowHM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+
+    const sheet = document.getElementById('fin-sheet');
+    const body = document.getElementById('fin-body');
+
+    function usableBalance() {
+        return fin.banks.filter(b => b.usable).reduce((s, b) => s + (Number(b.balance) || 0), 0);
+    }
+    function totalSavedBalance() {
+        return fin.banks.reduce((s, b) => s + (Number(b.balance) || 0), 0);
+    }
+    function monthExpenses(ym) {
+        return fin.expenses.filter(e => (e.date || '').slice(0, 7) === ym);
+    }
+    function monthTotalSpent(ym) {
+        return monthExpenses(ym).reduce((s, e) => s + (Number(e.amount) || 0), 0);
+    }
+
+    function upcomingRecurring() {
+        const now = new Date();
+        const todayDay = now.getDate();
+        return fin.recurring.map(r => {
+            let diff = r.day - todayDay;
+            if (diff < 0) diff += 30;
+            return { ...r, diff };
+        }).filter(r => r.diff <= (r.warnDays || 5)).sort((a,b) => a.diff - b.diff);
+    }
+
+    function renderOverview() {
+        const ym = ymNow();
+        const usable = usableBalance();
+        const spent = monthTotalSpent(ym);
+        const remaining = usable - spent;
+        const alerts = upcomingRecurring();
+
+        body.innerHTML = `
+            ${alerts.map(a => `
+                <div class="fin-pill-alert">
+                    <i class="fas fa-bell"></i>
+                    <div class="flex-1">
+                        <b>${esc(a.name)}</b> (${brl(a.amount)}) ${a.diff === 0 ? 'vence HOJE!' : `em ${a.diff} dia(s) (dia ${a.day})`}
+                    </div>
+                </div>
+            `).join('')}
+
+            <div class="fin-hero">
+                <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wider opacity-90">
+                    <span>Saldo Disponível no Mês</span>
+                    <span>Total guardado: ${brl(totalSavedBalance())}</span>
+                </div>
+                <div class="text-3xl font-extrabold mt-1">${brl(remaining)}</div>
+                <div class="flex justify-between text-xs font-bold mt-2 opacity-90">
+                    <span>Base usável: ${brl(usable)}</span>
+                    <span>Gasto no mês: ${brl(spent)}</span>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-2">
+                <span class="modal-label m-0">Dinheiro Guardado em Bancos / Cofres</span>
+                <button data-fact="add-bank-toggle" class="accent-pill text-xs font-bold px-3 py-1 rounded-full"><i class="fas fa-plus mr-1"></i>Novo Cofre</button>
+            </div>
+
+            <div id="bank-form" class="fin-card hidden">
+                <label class="modal-label">Nome do Banco / Cofre</label>
+                <input id="bf-name" class="task-input mb-2" placeholder="Ex: Nubank, Caixinha Reserva...">
+                <label class="modal-label">Valor Guardado (R$)</label>
+                <input id="bf-val" type="number" step="0.01" class="task-input mb-2" placeholder="0.00">
+                <label class="modal-label">Cor & Ícone</label>
+                <div class="flex gap-1.5 flex-wrap mb-2" id="bf-colors">
+                    ${PALETTE.map((c,i) => `<button type="button" class="fin-chip-pick ${i===0?'selected':''}" data-color="${c}" style="background:${c};color:#fff"><i class="fas fa-check text-[10px]"></i></button>`).join('')}
+                </div>
+                <div class="flex gap-1.5 flex-wrap mb-3" id="bf-icons">
+                    ${ICONS.slice(0,6).map((ic,i) => `<button type="button" class="fin-chip-pick bg-gray-100 text-gray-700 ${i===0?'selected':''}" data-icon="${ic}"><i class="fas ${ic}"></i></button>`).join('')}
+                </div>
+                <button data-fact="save-bank" class="pill-btn primary w-full">Salvar Cofre</button>
+            </div>
+
+            ${fin.banks.map(b => `
+                <div class="fin-card flex items-center gap-3" data-bid="${esc(b.id)}">
+                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white text-lg flex-shrink-0" style="background:${esc(b.color)}">
+                        <i class="fas ${esc(b.icon)}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-extrabold text-sm text-gray-800 truncate">${esc(b.name)}</p>
+                        <p class="text-xs font-bold text-gray-500">${brl(b.balance)} • ${b.usable ? 'Conta no saldo usável' : 'Apenas guardado'}</p>
+                    </div>
+                    <button class="row-btn" data-fact="edit-bank-val" title="Alterar saldo"><i class="fas fa-pen"></i></button>
+                    <button class="fin-toggle ${b.usable ? 'on' : ''}" data-fact="toggle-bank" title="Incluir/excluir do saldo usável do mês"></button>
+                    <button class="row-btn row-danger" data-fact="del-bank" title="Excluir"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    function renderExpenses() {
+        const ym = ymNow();
+        const list = [...fin.expenses].sort((a,b) => ((b.date||'')+(b.time||'')).localeCompare((a.date||'')+(a.time||'')));
+        body.innerHTML = `
+            <div class="fin-card">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="modal-label m-0">Registrar Gasto</span>
+                    <button data-fact="new-cat" class="text-xs font-bold accent-text">+ Nova Categoria</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="ex-desc" class="task-input" placeholder="Descrição (ex: Almoço)">
+                    <input id="ex-val" type="number" step="0.01" class="task-input" placeholder="Valor R$ 0,00">
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="ex-date" type="date" class="task-input" value="${todayISO()}">
+                    <input id="ex-time" type="time" class="task-input" value="${nowHM()}">
+                </div>
+                <div class="flex gap-1.5 flex-wrap my-2" id="ex-cats">
+                    ${fin.categories.map((c,i) => `
+                        <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${i===0?'selected':''}" style="--pill:${esc(c.color)}">
+                            <i class="fas ${esc(c.icon)} mr-1"></i>${esc(c.name)}
+                        </button>
+                    `).join('')}
+                </div>
+                <button data-fact="add-expense" class="pill-btn primary w-full mt-2">Adicionar Gasto</button>
+            </div>
+
+            <div class="fin-card">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="modal-label m-0">Importar Fatura / Lista Rápida (100% Offline)</span>
+                </div>
+                <p class="text-xs text-gray-400 font-semibold mb-2">Cole linhas do extrato do cartão no formato: <b>Nome;Valor;AAAA-MM-DD</b></p>
+                <textarea id="ex-bulk" class="task-input text-xs" rows="2" placeholder="iFood;45.90;${todayISO()}&#10;Farmácia;28.50;${todayISO()}"></textarea>
+                <button data-fact="import-bulk" class="pill-btn ghost w-full mt-2 text-xs">Importar linhas coladas</button>
+            </div>
+
+            <span class="modal-label">Histórico (${list.length})</span>
+            ${list.length ? list.slice(0, 60).map(e => {
+                const cat = fin.categories.find(c => c.id === e.catId) || fin.categories[0] || { name: 'Geral', color: '#94a3b8', icon: 'fa-tag' };
+                return `
+                    <div class="agenda-row" data-eid="${esc(e.id)}">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs flex-shrink-0" style="background:${esc(cat.color)}">
+                            <i class="fas ${esc(cat.icon)}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-sm text-gray-800 truncate">${esc(e.desc)}</p>
+                            <p class="text-xs font-semibold text-gray-400">${esc(e.date)} às ${esc(e.time || '--:--')} • ${esc(cat.name)}</p>
+                        </div>
+                        <span class="font-extrabold text-sm text-gray-800">${brl(e.amount)}</span>
+                        <button class="row-btn row-danger" data-fact="del-expense"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('') : '<p class="text-sm text-gray-400 font-semibold text-center py-4">Nenhum gasto registrado ainda.</p>'}
+        `;
+    }
+
+    function renderStats() {
+        const ym = ymNow();
+        const dPrev = new Date(); dPrev.setMonth(dPrev.getMonth() - 1);
+        const ymPrev = `${dPrev.getFullYear()}-${String(dPrev.getMonth()+1).padStart(2,'0')}`;
+
+        const curList = monthExpenses(ym);
+        const prevList = monthExpenses(ymPrev);
+        const curTotal = monthTotalSpent(ym);
+        const prevTotal = monthTotalSpent(ymPrev);
+        const diffPct = prevTotal > 0 ? Math.round(((curTotal - prevTotal) / prevTotal) * 100) : 0;
+
+        // Por categoria
+        const catTotals = fin.categories.map(c => {
+            const sum = curList.filter(e => e.catId === c.id).reduce((s,e) => s + Number(e.amount||0), 0);
+            const prevSum = prevList.filter(e => e.catId === c.id).reduce((s,e) => s + Number(e.amount||0), 0);
+            const pct = curTotal > 0 ? Math.round((sum / curTotal) * 100) : 0;
+            return { ...c, sum, prevSum, pct };
+        }).sort((a,b) => b.sum - a.sum);
+
+        // Período do dia e dia do mês com mais gasto
+        const periods = { 'Manhã (06h-12h)': 0, 'Tarde (12h-18h)': 0, 'Noite (18h-00h)': 0, 'Madrugada (00h-06h)': 0 };
+        const byDate = {};
+        curList.forEach(e => {
+            const h = parseInt((e.time || '12:00').split(':')[0], 10) || 12;
+            const val = Number(e.amount || 0);
+            if (h >= 6 && h < 12) periods['Manhã (06h-12h)'] += val;
+            else if (h >= 12 && h < 18) periods['Tarde (12h-18h)'] += val;
+            else if (h >= 18) periods['Noite (18h-00h)'] += val;
+            else periods['Madrugada (00h-06h)'] += val;
+            byDate[e.date] = (byDate[e.date] || 0) + val;
+        });
+        const topPeriod = Object.entries(periods).sort((a,b) => b[1] - a[1])[0];
+        const topDate = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
+
+        body.innerHTML = `
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="stat-box">
+                    <div class="text-lg font-extrabold text-gray-800">${brl(curTotal)}</div>
+                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">Mês Atual (${ym})</div>
+                </div>
+                <div class="stat-box">
+                    <div class="text-lg font-extrabold text-gray-800">${brl(prevTotal)}</div>
+                    <div class="text-[10px] font-extrabold text-gray-400 uppercase">Mês Anterior (${ymPrev})</div>
+                </div>
+            </div>
+
+            <div class="fin-card">
+                <span class="modal-label">Padrões de Comportamento (Mês Atual)</span>
+                <p class="text-xs font-bold text-gray-700 mb-1">
+                    <i class="fas fa-clock accent-text mr-1"></i>Horário de maior gasto:
+                    <b>${topPeriod && topPeriod[1] > 0 ? `${topPeriod[0]} (${brl(topPeriod[1])})` : 'Sem dados'}</b>
+                </p>
+                <p class="text-xs font-bold text-gray-700 mb-1">
+                    <i class="fas fa-calendar-day accent-text mr-1"></i>Data de pico:
+                    <b>${topDate ? `${topDate[0]} (${brl(topDate[1])})` : 'Sem dados'}</b>
+                </p>
+                <p class="text-xs font-bold text-gray-700">
+                    <i class="fas fa-scale-balanced accent-text mr-1"></i>Comparação mensal:
+                    <b>${prevTotal === 0 ? 'Sem base no mês anterior' : (diffPct > 0 ? `+${diffPct}% acima do mês passado` : `${diffPct}% abaixo do mês passado`)}</b>
+                </p>
+            </div>
+
+            <div class="fin-card">
+                <span class="modal-label">Porcentagem por Categoria & Comparação</span>
+                ${catTotals.map(c => `
+                    <div class="mb-3">
+                        <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
+                            <span><i class="fas ${esc(c.icon)} mr-1" style="color:${esc(c.color)}"></i>${esc(c.name)} (${c.pct}%)</span>
+                            <span>${brl(c.sum)} <small class="text-gray-400">(Mês ant: ${brl(c.prevSum)})</small></span>
+                        </div>
+                        <div class="fin-bar-track">
+                            <div class="h-full rounded-full" style="width:${c.pct}%;background:${esc(c.color)}"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderSim() {
+        const usable = usableBalance() - monthTotalSpent(ymNow());
+        const monthlyImpact = fin.simItems.reduce((s, it) => s + Number(it.monthly || 0), 0);
+        const totalSim = fin.simItems.reduce((s, it) => s + Number(it.totalWithInterest || 0), 0);
+
+        body.innerHTML = `
+            <div class="fin-card">
+                <span class="modal-label">Simulador de Compras & Parcelamento</span>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="sim-name" class="task-input" placeholder="Item (ex: Tablet, Roupa)">
+                    <input id="sim-val" type="number" step="0.01" class="task-input" placeholder="Valor Total R$">
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="sim-inst" type="number" min="1" max="48" class="task-input" value="1" placeholder="Nº Parcelas (ex: 6)">
+                    <input id="sim-rate" type="number" step="0.1" min="0" class="task-input" value="0" placeholder="Juros % ao mês (0 = sem juros)">
+                </div>
+                <button data-fact="add-sim" class="pill-btn primary w-full">Adicionar à Simulação</button>
+            </div>
+
+            <div class="fin-card">
+                <span class="modal-label">Impacto no seu Saldo Disponível</span>
+                <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
+                    <span>Saldo livre hoje:</span><b>${brl(usable)}</b>
+                </div>
+                <div class="flex justify-between text-xs font-bold text-gray-700 mb-1">
+                    <span>Soma das parcelas/mês simuladas:</span><b class="text-red-500">-${brl(monthlyImpact)}</b>
+                </div>
+                <div class="flex justify-between text-sm font-extrabold text-gray-800 pt-2 border-t border-gray-100">
+                    <span>Saldo livre após a compra:</span>
+                    <b class="${usable - monthlyImpact < 0 ? 'text-red-500' : 'text-green-500'}">${brl(usable - monthlyImpact)}</b>
+                </div>
+                <p class="text-[11px] font-bold text-gray-400 mt-1">Custo total acumulado dos itens simulados: ${brl(totalSim)}</p>
+            </div>
+
+            <div class="flex justify-between items-center mb-2">
+                <span class="modal-label m-0">Itens na Simulação (${fin.simItems.length})</span>
+                ${fin.simItems.length ? `<button data-fact="clear-sim" class="text-xs font-bold text-red-500">Limpar tudo</button>` : ''}
+            </div>
+            ${fin.simItems.map(it => `
+                <div class="agenda-row" data-sid="${esc(it.id)}">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm text-gray-800">${esc(it.name)}</p>
+                        <p class="text-xs font-semibold text-gray-400">${it.inst}x de ${brl(it.monthly)} ${it.rate > 0 ? `(c/ ${it.rate}% a.m. • Total ${brl(it.totalWithInterest)})` : '(sem juros)'}</p>
+                    </div>
+                    <button class="row-btn row-danger" data-fact="del-sim"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    function renderRecurring() {
+        body.innerHTML = `
+            <div class="fin-card">
+                <span class="modal-label">Novo Gasto Recorrente / Assinatura</span>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="rc-name" class="task-input" placeholder="Ex: Seguro Pet, Internet">
+                    <input id="rc-val" type="number" step="0.01" class="task-input" placeholder="Valor R$">
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="rc-day" type="number" min="1" max="31" class="task-input" placeholder="Dia do vencimento (1-31)">
+                    <input id="rc-warn" type="number" min="1" max="15" class="task-input" value="5" placeholder="Avisar X dias antes">
+                </div>
+                <button data-fact="add-rec" class="pill-btn primary w-full">Salvar Recorrência</button>
+            </div>
+
+            <span class="modal-label">Seus Gastos Recorrentes (${fin.recurring.length})</span>
+            ${fin.recurring.map(r => `
+                <div class="agenda-row" data-rid="${esc(r.id)}">
+                    <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center"><i class="fas fa-rotate"></i></div>
+                    <div class="flex-1">
+                        <p class="font-bold text-sm text-gray-800">${esc(r.name)}</p>
+                        <p class="text-xs font-semibold text-gray-400">Todo dia ${r.day} • Avisa ${r.warnDays}d antes</p>
+                    </div>
+                    <span class="font-extrabold text-sm text-gray-800">${brl(r.amount)}</span>
+                    <button class="row-btn row-danger" data-fact="del-rec"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    function renderFin() {
+        const map = { overview: renderOverview, expenses: renderExpenses, stats: renderStats, sim: renderSim, rec: renderRecurring };
+        (map[curTab] || renderOverview)();
+    }
+
+    // Eventos das abas
+    document.getElementById('fin-tabs').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-ftab]');
+        if (!b) return;
+        curTab = b.dataset.ftab;
+        document.querySelectorAll('#fin-tabs .fin-tab').forEach(t => t.classList.toggle('active', t === b));
+        renderFin();
+    });
+
+    // Delegação de cliques no corpo de Finanças
+    body.addEventListener('click', (e) => {
+        const colorPick = e.target.closest('#bf-colors [data-color]');
+        if (colorPick) {
+            body.querySelectorAll('#bf-colors .fin-chip-pick').forEach(x => x.classList.remove('selected'));
+            colorPick.classList.add('selected');
+            return;
+        }
+        const iconPick = e.target.closest('#bf-icons [data-icon]');
+        if (iconPick) {
+            body.querySelectorAll('#bf-icons .fin-chip-pick').forEach(x => x.classList.remove('selected'));
+            iconPick.classList.add('selected');
+            return;
+        }
+        const catPick = e.target.closest('#ex-cats [data-cid]');
+        if (catPick) {
+            body.querySelectorAll('#ex-cats .tag-pill').forEach(x => x.classList.remove('selected'));
+            catPick.classList.add('selected');
+            return;
+        }
+
+        const btn = e.target.closest('[data-fact]');
+        if (!btn) return;
+        const act = btn.dataset.fact;
+
+        if (act === 'add-bank-toggle') {
+            document.getElementById('bank-form').classList.toggle('hidden');
+        } else if (act === 'save-bank') {
+            const name = document.getElementById('bf-name').value.trim();
+            const balance = parseFloat(document.getElementById('bf-val').value) || 0;
+            if (!name) return;
+            const color = (body.querySelector('#bf-colors .selected') || {}).dataset?.color || PALETTE[0];
+            const icon = (body.querySelector('#bf-icons .selected') || {}).dataset?.icon || ICONS[0];
+            fin.banks.push({ id: 'b'+Date.now(), name, balance, color, icon, usable: true });
+            saveFin(); renderFin();
+        } else if (act === 'toggle-bank') {
+            const b = fin.banks.find(x => x.id === btn.closest('[data-bid]').dataset.bid);
+            if (b) { b.usable = !b.usable; saveFin(); renderFin(); }
+        } else if (act === 'edit-bank-val') {
+            const b = fin.banks.find(x => x.id === btn.closest('[data-bid]').dataset.bid);
+            if (b) {
+                const nv = prompt(`Novo saldo para "${b.name}" (R$):`, b.balance);
+                if (nv !== null && !isNaN(parseFloat(nv))) { b.balance = parseFloat(nv); saveFin(); renderFin(); }
+            }
+        } else if (act === 'del-bank') {
+            const id = btn.closest('[data-bid]').dataset.bid;
+            fin.banks = fin.banks.filter(x => x.id !== id);
+            saveFin(); renderFin();
+        } else if (act === 'new-cat') {
+            const name = prompt('Nome da nova categoria:');
+            if (!name || !name.trim()) return;
+            const color = PALETTE[fin.categories.length % PALETTE.length];
+            const icon = ICONS[fin.categories.length % ICONS.length];
+            fin.categories.push({ id: 'c'+Date.now(), name: name.trim(), color, icon });
+            saveFin(); renderFin();
+        } else if (act === 'add-expense') {
+            const desc = document.getElementById('ex-desc').value.trim();
+            const amount = parseFloat(document.getElementById('ex-val').value);
+            if (!desc || !(amount > 0)) return;
+            const date = document.getElementById('ex-date').value || todayISO();
+            const time = document.getElementById('ex-time').value || nowHM();
+            const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id);
+            fin.expenses.push({ id: 'e'+Date.now(), desc, amount, date, time, catId });
+            saveFin(); renderFin();
+        } else if (act === 'import-bulk') {
+            const raw = document.getElementById('ex-bulk').value.trim();
+            if (!raw) return;
+            const catId = (fin.categories[0] && fin.categories[0].id) || 'c1';
+            raw.split('\n').forEach((line, idx) => {
+                const [d, v, dt] = line.split(';').map(s => (s||'').trim());
+                const amount = parseFloat((v||'').replace(',','.'));
+                if (d && amount > 0) {
+                    fin.expenses.push({ id: 'e'+Date.now()+idx, desc: d, amount, date: dt || todayISO(), time: nowHM(), catId });
+                }
+            });
+            saveFin(); renderFin();
+        } else if (act === 'del-expense') {
+            const id = btn.closest('[data-eid]').dataset.eid;
+            fin.expenses = fin.expenses.filter(x => x.id !== id);
+            saveFin(); renderFin();
+        } else if (act === 'add-sim') {
+            const name = document.getElementById('sim-name').value.trim() || 'Item simulado';
+            const val = parseFloat(document.getElementById('sim-val').value);
+            const inst = Math.max(1, parseInt(document.getElementById('sim-inst').value, 10) || 1);
+            const rate = Math.max(0, parseFloat(document.getElementById('sim-rate').value) || 0);
+            if (!(val > 0)) return;
+            let monthly = val / inst;
+            if (rate > 0 && inst > 1) {
+                const r = rate / 100;
+                monthly = val * (r * Math.pow(1 + r, inst)) / (Math.pow(1 + r, inst) - 1);
+            }
+            fin.simItems.push({ id: 's'+Date.now(), name, val, inst, rate, monthly, totalWithInterest: monthly * inst });
+            saveFin(); renderFin();
+        } else if (act === 'del-sim') {
+            const id = btn.closest('[data-sid]').dataset.sid;
+            fin.simItems = fin.simItems.filter(x => x.id !== id);
+            saveFin(); renderFin();
+        } else if (act === 'clear-sim') {
+            fin.simItems = []; saveFin(); renderFin();
+        } else if (act === 'add-rec') {
+            const name = document.getElementById('rc-name').value.trim();
+            const amount = parseFloat(document.getElementById('rc-val').value);
+            const day = Math.min(31, Math.max(1, parseInt(document.getElementById('rc-day').value, 10) || 1));
+            const warnDays = Math.min(15, Math.max(1, parseInt(document.getElementById('rc-warn').value, 10) || 5));
+            if (!name || !(amount > 0)) return;
+            fin.recurring.push({ id: 'r'+Date.now(), name, amount, day, warnDays });
+            saveFin(); renderFin();
+        } else if (act === 'del-rec') {
+            const id = btn.closest('[data-rid]').dataset.rid;
+            fin.recurring = fin.recurring.filter(x => x.id !== id);
+            saveFin(); renderFin();
+        }
+    });
+
+    // Abrir / Fechar
+    const openBtn = document.getElementById('open-finances-btn');
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            renderFin();
+            sheet.classList.add('open');
+            sheet.setAttribute('aria-hidden', 'false');
+        });
+    }
+    document.getElementById('fin-close').addEventListener('click', () => {
+        sheet.classList.remove('open');
+        sheet.setAttribute('aria-hidden', 'true');
+    });
+})();
+</script>
+<!-- ==================== FIM DO MÓDULO DE FINANÇAS ==================== --></body>
 </html>
