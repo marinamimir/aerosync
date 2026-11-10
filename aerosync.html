@@ -7245,7 +7245,7 @@
 
     </script>
 
-<!-- ==================== MÓDULO DE FINANÇAS V3 (SELEÇÃO EM MASSA & POP-UP) ==================== -->
+<!-- ==================== MÓDULO DE FINANÇAS V4 (CATEGORIAS ESTILO PRESET + LIXEIRA) ==================== -->
 <style>
     /* Oculta o modal antigo de finanças caso acionado */
     #fin-modal { display: none !important; }
@@ -7354,7 +7354,12 @@
         background: rgba(255,255,255,0.16); border-radius: 14px; padding: 8px 10px;
     }
 
-    /* Bolinha de seleção em massa ("Selecionar várias") */
+    /* Pílulas horizontais com rolagem suave */
+    .fin-pills-scroll {
+        display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px;
+    }
+
+    /* Bolinha de seleção em massa */
     .fin-select-dot {
         width: 24px; height: 24px; border-radius: 50%;
         border: 2px solid #cbd5e1; background: #fff;
@@ -7370,7 +7375,7 @@
     }
     html.dark .fin-select-dot { background: #1e2130; border-color: #475569; }
 
-    /* Barra flutuante de ações em massa ("Editar todas") */
+    /* Barra flutuante de ações em massa */
     .fin-bulk-bar {
         position: sticky; bottom: 4px; z-index: 30;
         display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -7383,7 +7388,7 @@
     }
     html.dark .fin-bulk-bar { background: rgba(30, 33, 48, 0.96); }
 
-    /* Modal Pop-up de Edição em Massa / Edição Individual */
+    /* Modal Pop-up */
     #fin-popup-overlay {
         position: absolute; inset: 0; z-index: 95;
         background: rgba(15, 23, 42, 0.28);
@@ -7418,7 +7423,7 @@
             <button id="fin-close" class="modal-x" aria-label="Fechar Finanças"><i class="fas fa-times"></i></button>
         </div>
 
-        <!-- Barra Seletora de Mês (Visão Mensal Global + Parcelas) -->
+        <!-- Barra Seletora de Mês -->
         <div class="fin-month-bar">
             <button type="button" class="fin-month-nav" id="fin-prev-m" title="Mês anterior"><i class="fas fa-chevron-left"></i></button>
             <div class="text-center">
@@ -7428,20 +7433,23 @@
             <button type="button" class="fin-month-nav" id="fin-next-m" title="Próximo mês"><i class="fas fa-chevron-right"></i></button>
         </div>
 
+        <!-- Abas (com a nova aba 'Categorias' e 'Lixeira') -->
         <div class="fin-tabs no-scrollbar" id="fin-tabs">
             <button class="fin-tab active" data-ftab="overview"><i class="fas fa-layer-group mr-1"></i>Visão Geral</button>
             <button class="fin-tab" data-ftab="cards"><i class="fas fa-credit-card mr-1"></i>Cartões</button>
             <button class="fin-tab" data-ftab="expenses"><i class="fas fa-receipt mr-1"></i>Compras</button>
-            <button class="fin-tab" data-ftab="income"><i class="fas fa-money-bill-trend-up mr-1"></i>Salário & Entradas</button>
+            <button class="fin-tab" data-ftab="categories"><i class="fas fa-tags mr-1"></i>Categorias</button>
+            <button class="fin-tab" data-ftab="income"><i class="fas fa-money-bill-trend-up mr-1"></i>Salário</button>
             <button class="fin-tab" data-ftab="stats"><i class="fas fa-chart-pie mr-1"></i>Estatísticas</button>
             <button class="fin-tab" data-ftab="sim"><i class="fas fa-calculator mr-1"></i>Simulador</button>
             <button class="fin-tab" data-ftab="rec"><i class="fas fa-bell mr-1"></i>Recorrentes</button>
+            <button class="fin-tab" data-ftab="trash"><i class="fas fa-trash-can mr-1"></i>Lixeira</button>
         </div>
 
         <div id="fin-body" class="sheet-body no-scrollbar"></div>
     </div>
 
-    <!-- Pop-up Modal (Para "Editar todas" em massa ou editar uma compra individual) -->
+    <!-- Pop-up Modal Centralizado -->
     <div id="fin-popup-overlay" aria-hidden="true">
         <div class="fin-popup-box no-scrollbar" id="fin-popup-content"></div>
     </div>
@@ -7459,8 +7467,9 @@
     let curTab = 'overview';
     let editingCardId = null;
     let editingBankId = null;
+    let editingCatDraft = null; // edição de categoria estilo preset
 
-    // Estado da Seleção em Massa ("Selecionar várias")
+    // Estado da Seleção em Massa
     let bulkSelectMode = false;
     let selectedExpenseGroupIds = new Set();
 
@@ -7506,6 +7515,7 @@
                 { id: 'c5', name: 'Contas Fixas', color: '#fbbf24', icon: 'fa-bolt' }
             ],
             expenses: Array.isArray(obj.expenses) ? obj.expenses : [],
+            trash: Array.isArray(obj.trash) ? obj.trash : [],
             recurring: Array.isArray(obj.recurring) ? obj.recurring : [],
             simItems: Array.isArray(obj.simItems) ? obj.simItems : []
         };
@@ -7609,6 +7619,16 @@
         }).filter(r => r.diff <= (r.warnDays || 5)).sort((a,b) => a.diff - b.diff);
     }
 
+    // Resolve categoria (preserva o nome histórico se a categoria foi excluída!)
+    function resolveExpenseCat(e) {
+        const found = fin.categories.find(c => c.id === e.catId);
+        if (found) return found;
+        if (e.catNameSnapshot) {
+            return { name: e.catNameSnapshot, color: e.catColorSnapshot || '#94a3b8', icon: e.catIconSnapshot || 'fa-tag' };
+        }
+        return { name: 'Outros', color: '#94a3b8', icon: 'fa-tag' };
+    }
+
     // =========================================================================
     //  POP-UPS: EDIÇÃO INDIVIDUAL E EDIÇÃO EM MASSA ("Editar todas")
     // =========================================================================
@@ -7648,7 +7668,7 @@
                 </div>
             </div>
             <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Cartão / Forma de Pagamento</label>
-            <div class="flex gap-1.5 flex-wrap mb-2" id="pop-ex-cards">
+            <div class="fin-pills-scroll no-scrollbar mb-2" id="pop-ex-cards">
                 <button type="button" data-payid="pix" class="tag-pill ${selCard==='pix'?'selected':''}" style="--pill:#10b981">
                     <i class="fas fa-bolt mr-1"></i>Pix / Conta
                 </button>
@@ -7658,8 +7678,8 @@
                     </button>
                 `).join('')}
             </div>
-            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria</label>
-            <div class="flex gap-1.5 flex-wrap mb-4" id="pop-ex-cats">
+            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria (Pílulas Horizontais)</label>
+            <div class="fin-pills-scroll no-scrollbar mb-4" id="pop-ex-cats">
                 ${fin.categories.map(c => `
                     <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${selCat===c.id?'selected':''}" style="--pill:${esc(c.color)}">
                         <i class="fas ${esc(c.icon)} mr-1"></i>${esc(c.name)}
@@ -7685,11 +7705,11 @@
                 <button type="button" class="modal-x" data-popact="close"><i class="fas fa-times"></i></button>
             </div>
             <p class="text-xs font-semibold text-gray-400 mb-3">
-                Toque apenas no que deseja alterar para todas as <b>${count} compra(s)</b> selecionadas (deixe sem marcar o que não quiser mexer):
+                Escolha o que deseja alterar para todas as <b>${count} compra(s)</b> selecionadas:
             </p>
 
-            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Novo Cartão / Forma de Pagamento (opcional)</label>
-            <div class="flex gap-1.5 flex-wrap mb-3" id="pop-bulk-cards">
+            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Novo Cartão / Pagamento (opcional)</label>
+            <div class="fin-pills-scroll no-scrollbar mb-3" id="pop-bulk-cards">
                 <button type="button" data-payid="" class="tag-pill selected" style="--pill:#94a3b8">Manter atual</button>
                 <button type="button" data-payid="pix" class="tag-pill" style="--pill:#10b981">
                     <i class="fas fa-bolt mr-1"></i>Pix / Conta
@@ -7701,8 +7721,8 @@
                 `).join('')}
             </div>
 
-            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Nova Categoria (opcional)</label>
-            <div class="flex gap-1.5 flex-wrap mb-3" id="pop-bulk-cats">
+            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Nova Categoria (Pílulas Horizontais)</label>
+            <div class="fin-pills-scroll no-scrollbar mb-3" id="pop-bulk-cats">
                 <button type="button" data-cid="" class="tag-pill selected" style="--pill:#94a3b8">Manter atual</button>
                 ${fin.categories.map(c => `
                     <button type="button" data-cid="${esc(c.id)}" class="tag-pill" style="--pill:${esc(c.color)}">
@@ -7752,6 +7772,7 @@
             const instTotal = Math.max(1, Math.min(48, parseInt(document.getElementById('pop-ex-inst').value, 10) || 1));
             const cardId = (popupContent.querySelector('#pop-ex-cards .selected') || {}).dataset?.payid || 'pix';
             const catId = (popupContent.querySelector('#pop-ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id);
+            const catObj = fin.categories.find(c => c.id === catId);
 
             fin.expenses = fin.expenses.filter(e => (e.groupId || e.id) !== gid);
             const perInst = Number((totalAmount / instTotal).toFixed(2));
@@ -7766,6 +7787,9 @@
                     time,
                     cardId,
                     catId,
+                    catNameSnapshot: catObj ? catObj.name : '',
+                    catColorSnapshot: catObj ? catObj.color : '',
+                    catIconSnapshot: catObj ? catObj.icon : '',
                     instIndex: i,
                     instTotal
                 });
@@ -7777,12 +7801,20 @@
             const newCardId = (popupContent.querySelector('#pop-bulk-cards .selected') || {}).dataset?.payid || '';
             const newCatId = (popupContent.querySelector('#pop-bulk-cats .selected') || {}).dataset?.cid || '';
             const newDate = document.getElementById('pop-bulk-date').value.trim();
+            const newCatObj = fin.categories.find(c => c.id === newCatId);
 
             fin.expenses.forEach(exp => {
                 const gid = exp.groupId || exp.id;
                 if (selectedExpenseGroupIds.has(gid)) {
                     if (newCardId !== '') exp.cardId = newCardId;
-                    if (newCatId !== '') exp.catId = newCatId;
+                    if (newCatId !== '') {
+                        exp.catId = newCatId;
+                        if (newCatObj) {
+                            exp.catNameSnapshot = newCatObj.name;
+                            exp.catColorSnapshot = newCatObj.color;
+                            exp.catIconSnapshot = newCatObj.icon;
+                        }
+                    }
                     if (newDate !== '') {
                         exp.purchaseDate = newDate;
                         exp.date = newDate;
@@ -7823,10 +7855,18 @@
             .filter(e => (!e.cardId || e.cardId === 'pix') && getEffectiveBillingYM(e) === ym)
             .reduce((s, e) => s + (Number(e.amount) || 0), 0);
 
-        const catBreakdown = fin.categories.map(cat => {
-            const sum = curExpenses.filter(e => e.catId === cat.id).reduce((s, e) => s + (Number(e.amount)||0), 0);
-            const pct = spentVisible > 0 ? Math.round((sum / spentVisible) * 100) : 0;
-            return { ...cat, sum, pct };
+        // Agrupamento por categoria considerando preservação histórica de nomes
+        const catMap = {};
+        curExpenses.forEach(e => {
+            const cat = resolveExpenseCat(e);
+            if (!catMap[cat.name]) {
+                catMap[cat.name] = { name: cat.name, color: cat.color, icon: cat.icon, sum: 0 };
+            }
+            catMap[cat.name].sum += Number(e.amount || 0);
+        });
+        const catBreakdown = Object.values(catMap).map(c => {
+            const pct = spentVisible > 0 ? Math.round((c.sum / spentVisible) * 100) : 0;
+            return { ...c, pct };
         }).sort((a,b) => b.sum - a.sum);
 
         body.innerHTML = `
@@ -8025,7 +8065,7 @@
     }
 
     // =========================================================================
-    //  ABA 3: COMPRAS (COM BOTÃO "SELECIONAR VÁRIAS" + BOLINHAS + "EDITAR TODAS")
+    //  ABA 3: COMPRAS (PÍLULAS HORIZONTAIS + SELEÇÃO EM MASSA)
     // =========================================================================
     function renderExpenses() {
         const ym = selectedYM;
@@ -8038,7 +8078,7 @@
             <div class="fin-card">
                 <div class="flex justify-between items-center mb-2">
                     <span class="modal-label m-0">Registrar Nova Compra / Gasto</span>
-                    <button type="button" data-fact="new-cat" class="text-xs font-bold accent-text">+ Nova Categoria</button>
+                    <button type="button" data-fact="goto-categories" class="text-xs font-bold accent-text"><i class="fas fa-tags mr-1"></i>Gerenciar Categorias</button>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-2">
                     <input id="ex-desc" class="task-input" placeholder="Descrição (ex: Supermercado)">
@@ -8060,7 +8100,7 @@
                 </div>
 
                 <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Forma de Pagamento / Cartão</label>
-                <div class="flex gap-1.5 flex-wrap mb-2" id="ex-cards">
+                <div class="fin-pills-scroll no-scrollbar mb-2" id="ex-cards">
                     <button type="button" data-payid="pix" class="tag-pill ${selectedCardId==='pix'?'selected':''}" style="--pill:#10b981">
                         <i class="fas fa-bolt mr-1"></i>Pix / Conta
                     </button>
@@ -8071,8 +8111,9 @@
                     `).join('')}
                 </div>
 
+                <!-- Categorias em Pílulas Horizontais -->
                 <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria</label>
-                <div class="flex gap-1.5 flex-wrap mb-3" id="ex-cats">
+                <div class="fin-pills-scroll no-scrollbar mb-3" id="ex-cats">
                     ${fin.categories.map(c => `
                         <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${selectedCatId===c.id?'selected':''}" style="--pill:${esc(c.color)}">
                             <i class="fas ${esc(c.icon)} mr-1"></i>${esc(c.name)}
@@ -8109,7 +8150,7 @@
             ${list.length ? list.map(e => {
                 const gid = e.groupId || e.id;
                 const isChecked = selectedExpenseGroupIds.has(gid);
-                const cat = fin.categories.find(c => c.id === e.catId) || fin.categories[0] || { name: 'Geral', color: '#94a3b8', icon: 'fa-tag' };
+                const cat = resolveExpenseCat(e);
                 const cardObj = (!e.cardId || e.cardId === 'pix')
                     ? { name: 'Pix / Conta', color: '#10b981', icon: 'fa-bolt' }
                     : (fin.cards.find(x => x.id === e.cardId) || { name: 'Cartão', color: '#64748b', icon: 'fa-credit-card' });
@@ -8134,19 +8175,20 @@
                         <span class="font-extrabold text-sm text-gray-800">${brl(e.amount)}</span>
                         ${!bulkSelectMode ? `
                             <button type="button" class="row-btn" data-fact="edit-expense" title="Editar compra"><i class="fas fa-pen"></i></button>
-                            <button type="button" class="row-btn row-danger" data-fact="del-expense" title="Excluir compra"><i class="fas fa-trash"></i></button>
+                            <button type="button" class="row-btn row-danger" data-fact="trash-expense" title="Mover para a Lixeira"><i class="fas fa-trash"></i></button>
                         ` : ''}
                     </div>
                 `;
             }).join('') : `<p class="text-sm text-gray-400 font-semibold text-center py-4">Nenhum gasto caindo em ${esc(formatYM(ym))}.</p>`}
 
-            <!-- Barra Flutuante "Editar todas" quando o modo seleção está ativo -->
+            <!-- Barra Flutuante "Editar todas" -->
             ${bulkSelectMode ? `
                 <div class="fin-bulk-bar">
                     <div class="text-xs font-extrabold text-gray-700">
                         <span class="accent-text">${selCount}</span> selecionada(s)
                     </div>
                     <div class="flex items-center gap-2">
+                        <button type="button" data-fact="bulk-trash" class="row-btn row-danger" title="Mover selecionadas para Lixeira" ${selCount === 0 ? 'disabled style="opacity:0.45"' : ''}><i class="fas fa-trash"></i></button>
                         <button type="button" data-fact="open-bulk-edit" class="pill-btn primary text-xs px-4 py-2" ${selCount === 0 ? 'disabled style="opacity:0.45"' : ''}>
                             <i class="fas fa-pen-to-square mr-1"></i>Editar todas
                         </button>
@@ -8157,7 +8199,98 @@
     }
 
     // =========================================================================
-    //  ABA 4: SALÁRIO FIXO (VARIÁVEL POR MÊS) & ENTRADAS DE DINHEIRO
+    //  NOVA ABA: CATEGORIAS (ESTILO PRESETS, CARDS TÁTEIS E LISTAGEM DIRETA)
+    // =========================================================================
+    function renderCategories() {
+        const d = editingCatDraft;
+
+        body.innerHTML = `
+            <div class="fin-card">
+                <span class="modal-label">${d ? 'Editar Categoria' : 'Nova Categoria'}</span>
+                <!-- Linha estilo Presets: Ícone à esquerda com botão tátil + Nome -->
+                <div class="name-row mb-3">
+                    <button type="button" data-fact="cat-pick-icon" class="icon-pick-btn ${d?.icon ? 'has-icon' : ''}" style="border-color:${d?.color || 'var(--theme-accent, #3b82f6)'}">
+                        <i class="fas ${d?.icon || 'fa-tag'}" style="color:${d?.color || 'var(--theme-accent, #3b82f6)'}"></i>
+                    </button>
+                    <input id="cat-edit-name" class="task-input" placeholder="Nome da categoria (ex: Livros, Farmácia)" value="${d ? esc(d.name) : ''}">
+                </div>
+                <label class="modal-label">Cor da Categoria</label>
+                <div class="flex gap-1.5 flex-wrap mb-3" id="cat-colors">
+                    ${PALETTE.map(c => `
+                        <button type="button" class="fin-chip-pick ${(d?.color || PALETTE[0]) === c ? 'selected' : ''}" data-color="${c}" style="background:${c};color:#fff"><i class="fas fa-check text-[10px]"></i></button>
+                    `).join('')}
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" data-fact="save-cat-form" class="pill-btn primary flex-1">${d ? 'Salvar Categoria' : 'Criar Categoria'}</button>
+                    ${d ? `<button type="button" data-fact="cancel-cat-form" class="pill-btn ghost">Cancelar</button>` : ''}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-2">
+                <span class="modal-label m-0">Suas Categorias (${fin.categories.length})</span>
+                <span class="text-[10px] font-bold text-gray-400">Cards táteis • Estilo Presets</span>
+            </div>
+
+            ${fin.categories.map(c => `
+                <div class="fin-card flex items-center gap-3" data-cid="${esc(c.id)}">
+                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white text-base flex-shrink-0" style="background:${esc(c.color)}">
+                        <i class="fas ${esc(c.icon)}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-extrabold text-sm text-gray-800 truncate">${esc(c.name)}</p>
+                        <p class="text-[10px] font-semibold text-gray-400">Usada nos gastos e relatórios</p>
+                    </div>
+                    <button type="button" class="row-btn" data-fact="edit-cat-btn" title="Editar categoria"><i class="fas fa-pen"></i></button>
+                    <button type="button" class="row-btn row-danger" data-fact="del-cat-btn" title="Excluir categoria"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    // =========================================================================
+    //  NOVA ABA: LIXEIRA (RESTAURAR OU EXCLUIR PERMANENTE)
+    // =========================================================================
+    function renderTrash() {
+        const trashList = Array.isArray(fin.trash) ? fin.trash : [];
+
+        body.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <span class="modal-label m-0">Lixeira de Compras (${trashList.length})</span>
+                    <p class="text-[11px] font-semibold text-gray-400">Itens excluídos ficam aqui caso precise restaurar</p>
+                </div>
+                ${trashList.length ? `
+                    <button type="button" data-fact="empty-trash" class="fin-mini-pill text-red-500 font-extrabold">Esvaziar Lixeira</button>
+                ` : ''}
+            </div>
+
+            ${trashList.length ? trashList.map(item => {
+                const cat = resolveExpenseCat(item);
+                const instBadge = (item.instTotal && item.instTotal > 1) ? `<span class="fin-mini-pill">${item.instIndex}/${item.instTotal}</span>` : '';
+                return `
+                    <div class="agenda-row" data-tid="${esc(item.id)}" data-tgid="${esc(item.groupId || item.id)}">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs flex-shrink-0 opacity-70" style="background:${esc(cat.color)}">
+                            <i class="fas ${esc(cat.icon)}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-sm text-gray-700 truncate line-through opacity-75">${esc(item.desc)} ${instBadge}</p>
+                            <p class="text-[11px] font-semibold text-gray-400">Compra de ${esc(item.purchaseDate || item.date)} • ${brl(item.amount)}</p>
+                        </div>
+                        <button type="button" class="row-btn" data-fact="restore-trash" title="Restaurar compra"><i class="fas fa-rotate-left text-green-500"></i></button>
+                        <button type="button" class="row-btn row-danger" data-fact="purge-trash" title="Excluir permanentemente"><i class="fas fa-xmark"></i></button>
+                    </div>
+                `;
+            }).join('') : `
+                <div class="text-center py-8">
+                    <i class="fas fa-trash-can text-3xl text-gray-300 mb-2"></i>
+                    <p class="text-sm font-bold text-gray-400">A lixeira está vazia!</p>
+                </div>
+            `}
+        `;
+    }
+
+    // =========================================================================
+    //  ABA 4: SALÁRIO FIXO (VARIÁVEL POR MÊS) & ENTRADAS
     // =========================================================================
     function renderIncome() {
         const ym = selectedYM;
@@ -8396,10 +8529,12 @@
             overview: renderOverview,
             cards: renderCards,
             expenses: renderExpenses,
+            categories: renderCategories,
             income: renderIncome,
             stats: renderStats,
             sim: renderSim,
-            rec: renderRecurring
+            rec: renderRecurring,
+            trash: renderTrash
         };
         (map[curTab] || renderOverview)();
     }
@@ -8422,11 +8557,14 @@
     });
 
     body.addEventListener('click', (e) => {
-        const colorPick = e.target.closest('#bf-colors [data-color], #cd-colors [data-color]');
+        const colorPick = e.target.closest('#bf-colors [data-color], #cd-colors [data-color], #cat-colors [data-color]');
         if (colorPick) {
             const parent = colorPick.parentElement;
             parent.querySelectorAll('.fin-chip-pick').forEach(x => x.classList.remove('selected'));
             colorPick.classList.add('selected');
+            if (editingCatDraft && parent.id === 'cat-colors') {
+                editingCatDraft.color = colorPick.dataset.color;
+            }
             return;
         }
         const iconPick = e.target.closest('#bf-icons [data-icon]');
@@ -8452,8 +8590,113 @@
         if (!btn) return;
         const act = btn.dataset.fact;
 
-        // Seleção em Massa ("Selecionar várias" e "Editar todas")
-        if (act === 'toggle-bulk-mode') {
+        // Categorias: Abertura e Gestão
+        if (act === 'goto-categories') {
+            curTab = 'categories';
+            document.querySelectorAll('#fin-tabs .fin-tab').forEach(t => t.classList.toggle('active', t.dataset.ftab === 'categories'));
+            renderFin();
+        } else if (act === 'cat-pick-icon') {
+            const curIconName = editingCatDraft?.icon || 'fa-tag';
+            const curColor = editingCatDraft?.color || PALETTE[0];
+            if (typeof openIconPicker === 'function') {
+                openIconPicker({ n: curIconName, c: curColor }, (picked) => {
+                    if (picked) {
+                        if (!editingCatDraft) editingCatDraft = { name: '', color: picked.c || curColor, icon: picked.n || curIconName };
+                        else {
+                            editingCatDraft.icon = picked.n || curIconName;
+                            if (picked.c) editingCatDraft.color = picked.c;
+                        }
+                        renderFin();
+                    }
+                });
+            } else {
+                const nextIdx = (ICONS.indexOf(curIconName) + 1) % ICONS.length;
+                if (!editingCatDraft) editingCatDraft = { name: '', color: curColor, icon: ICONS[nextIdx] };
+                else editingCatDraft.icon = ICONS[nextIdx];
+                renderFin();
+            }
+        } else if (act === 'save-cat-form') {
+            const nameEl = document.getElementById('cat-edit-name');
+            const name = (nameEl ? nameEl.value : '').trim();
+            if (!name) return;
+            const color = (body.querySelector('#cat-colors .selected') || {}).dataset?.color || editingCatDraft?.color || PALETTE[0];
+            const icon = editingCatDraft?.icon || 'fa-tag';
+
+            if (editingCatDraft && editingCatDraft.id) {
+                const c = fin.categories.find(x => x.id === editingCatDraft.id);
+                if (c) { c.name = name; c.color = color; c.icon = icon; }
+            } else {
+                fin.categories.push({ id: 'c'+Date.now(), name, color, icon });
+            }
+            editingCatDraft = null;
+            saveFin(); renderFin();
+        } else if (act === 'cancel-cat-form') {
+            editingCatDraft = null;
+            renderFin();
+        } else if (act === 'edit-cat-btn') {
+            const cid = btn.closest('[data-cid]').dataset.cid;
+            const c = fin.categories.find(x => x.id === cid);
+            if (c) { editingCatDraft = { ...c }; renderFin(); }
+        } else if (act === 'del-cat-btn') {
+            const cid = btn.closest('[data-cid]').dataset.cid;
+            const catObj = fin.categories.find(x => x.id === cid);
+            if (catObj) {
+                // Preserva o nome e ícone no histórico de compras!
+                fin.expenses.forEach(e => {
+                    if (e.catId === cid) {
+                        e.catNameSnapshot = catObj.name;
+                        e.catColorSnapshot = catObj.color;
+                        e.catIconSnapshot = catObj.icon;
+                    }
+                });
+                fin.categories = fin.categories.filter(x => x.id !== cid);
+                if (editingCatDraft?.id === cid) editingCatDraft = null;
+                saveFin(); renderFin();
+            }
+        }
+
+        // Lixeira: Ações
+        else if (act === 'trash-expense') {
+            const row = btn.closest('[data-gid]');
+            const gid = row.dataset.gid;
+            if (!Array.isArray(fin.trash)) fin.trash = [];
+            const toTrash = fin.expenses.filter(x => (x.groupId || x.id) === gid);
+            toTrash.forEach(it => fin.trash.push(it));
+            fin.expenses = fin.expenses.filter(x => (x.groupId || x.id) !== gid);
+            saveFin(); renderFin();
+        } else if (act === 'bulk-trash') {
+            if (!Array.isArray(fin.trash)) fin.trash = [];
+            fin.expenses.forEach(it => {
+                const gid = it.groupId || it.id;
+                if (selectedExpenseGroupIds.has(gid)) {
+                    fin.trash.push(it);
+                }
+            });
+            fin.expenses = fin.expenses.filter(it => !selectedExpenseGroupIds.has(it.groupId || it.id));
+            selectedExpenseGroupIds.clear();
+            bulkSelectMode = false;
+            saveFin(); renderFin();
+        } else if (act === 'restore-trash') {
+            const row = btn.closest('[data-tgid]');
+            const tgid = row.dataset.tgid;
+            const toRestore = fin.trash.filter(x => (x.groupId || x.id) === tgid);
+            toRestore.forEach(it => fin.expenses.push(it));
+            fin.trash = fin.trash.filter(x => (x.groupId || x.id) !== tgid);
+            saveFin(); renderFin();
+        } else if (act === 'purge-trash') {
+            const row = btn.closest('[data-tgid]');
+            const tgid = row.dataset.tgid;
+            fin.trash = fin.trash.filter(x => (x.groupId || x.id) !== tgid);
+            saveFin(); renderFin();
+        } else if (act === 'empty-trash') {
+            if (confirm('Deseja realmente esvaziar a lixeira e apagar todos os itens permanentemente?')) {
+                fin.trash = [];
+                saveFin(); renderFin();
+            }
+        }
+
+        // Seleção em Massa
+        else if (act === 'toggle-bulk-mode') {
             bulkSelectMode = !bulkSelectMode;
             selectedExpenseGroupIds.clear();
             renderFin();
@@ -8546,15 +8789,8 @@
             saveFin(); renderFin();
         }
 
-        // Categorias e Compras
-        else if (act === 'new-cat') {
-            const name = prompt('Nome da nova categoria:');
-            if (!name || !name.trim()) return;
-            const color = PALETTE[fin.categories.length % PALETTE.length];
-            const icon = ICONS[fin.categories.length % ICONS.length];
-            fin.categories.push({ id: 'c'+Date.now(), name: name.trim(), color, icon });
-            saveFin(); renderFin();
-        } else if (act === 'save-expense') {
+        // Compras
+        else if (act === 'save-expense') {
             const desc = document.getElementById('ex-desc').value.trim();
             const totalAmount = parseFloat(document.getElementById('ex-val').value);
             if (!desc || !(totalAmount > 0)) return;
@@ -8563,6 +8799,7 @@
             const instTotal = Math.max(1, Math.min(48, parseInt(document.getElementById('ex-inst').value, 10) || 1));
             const cardId = (body.querySelector('#ex-cards .selected') || {}).dataset?.payid || 'pix';
             const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id);
+            const catObj = fin.categories.find(c => c.id === catId);
 
             const groupId = 'grp' + Date.now() + Math.random().toString(36).slice(2,5);
             const perInstallment = Number((totalAmount / instTotal).toFixed(2));
@@ -8577,6 +8814,9 @@
                     time,
                     cardId,
                     catId,
+                    catNameSnapshot: catObj ? catObj.name : '',
+                    catColorSnapshot: catObj ? catObj.color : '',
+                    catIconSnapshot: catObj ? catObj.icon : '',
                     instIndex: i,
                     instTotal
                 });
@@ -8588,6 +8828,9 @@
         } else if (act === 'del-expense') {
             const row = btn.closest('[data-gid]');
             const gid = row.dataset.gid;
+            if (!Array.isArray(fin.trash)) fin.trash = [];
+            const toTrash = fin.expenses.filter(x => (x.groupId || x.id) === gid);
+            toTrash.forEach(it => fin.trash.push(it));
             fin.expenses = fin.expenses.filter(x => (x.groupId || x.id) !== gid);
             saveFin(); renderFin();
         } else if (act === 'import-bulk') {
@@ -8595,6 +8838,7 @@
             if (!raw) return;
             const cardId = (body.querySelector('#ex-cards .selected') || {}).dataset?.payid || 'pix';
             const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id) || 'c1';
+            const catObj = fin.categories.find(c => c.id === catId);
             raw.split('\n').forEach((line, idx) => {
                 const [d, v, dt, instStr] = line.split(';').map(s => (s||'').trim());
                 const totalAmount = parseFloat((v||'').replace(',','.'));
@@ -8614,6 +8858,9 @@
                             time: nowHM(),
                             cardId,
                             catId,
+                            catNameSnapshot: catObj ? catObj.name : '',
+                            catColorSnapshot: catObj ? catObj.color : '',
+                            catIconSnapshot: catObj ? catObj.icon : '',
                             instIndex: i,
                             instTotal
                         });
@@ -8711,7 +8958,7 @@
     });
 })();
 </script>
-<!-- ==================== FIM DO MÓDULO DE FINANÇAS V3 ==================== -->
+<!-- ==================== FIM DO MÓDULO DE FINANÇAS V4 ==================== -->
 
 </body>
 </html>
