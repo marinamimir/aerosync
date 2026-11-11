@@ -2868,7 +2868,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             widgets: 'aerosync.widgets', // widgets da tela inicial (imagem e citação)
             breaks: 'aerosync.breaks', // Pausas pro Café (aparecem no calendário)
             finance: 'aerosync.finance', // Finanças (gastos e categorias) — separado das tarefas
-            fundo: 'aerosync.fundo' // fundo suave do app
+            fundo: 'aerosync.fundo', // fundo suave do app
+            pet: 'aerosync.pet' // AeroPets: um único pet
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
         const store = {
@@ -5700,6 +5701,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <button data-act="wd-add" data-type="quote" class="wd-add"><i class="fas fa-quote-left" aria-hidden="true"></i><b>Citação</b><small>Uma frase para lembrar</small></button>
                     <button data-act="wd-add" data-type="weather" class="wd-add"><i class="fas fa-cloud-sun" aria-hidden="true"></i><b>Clima</b><small>Temperatura e condição local</small></button>
                     <button data-act="wd-add" data-type="luck" class="wd-add"><i class="fas fa-clover" aria-hidden="true"></i><b>Sorte do dia</b><small>Uma mensagem nova por dia</small></button>
+                    <button data-act="wd-add" data-type="pet" class="wd-add"><i class="fas fa-paw" aria-hidden="true"></i><b>AeroPet</b><small>Adote seu companheirinho</small></button>
                 </div>
                 <span class="modal-label mt-5">Na tela inicial (${widgets.length})</span>
                 ${widgets.length ? widgets.map(w => `
@@ -7398,7 +7400,14 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
-        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia' };
+        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', pet: 'AeroPet' };
+        const PET_DEFAULT={adopted:false,species:'cat',name:'',gender:'unspecified',ears:'upright',coat:'short',color:'snow',accessory:'bow',personality:['affectionate'],traits:[],happiness:100,bond:0,stars:0,level:1,xp:0};
+        let aeroPet={...PET_DEFAULT,...(store.get(STORAGE_KEYS.pet,{})||{})};
+        const PET_COLORS={snow:'#fff8f8',cream:'#f4dfc4',caramel:'#c88f68',cocoa:'#8c6c68',gray:'#b9b7c4',black:'#57525c',pink:'#f4c6d6',lilac:'#d9c9e8'};
+        const PET_PERSONALITIES={affectionate:'Carinhoso',playful:'Brincalhão',shy:'Tímido',curious:'Curioso',sleepy:'Dorminhoco',mischievous:'Travesso'};
+        const PET_TRAITS={foodie:'Guloso',explorer:'Aventureiro',cuddly:'Dengoso',independent:'Independente',dreamy:'Sonhador'};
+        function savePet(){return store.set(STORAGE_KEYS.pet,aeroPet);}
+        function petArt(p=aeroPet){const dog=p.species==='dog',long=p.coat==='long',floppy=p.ears==='floppy',c=PET_COLORS[p.color]||PET_COLORS.snow;const ear=dog&&floppy?'<path d="M48 67Q8 30 18 92Q27 110 54 86Z"/><path d="M152 67Q192 30 182 92Q173 110 146 86Z"/>':'<path d="M48 68L35 13Q68 20 76 61Z"/><path d="M152 68L165 13Q132 20 124 61Z"/>';const body=long?'M28 105Q18 80 43 68Q50 45 77 57Q100 39 123 57Q151 46 159 76Q181 96 166 121Q178 151 146 163Q122 180 100 164Q76 181 53 161Q22 160 28 128Z':'M31 105Q25 75 52 65Q61 45 83 56Q100 44 117 56Q144 48 151 72Q174 88 164 112Q173 145 145 158Q121 174 101 161Q75 176 55 158Q25 155 31 128Z';return `<svg viewBox="0 0 200 190" role="img" aria-label="Seu pet"><g fill="${c}" stroke="#887b82" stroke-width="4" stroke-linejoin="round">${ear}<path d="${body}"/></g><g fill="#786c74"><ellipse cx="72" cy="111" rx="5" ry="8"/><ellipse cx="128" cy="111" rx="5" ry="8"/></g><ellipse cx="100" cy="126" rx="7" ry="5" fill="#e9a8bd"/><path d="M100 131q-7 10-14 3m14-3q7 10 14 3" fill="none" stroke="#887b82" stroke-width="3" stroke-linecap="round"/><g fill="#f3a9c5" opacity=".6"><ellipse cx="54" cy="128" rx="12" ry="6"/><ellipse cx="146" cy="128" rx="12" ry="6"/></g>${p.accessory==='bow'?'<path d="M127 61Q105 37 119 31Q137 29 137 49Q147 27 163 35Q173 49 145 63Z" fill="#f3a9c5" stroke="#987d88" stroke-width="3"/>':''}</svg>`;}
         const QUOTE_STYLES = { paper: 'Papel', accent: 'Destaque', minimal: 'Simples' };
         // Frases curtinhas para o botão "Inspiração" (escritas para o app; troque à vontade)
         const QUOTE_IDEAS = [
@@ -7415,6 +7424,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 if (w.type === 'image') return { id, type: 'image', image: isThumb(w.image) ? w.image : '', caption: libText(w.caption, 80), fit: w.fit === 'contain' ? 'contain' : 'cover' };
                 if (w.type === 'weather') return { id, type:'weather', background:w.background==='solid'?'solid':'transparent', weather: w.weather&&typeof w.weather==='object'?w.weather:null };
                 if (w.type === 'luck') return { id, type:'luck', style: QUOTE_STYLES[w.style] ? w.style : 'accent' };
+                if (w.type === 'pet') return { id, type:'pet' };
                 return { id, type: 'quote', text: typeof w.text === 'string' ? w.text.slice(0, 240) : '', author: libText(w.author, 60), style: QUOTE_STYLES[w.style] ? w.style : 'paper' };
             }).filter(Boolean).filter((w, i, a) => a.findIndex(x => x.id === w.id) === i).slice(0, 30);
         }
@@ -7558,6 +7568,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             if (widgets.length >= 30) { toast('Limite de 30 widgets'); return; }
             const w = normWidgets([{ type, id: uid('w_') }])[0];
             if (type === 'quote') { const q = QUOTE_IDEAS[Math.floor(Math.random() * QUOTE_IDEAS.length)]; w.text = q[0]; w.author = q[1]; }
+            if (type === 'pet' && widgets.some(x=>x.type==='pet')) { toast('Você já tem seu AeroPet!'); return; }
             widgets.push(w);
             layout.order.unshift(w.id); // entra no topo da tela inicial
             layout.sizes[w.id] = defaultSizeOf(w.id);
