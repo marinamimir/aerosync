@@ -16,8 +16,8 @@ html:root i:not([style*="color:"]) { color: var(--user-icon-color) !important; }
 .home-section.dragging { opacity:.35; transform:scale(.98); }
 .home-section.drop-target { outline:2px solid var(--theme-accent)!important; outline-offset:4px; }
 .section-tools .st-btn[data-st="size"] { min-width:32px; }
-.home-edit-fab { position:absolute; z-index:20; right:20px; top:72px; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff!important; background:linear-gradient(145deg,var(--theme-accent-2),var(--theme-accent)); border:2px solid rgba(255,255,255,.78); box-shadow:0 5px 16px var(--theme-glow), inset 0 1px 2px rgba(255,255,255,.45); padding:0; line-height:1; }
-.home-edit-fab i { display:block; color:#fff!important; font-size:18px; line-height:1; width:auto; height:auto; opacity:1!important; }
+.home-edit-fab { position:static; z-index:4; flex:0 0 44px; width:44px; height:44px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff!important; background:linear-gradient(145deg,var(--theme-accent-2),var(--theme-accent))!important; border:2px solid rgba(255,255,255,.88); box-shadow:0 5px 16px var(--theme-glow), inset 0 1px 2px rgba(255,255,255,.45); padding:0; line-height:1; }
+.home-edit-fab svg { display:block; width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; color:#fff!important; opacity:1!important; }
 .home-edit-fab:active { transform:scale(.94); }
 .theme-custom-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
 .theme-color-field { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:800; color:var(--fin-ink,var(--icon)); }
@@ -905,9 +905,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         /* ===== Botão claro/escuro do topo ===== */
         .theme-toggle {
-            width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%;
+            width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; position:relative; z-index:4;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.05rem; color: var(--accent); background: var(--accent-soft);
+            font-size: 1.05rem; color: var(--accent)!important; background: var(--accent-soft)!important;
             box-shadow: inset 0 2px 0 rgba(255,255,255,0.8), inset 0 -3px 6px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
             transition: transform 0.2s ease, background 0.2s;
         }
@@ -2077,16 +2077,20 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .mobile-frame::after { display: none !important; }
 
         /* Camadas de Fundo Dinâmico e Vinheta Customizável */
-        .mobile-frame { isolation: isolate; }
+        .mobile-frame { isolation: isolate; position: relative; }
+        /* O wallpaper fica numa camada própria, abaixo de TODA a interface.
+           Não usar z-index negativo: no Android ele podia atravessar a pilha visual. */
         .app-bg-canvas {
-            position: absolute; inset: 0; z-index: -2; pointer-events: none;
+            position: absolute; inset: 0; z-index: 0; pointer-events: none;
             overflow: hidden; border-radius: inherit;
             transition: opacity 0.3s ease, filter 0.3s ease;
         }
         .app-vignette-canvas {
-            position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+            position: absolute; inset: 0; z-index: 0; pointer-events: none; border-radius: inherit;
             transition: opacity 0.3s ease, background 0.3s ease;
         }
+        #app-status-bar, #app-header { position: relative; z-index: 3; }
+        #edit-bar { position: relative; z-index: 3; }
 
         /* Conteúdo principal e widgets ficam sobre o fundo */
         #main-scroll { position: relative; z-index: 2; }
@@ -2526,7 +2530,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         </div>
 
         <!-- Status Bar Fake -->
-        <div class="w-full flex justify-between items-center px-6 pt-5 pb-2 text-gray-500 text-xs font-bold">
+        <div id="app-status-bar" class="w-full flex justify-between items-center px-6 pt-5 pb-2 text-gray-500 text-xs font-bold">
             <span id="clock">09:41</span>
             <div class="flex gap-1.5 items-center">
                 <i class="fas fa-signal"></i>
@@ -2536,7 +2540,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         </div>
 
         <!-- Header -->
-        <div class="px-6 pt-4 pb-2">
+        <div id="app-header" class="px-6 pt-4 pb-2">
             <div class="flex justify-between items-center gap-3">
                 <div class="flex items-center gap-3 min-w-0">
                     <!-- Avatar (escolhido nos Ajustes); sem imagem mostra um ícone -->
@@ -2544,7 +2548,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <h1 id="app-title" class="text-2xl font-extrabold text-gray-800 tracking-tight truncate">Organização</h1>
                 </div>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar para modo escuro" aria-pressed="false"><i class="fas fa-moon"></i></button>
-                <button id="home-edit-pencil" class="home-edit-fab" aria-label="Editar tela inicial" title="Editar tela inicial"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>
+                <button id="home-edit-pencil" class="home-edit-fab" aria-label="Editar tela inicial" title="Editar tela inicial"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button>
             </div>
         </div>
 
