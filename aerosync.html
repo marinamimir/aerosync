@@ -2155,6 +2155,28 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         #app-status-bar[data-clock-style="bold"] #clock { font-size:14px; font-weight:900; letter-spacing:-.5px; color:var(--theme-accent, var(--accent)); }
         #app-status-bar[data-clock-style="kawaii"] #clock { padding:4px 9px; border-radius:12px; background:linear-gradient(135deg,color-mix(in srgb,var(--theme-accent-2, var(--accent)) 22%,white),color-mix(in srgb,var(--theme-accent, var(--accent)) 13%,white)); color:var(--theme-accent, var(--accent)); box-shadow:0 2px 8px var(--theme-glow,rgba(0,0,0,.08)); }
         #app-status-bar[data-clock-style="kawaii"] #clock::before { content:'♡'; margin-right:5px; font-size:11px; }
+        #date-widget[data-date-style="calendar"] .lcd{border-radius:15px;background:linear-gradient(145deg,#fff,#fce8f1);border:1px solid #f2c9da;padding:10px}
+        #date-widget[data-date-style="calendar"] #date-weekday{font-size:10px;letter-spacing:.16em;color:var(--theme-accent);font-weight:900}
+        #date-widget[data-date-style="calendar"] #date-main{font-size:28px;font-weight:900;color:#655464}
+        #date-widget[data-date-style="minimal"] .lcd{background:transparent;box-shadow:none}
+        #date-widget[data-date-style="minimal"] #date-weekday{font-size:11px;letter-spacing:.04em;text-transform:capitalize}
+        #date-widget[data-date-style="minimal"] #date-main{font-size:30px;font-weight:900;letter-spacing:-.06em}
+        #date-widget[data-date-style="kawaii"] .lcd{background:linear-gradient(135deg,#fff2f7,#f8e7ff);border:1px solid #f4c6d8;border-radius:18px;padding:10px}
+        #date-widget[data-date-style="kawaii"] #date-weekday:before{content:'♡ ';color:#e99abd}
+        #date-widget[data-date-style="kawaii"] #date-main{font-size:26px;font-weight:900;color:#a66f91}
+        #date-widget[data-date-style="badge"] .lcd{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--theme-soft);border-radius:999px;padding:9px}
+        #date-widget[data-date-style="badge"] #date-weekday{font-size:10px;font-weight:900}
+        #date-widget[data-date-style="badge"] #date-main{font-size:20px;font-weight:900}
+        .w-clock{height:100%;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:12px}
+        .w-clock-time{font-size:clamp(30px,8vw,48px);font-weight:900;letter-spacing:-.06em;color:var(--theme-accent)}
+        .w-clock small{font-size:10px;font-weight:800;text-transform:capitalize;color:var(--icon);opacity:.7}
+        .w-clock-digital{background:#252a35;border-radius:18px}.w-clock-digital .w-clock-time{font-family:'VT323',monospace;color:#a7f3d0;letter-spacing:.05em}
+        .w-clock-digital small{color:#d1fae5}
+        .w-clock-retro{background:linear-gradient(145deg,#f7e8ee,#fff);border:2px solid #efc8d8;border-radius:22px}
+        .w-clock-retro .w-clock-time{font-family:Georgia,serif;color:#a56f8b}
+        .w-clock-kawaii{background:linear-gradient(145deg,#fff0f7,#f3eaff);border:1px solid #f1c6dc;border-radius:22px}
+        .w-clock-kawaii .w-clock-time:before{content:'♡ ';font-size:.55em;color:#e99abd}
+        
         #app-header { flex:0 0 auto; }
         #app-header > *, #app-status-bar > * { position:relative; z-index:1; }
         #edit-bar { position: relative; z-index: 3; }
@@ -5739,11 +5761,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <button data-act="wd-add" data-type="weather" class="wd-add"><i class="fas fa-cloud-sun" aria-hidden="true"></i><b>Clima</b><small>Temperatura e condição local</small></button>
                     <button data-act="wd-add" data-type="luck" class="wd-add"><i class="fas fa-clover" aria-hidden="true"></i><b>Sorte do dia</b><small>Uma mensagem nova por dia</small></button>
                     <button data-act="wd-add" data-type="pet" class="wd-add"><i class="fas fa-paw" aria-hidden="true"></i><b>AeroPet</b><small>Adote seu companheirinho</small></button>
+                    <button data-act="wd-add" data-type="clock" class="wd-add"><i class="fas fa-clock" aria-hidden="true"></i><b>Relógio</b><small>Um relógio decorativo na tela inicial</small></button>
                 </div>
                 <span class="modal-label mt-5">Na tela inicial (${widgets.length})</span>
                 ${widgets.length ? widgets.map(w => `
                     <div class="wd-row" data-wid="${w.id}">
-                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : w.type==='weather' ? '<i class="fas fa-cloud-sun"></i>' : w.type==='luck' ? '<i class="fas fa-clover"></i>' : '<i class="fas fa-quote-left"></i>'}</span>
+                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : w.type==='weather' ? '<i class="fas fa-cloud-sun"></i>' : w.type==='luck' ? '<i class="fas fa-clover"></i>' : w.type==='clock' ? '<i class="fas fa-clock"></i>' : '<i class="fas fa-quote-left"></i>'}</span>
                         <span class="wd-text"><b>${esc(sectionEl(w.id) ? sectionEl(w.id).dataset.label : WIDGET_LABEL[w.type])}</b><small>${esc(w.type === 'image' ? (w.caption || (w.image ? 'Foto' : 'Sem foto ainda')) : w.type==='weather' ? 'Previsão local' : w.type==='luck' ? 'Mensagem diária' : (w.text || 'Sem texto'))}</small></span>
                         <button data-act="wd-edit" class="row-btn" aria-label="Editar widget" title="Editar"><i class="fas fa-pen"></i></button>
                         <button data-act="wd-del" class="row-btn row-danger" aria-label="Remover widget" title="Remover"><i class="fas fa-trash"></i></button>
@@ -5758,7 +5781,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 <button data-act="wd-back" class="note-tool mb-4"><i class="fas fa-chevron-left"></i>Widgets</button>
                 <span class="modal-label">Prévia</span>
                 <div class="wd-preview widget-section ${String(layout.sizes[w.id] || defaultSizeOf(w.id)).startsWith('4x') ? 'is-full' : ''}"><div class="w-body">${widgetBodyHTML(w)}</div></div>
-                ${w.type === 'image' ? `
+                ${w.type === 'clock' ? `<label class="modal-label mt-4" for="wd-clock-style">Estilo do relógio</label><select id="wd-clock-style" class="task-input"><option value="soft" ${w.style==='soft'?'selected':''}>Suave</option><option value="digital" ${w.style==='digital'?'selected':''}>Digital</option><option value="retro" ${w.style==='retro'?'selected':''}>Retrô</option><option value="kawaii" ${w.style==='kawaii'?'selected':''}>Kawaii ♡</option></select>` : w.type === 'image' ? `
                     <div class="flex gap-2 mt-4">
                         <label for="wd-file" class="pill-btn primary sm flex-1 text-center cursor-pointer" role="button" tabindex="0" data-wd-pick><i class="fas fa-camera mr-1"></i>${w.image ? 'Trocar foto' : 'Escolher foto'}</label>
                         ${w.image ? '<button data-act="wd-img-del" class="pill-btn ghost sm"><i class="fas fa-xmark mr-1"></i>Tirar foto</button>' : ''}
@@ -6327,6 +6350,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && finEl.classList.contains('open')) { e.stopPropagation(); e.preventDefault(); finClose(); } }, true);
 
         // ----- ações dentro do painel Finanças -----
+        sheetBody.addEventListener('change',e=>{if(e.target.id==='bg-date-style'){dateStyle=e.target.value;store.set('aerosync.date.style',dateStyle);applyDateStyle();playClick();}if(e.target.id==='bg-clock-style'){clockStyle=e.target.value;store.set('aerosync.clock.style',clockStyle);applyClockStyle();playClick();}});
         sheetBody.addEventListener('click', (e) => {
             const b = e.target.closest('[data-fin]'); if (!b || currentView !== 'finance') return;
             if (b.dataset.fin === 'new') { playClick(); finOpen(); return; }
@@ -6373,10 +6397,15 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             bar.dataset.clockStyle = clockStyle;
             const clock = document.getElementById('clock');
             if (clock) clock.setAttribute('aria-label', 'Horário atual');
+            document.querySelectorAll('.w-clock-time').forEach(el=>{el.textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});});
         };
         applyClockStyle();
         if (!isThumb(bgCustomImage)) bgCustomImage = '';
 
+        let dateStyle=store.get('aerosync.date.style','lcd');
+        if(!['lcd','calendar','minimal','kawaii','badge'].includes(dateStyle))dateStyle='lcd';
+        const applyDateStyle=()=>{const el=document.getElementById('date-widget');if(el)el.dataset.dateStyle=dateStyle;};
+        applyDateStyle();
         const applyFundo = () => {
             if (fundo) document.documentElement.dataset.fundo = fundo;
             else delete document.documentElement.dataset.fundo;
@@ -6418,7 +6447,11 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     </div>
 
                     <div class="mt-4">
-                        <label class="modal-label" for="bg-clock-style">Estilo do relógio</label>
+                        <label class="modal-label" for="bg-date-style">Estilo do widget de data</label>
+                        <select id="bg-date-style" class="w-full rounded-xl p-2 mt-1 text-sm font-bold" style="background:var(--surface);border:1px solid rgba(148,163,184,.3)">
+                            <option value="lcd">LCD clássico</option><option value="calendar">Calendário fofo</option><option value="minimal">Minimalista</option><option value="kawaii">Kawaii ♡</option><option value="badge">Pílula</option>
+                        </select>
+                        <label class="modal-label mt-4" for="bg-clock-style">Estilo do relógio</label>
                         <select id="bg-clock-style" class="w-full rounded-xl p-2 mt-1 text-sm font-bold" style="background:var(--surface);border:1px solid rgba(148,163,184,.3)">
                             <option value="default" ${clockStyle==='default'?'selected':''}>Clássico</option>
                             <option value="pill" ${clockStyle==='pill'?'selected':''}>Pílula delicada</option>
@@ -7492,7 +7525,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
-        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', pet: 'AeroPet' };
+        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', pet: 'AeroPet', clock: 'Relógio' };
         const PET_DEFAULT={adopted:false,species:'cat',name:'',gender:'unspecified',ears:'upright',coat:'short',color:'snow',accessory:'bow',personality:['affectionate'],traits:[],happiness:100,bond:0,stars:0,level:1,xp:0};
         let aeroPet={...PET_DEFAULT,...(store.get(STORAGE_KEYS.pet,{})||{})};
         const PET_COLORS={snow:'#fff8f8',cream:'#f4dfc4',caramel:'#c88f68',cocoa:'#8c6c68',gray:'#b9b7c4',black:'#57525c',pink:'#f4c6d6',lilac:'#d9c9e8'};
@@ -7557,6 +7590,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 if (w.type === 'weather') return { id, type:'weather', background:w.background==='solid'?'solid':'transparent', weather: w.weather&&typeof w.weather==='object'?w.weather:null };
                 if (w.type === 'luck') return { id, type:'luck', style: QUOTE_STYLES[w.style] ? w.style : 'accent' };
                 if (w.type === 'pet') return { id, type:'pet' };
+                if (w.type === 'clock') return { id, type:'clock', style: ['digital','soft','retro','kawaii'].includes(w.style) ? w.style : 'soft' };
                 return { id, type: 'quote', text: typeof w.text === 'string' ? w.text.slice(0, 240) : '', author: libText(w.author, 60), style: QUOTE_STYLES[w.style] ? w.style : 'paper' };
             }).filter(Boolean).filter((w, i, a) => a.findIndex(x => x.id === w.id) === i).slice(0, 30);
         }
@@ -7620,8 +7654,10 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <img src="${w.image}" alt="${esc(w.caption || 'Imagem decorativa')}">
                     ${w.caption ? `<figcaption>${esc(w.caption)}</figcaption>` : ''}</figure>`;
             }
+            if (w.type === 'clock') return `<div class="w-clock w-clock-${w.style||'soft'}"><span class="w-clock-time">${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span><small>${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})}</small></div>`;
             if (w.type === 'pet') { if(!aeroPet.adopted)return `<div class="aeropet-card"><div class="aeropet-figure">${petArt()}</div><b>Seu novo amiguinho está esperando!</b><span>Toque para começar a adoção ♡</span></div>`;return `<div class="aeropet-card"><div class="aeropet-figure">${petArt()}</div><div class="aeropet-name">${esc(aeroPet.name)} ♡</div><div class="aeropet-level">Nível ${aeroPet.level} · ${aeroPet.xp}/100 XP</div><div class="aeropet-actions"><button data-act="pet-care" data-value="love">♡ Carinho</button><button data-act="pet-care" data-value="play">✧ Brincar</button><button data-act="pet-care" data-value="task">★ Recompensa</button></div><small>♡ ${aeroPet.bond} carinho · ★ ${aeroPet.stars} estrelinhas</small></div>`; }
-            if (w.type === 'weather') { const d=w.weather||{};return `<div class="w-weather ${w.background==='solid'?'has-bg':''}"><div class="w-weather-head"><span><i class="fas fa-location-dot"></i> Clima local</span><button type="button" class="w-weather-refresh" data-act="wd-weather-refresh" aria-label="Atualizar clima"><i class="fas fa-rotate"></i></button></div><div class="w-weather-main"><i class="fas ${esc(d.icon||'fa-cloud-sun')}"></i><b>${d.temp==null?'--°':Math.round(d.temp)+'°'}</b></div><div class="w-weather-desc">${esc(d.label||'Toque em atualizar para consultar')}</div>${d.city?`<small>${esc(d.city)}</small>`:''}</div>`; }
+            if (w.type === 'clock') { const sel=document.getElementById('wd-clock-style'); if(sel) sel.addEventListener('change',()=>{w.style=sel.value;saveWidgets();refresh();}); }
+            else if (w.type === 'weather') { const d=w.weather||{};return `<div class="w-weather ${w.background==='solid'?'has-bg':''}"><div class="w-weather-head"><span><i class="fas fa-location-dot"></i> Clima local</span><button type="button" class="w-weather-refresh" data-act="wd-weather-refresh" aria-label="Atualizar clima"><i class="fas fa-rotate"></i></button></div><div class="w-weather-main"><i class="fas ${esc(d.icon||'fa-cloud-sun')}"></i><b>${d.temp==null?'--°':Math.round(d.temp)+'°'}</b></div><div class="w-weather-desc">${esc(d.label||'Toque em atualizar para consultar')}</div>${d.city?`<small>${esc(d.city)}</small>`:''}</div>`; }
             if (w.type === 'luck') { const quotes=['Hoje, uma pequena escolha pode abrir um caminho bonito.','Sua sorte floresce quando você respeita seu próprio ritmo.','Uma surpresa gentil pode aparecer onde menos espera.','Confie no próximo passo, não precisa enxergar a escada inteira.','Hoje é um ótimo dia para acolher uma ideia nova.','O acaso também gosta de quem se permite tentar.','Pequenas alegrias estão procurando você.','Sua curiosidade é seu trevo de quatro folhas.','Uma pausa na hora certa também é sorte.','O melhor detalhe do dia pode ser o mais simples.','Permita-se receber coisas boas sem culpa.','Uma conversa leve pode mudar o tom do dia.','Hoje, escolha o que faz seu coração respirar.','Você está mais perto do que imagina.'];const day=new Date();const key=day.getFullYear()*10000+(day.getMonth()+1)*100+day.getDate();const quote=quotes[((key*9301+49297)>>>0)%quotes.length];return `<blockquote class="w-quote q-${w.style||'accent'}"><i class="fas fa-clover"></i><span class="w-luck-label">SORTE DO DIA</span><p>${quote}</p><small>${day.toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small></blockquote>`; }
             return `<blockquote class="w-quote q-${w.style}${w.text.trim() ? '' : ' is-empty'}">
                 <i class="fas fa-quote-left" aria-hidden="true"></i>
