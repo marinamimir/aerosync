@@ -1092,6 +1092,20 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         .aeropet-card,.aeropet-editor{background:var(--surface);border:1px solid color-mix(in srgb,var(--theme-accent) 24%,transparent);border-radius:22px;padding:16px;color:var(--icon);text-align:center}
         .aeropet-figure,.aeropet-art{width:100%;max-width:190px;margin:0 auto 10px}.aeropet-figure svg,.aeropet-art svg{width:100%;height:auto;filter:drop-shadow(0 4px 2px rgba(80,60,70,.08))}
+        /* Mascotinho AeroPets: animação idle independente das opções escolhidas */
+        .aeropet-figure svg,.aeropet-art svg{overflow:visible}
+        .pet-idle{transform-box:fill-box;transform-origin:center bottom;animation:pet-idle-bob 3.2s ease-in-out infinite}
+        .pet-ear{transform-box:fill-box;transform-origin:bottom center;animation:pet-ear-wiggle 4.8s ease-in-out infinite}
+        .pet-ear-right{animation-delay:.18s}
+        .pet-tail{transform-box:fill-box;transform-origin:0% 50%;animation:pet-tail-wag 1.9s ease-in-out infinite}
+        .pet-eyes{transform-box:fill-box;transform-origin:center;animation:pet-blink 5.6s infinite}
+        .pet-bow{transform-box:fill-box;transform-origin:center;animation:pet-bow-sway 3.2s ease-in-out infinite}
+        @keyframes pet-idle-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-1deg)}}
+        @keyframes pet-ear-wiggle{0%,82%,100%{transform:rotate(0)}86%{transform:rotate(-5deg)}92%{transform:rotate(3deg)}}
+        @keyframes pet-tail-wag{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(12deg)}}
+        @keyframes pet-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.08)}}
+        @keyframes pet-bow-sway{0%,100%{transform:rotate(0)}50%{transform:rotate(5deg)}}
+        @media(prefers-reduced-motion:reduce){.pet-idle,.pet-ear,.pet-tail,.pet-eyes,.pet-bow{animation:none!important}}
         .aeropet-name{font-size:18px;font-weight:900;color:var(--theme-accent)}.aeropet-level,.aeropet-card small{font-size:11px;opacity:.72;font-weight:800}
         .aeropet-actions,.pet-species,.pet-chip-list{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:12px 0}
         .aeropet-actions button,.pet-species button,.pet-chip-list button{border:1px solid color-mix(in srgb,var(--theme-accent) 35%,transparent);border-radius:999px;padding:8px 12px;background:var(--surface);font-size:11px;font-weight:800}
@@ -7449,7 +7463,39 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const PET_PERSONALITIES={affectionate:'Carinhoso',playful:'Brincalhão',shy:'Tímido',curious:'Curioso',sleepy:'Dorminhoco',mischievous:'Travesso'};
         const PET_TRAITS={foodie:'Guloso',explorer:'Aventureiro',cuddly:'Dengoso',independent:'Independente',dreamy:'Sonhador'};
         function savePet(){return store.set(STORAGE_KEYS.pet,aeroPet);}
-        function petArt(p=aeroPet){const dog=p.species==='dog',long=p.coat==='long',floppy=p.ears==='floppy',c=PET_COLORS[p.color]||PET_COLORS.snow;const ear=dog&&floppy?'<path d="M48 67Q8 30 18 92Q27 110 54 86Z"/><path d="M152 67Q192 30 182 92Q173 110 146 86Z"/>':'<path d="M48 68L35 13Q68 20 76 61Z"/><path d="M152 68L165 13Q132 20 124 61Z"/>';const body=long?'M28 105Q18 80 43 68Q50 45 77 57Q100 39 123 57Q151 46 159 76Q181 96 166 121Q178 151 146 163Q122 180 100 164Q76 181 53 161Q22 160 28 128Z':'M31 105Q25 75 52 65Q61 45 83 56Q100 44 117 56Q144 48 151 72Q174 88 164 112Q173 145 145 158Q121 174 101 161Q75 176 55 158Q25 155 31 128Z';return `<svg viewBox="0 0 200 190" role="img" aria-label="Seu pet"><g fill="${c}" stroke="#887b82" stroke-width="4" stroke-linejoin="round">${ear}<path d="${body}"/></g><g fill="#786c74"><ellipse cx="72" cy="111" rx="5" ry="8"/><ellipse cx="128" cy="111" rx="5" ry="8"/></g><ellipse cx="100" cy="126" rx="7" ry="5" fill="#e9a8bd"/><path d="M100 131q-7 10-14 3m14-3q7 10 14 3" fill="none" stroke="#887b82" stroke-width="3" stroke-linecap="round"/><g fill="#f3a9c5" opacity=".6"><ellipse cx="54" cy="128" rx="12" ry="6"/><ellipse cx="146" cy="128" rx="12" ry="6"/></g>${p.accessory==='bow'?'<path d="M127 61Q105 37 119 31Q137 29 137 49Q147 27 163 35Q173 49 145 63Z" fill="#f3a9c5" stroke="#987d88" stroke-width="3"/>':''}</svg>`;}
+        function petArt(p=aeroPet){
+            const dog=p.species==='dog',long=p.coat==='long',floppy=p.ears==='floppy',c=PET_COLORS[p.color]||PET_COLORS.snow;
+            const ear=dog&&floppy
+                ? '<path class="pet-ear pet-ear-left" d="M48 68Q13 44 18 91Q23 116 54 99Q64 83 48 68Z"/><path class="pet-ear pet-ear-right" d="M152 68Q187 44 182 91Q177 116 146 99Q136 83 152 68Z"/>'
+                : dog
+                    ? '<path class="pet-ear pet-ear-left" d="M48 70Q27 24 39 15Q67 18 76 65Z"/><path class="pet-ear pet-ear-right" d="M152 70Q173 24 161 15Q133 18 124 65Z"/>'
+                    : '<path class="pet-ear pet-ear-left" d="M43 76Q27 22 43 15Q67 28 76 65Z"/><path class="pet-ear pet-ear-right" d="M157 76Q173 22 157 15Q133 28 124 65Z"/>';
+            const head=long
+                ? 'M24 104Q17 75 43 63Q50 40 77 52Q100 35 123 52Q150 40 157 63Q183 75 176 104Q184 143 151 158Q128 177 100 163Q72 177 49 158Q16 143 24 104Z'
+                : 'M27 105Q22 76 47 64Q56 43 79 54Q100 39 121 54Q144 43 153 64Q178 76 173 105Q180 141 150 155Q126 170 100 159Q74 170 50 155Q20 141 27 105Z';
+            const muzzle=dog?'<ellipse cx="100" cy="125" rx="17" ry="12" fill="#fff8fb" stroke="#a9959f" stroke-width="2.5"/><ellipse cx="100" cy="119" rx="5" ry="3.5" fill="#8c7d85"/>':'<path d="M94 119Q100 114 106 119Q103 125 100 125Q97 125 94 119Z" fill="#e9a8bd"/>';
+            const tail=dog?'<path class="pet-tail" d="M163 139Q190 135 184 113Q180 102 172 111" fill="none" stroke="'+c+'" stroke-width="11" stroke-linecap="round"/><path d="M163 139Q190 135 184 113Q180 102 172 111" fill="none" stroke="#a9959f" stroke-width="2.5" stroke-linecap="round"/>':'<path class="pet-tail" d="M39 143Q14 157 27 169" fill="none" stroke="'+c+'" stroke-width="8" stroke-linecap="round"/><path d="M39 143Q14 157 27 169" fill="none" stroke="#a9959f" stroke-width="2" stroke-linecap="round"/>';
+            const bow=p.accessory==='bow'?'<g class="pet-bow" fill="#f3a9c5" stroke="#a98998" stroke-width="2.4" stroke-linejoin="round"><path d="M132 55Q111 35 116 27Q128 22 139 43Q150 22 164 29Q172 39 145 57Z"/><circle cx="140" cy="45" r="5" fill="#ffeaf2"/></g>':'';
+            const coatTufts=long?'<path d="M52 59Q43 47 54 39M75 52Q68 39 79 33M124 52Q132 39 121 33M148 61Q160 48 151 40" fill="none" stroke="#fff8fb" stroke-width="5" stroke-linecap="round"/>':'';
+            return `<svg class="pet-mascot" viewBox="0 0 200 190" role="img" aria-label="Mascotinho do seu pet">
+                <g class="pet-idle">
+                    ${tail}
+                    <g fill="${c}" stroke="#a9959f" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">${ear}<path d="${head}"/></g>
+                    ${coatTufts}
+                    <g class="pet-face">
+                        <g class="pet-eyes" fill="#756873"><ellipse cx="72" cy="105" rx="6.5" ry="9"/><ellipse cx="128" cy="105" rx="6.5" ry="9"/></g>
+                        <g fill="#fff"><circle cx="74" cy="101" r="2.2"/><circle cx="130" cy="101" r="2.2"/></g>
+                        ${muzzle}
+                        <path d="M100 128Q94 136 88 130M100 128Q106 136 112 130" fill="none" stroke="#8d7c85" stroke-width="2.6" stroke-linecap="round"/>
+                        <g fill="#f2a9c2" opacity=".72"><ellipse cx="54" cy="124" rx="12" ry="6"/><ellipse cx="146" cy="124" rx="12" ry="6"/></g>
+                    </g>
+                    ${bow}
+                    <ellipse cx="76" cy="166" rx="16" ry="5" fill="${c}" opacity=".9" stroke="#a9959f" stroke-width="2"/>
+                    <ellipse cx="124" cy="166" rx="16" ry="5" fill="${c}" opacity=".9" stroke="#a9959f" stroke-width="2"/>
+                </g>
+                <path d="M25 178Q100 185 175 178" fill="none" stroke="#f3c8d8" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+            </svg>`;
+        }
         const QUOTE_STYLES = { paper: 'Papel', accent: 'Destaque', minimal: 'Simples' };
         // Frases curtinhas para o botão "Inspiração" (escritas para o app; troque à vontade)
         const QUOTE_IDEAS = [
