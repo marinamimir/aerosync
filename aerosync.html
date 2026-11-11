@@ -2930,7 +2930,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             breaks: 'aerosync.breaks', // Pausas pro Café (aparecem no calendário)
             finance: 'aerosync.finance', // Finanças (gastos e categorias) — separado das tarefas
             fundo: 'aerosync.fundo', // fundo suave do app
-            pet: 'aerosync.pet' // AeroPets: um único pet
+            pet: 'aerosync.pet', // AeroPets: um único pet
+            categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors' // categorias personalizadas e paleta de ícones
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
         const store = {
@@ -7195,7 +7196,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const ipCustomColors = document.getElementById('ip-custom-colors');
         const ipCustomColorInput = document.getElementById('ip-custom-color');
         const ipSaveColorButton = document.getElementById('ip-save-color');
-        let savedIconColors = (Array.isArray(store.get('aerosync.customIconColors',[]))?store.get('aerosync.customIconColors',[]):[])
+        let savedIconColors = (Array.isArray(store.get(STORAGE_KEYS.iconColors,[]))?store.get(STORAGE_KEYS.iconColors,[]):[])
             .filter(c=>typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c))
             .map(c=>c.toUpperCase()).filter((c,i,a)=>a.indexOf(c)===i).slice(-32);
         const renderIconColors = () => {
@@ -7281,7 +7282,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             if(!ICON_COLORS.some(([c])=>c.toUpperCase()===color)&&!savedIconColors.includes(color)){
                 savedIconColors.push(color);
                 savedIconColors=savedIconColors.slice(-32);
-                store.set('aerosync.customIconColors',savedIconColors);
+                store.set(STORAGE_KEYS.iconColors,savedIconColors);
                 renderIconColors();
             }
             if(ipCurrent)ipCurrent={n:ipCurrent.n,c:color};
