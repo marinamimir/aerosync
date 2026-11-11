@@ -5812,9 +5812,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const w = id ? widgetById(id) : null;
             if (act === 'wd-add') { addWidget(btn.dataset.type); return; }
             if (act === 'wd-back') { playClick(); openSheet('widgets'); return; }
-            if (act === 'pet-species' && !aeroPet.adopted) { aeroPet.species=btn.dataset.value==='dog'?'dog':'cat'; savePet(); renderSheet(); return; }
-            if (act === 'pet-personality') { const v=btn.dataset.value;const a=aeroPet.personality||[];aeroPet.personality=a.includes(v)?a.filter(x=>x!==v):a.length<3?[...a,v]:a;savePet();renderSheet();return; }
-            if (act === 'pet-trait') { const v=btn.dataset.value;const a=aeroPet.traits||[];aeroPet.traits=a.includes(v)?a.filter(x=>x!==v):[...a,v];savePet();renderSheet();return; }
+            if (act === 'pet-species' && !aeroPet.adopted) { aeroPet.species=btn.dataset.value==='dog'?'dog':'cat'; savePet(); sheetBody.querySelectorAll('[data-act="pet-species"]').forEach(x=>x.classList.toggle('selected',x===btn)); const art=sheetBody.querySelector('.aeropet-art'); if(art) art.innerHTML=petArt(); return; }
+            if (act === 'pet-personality') { const v=btn.dataset.value;const a=aeroPet.personality||[];if(a.includes(v)) aeroPet.personality=a.filter(x=>x!==v); else if(a.length<3) aeroPet.personality=[...a,v]; else { toast('Você pode escolher até 3 personalidades ♡'); return; } savePet(); btn.classList.toggle('selected',aeroPet.personality.includes(v)); return; }
+            if (act === 'pet-trait') { const v=btn.dataset.value;const a=aeroPet.traits||[];aeroPet.traits=a.includes(v)?a.filter(x=>x!==v):[...a,v];savePet();btn.classList.toggle('selected',aeroPet.traits.includes(v));return; }
             if (act === 'pet-save') { const name=(document.getElementById('pet-name')?.value||'').trim();if(!name){toast('Escolha um nome para seu pet ♡');return;}aeroPet.name=name.slice(0,24);aeroPet.ears=document.getElementById('pet-ears')?.value||'upright';aeroPet.coat=document.getElementById('pet-coat')?.value||'short';aeroPet.color=document.getElementById('pet-color')?.value||'snow';aeroPet.accessory=document.getElementById('pet-accessory')?.value||'bow';if(!aeroPet.adopted){aeroPet.gender=document.getElementById('pet-gender')?.value||'unspecified';aeroPet.adopted=true;aeroPet.createdAt=Date.now();}savePet();syncWidgetSections();renderSheet();playSuccess();toast(aeroPet.adopted?'Seu pet está salvo! ♡':'');return; }
             if (act === 'pet-care') { if(!aeroPet.adopted)return;aeroPet.happiness=Math.min(100,(aeroPet.happiness||0)+5);aeroPet.bond=(aeroPet.bond||0)+(btn.dataset.value==='task'?10:5);aeroPet.xp=(aeroPet.xp||0)+10;if(aeroPet.xp>=100){aeroPet.xp-=100;aeroPet.level=(aeroPet.level||1)+1;aeroPet.stars=(aeroPet.stars||0)+1;toast('Seu pet subiu de nível! ✨');}savePet();syncWidgetSections();playSuccess();return; }
             if (!w) return;
@@ -6517,6 +6517,16 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             setStatus(t, e.target.checked ? 'done' : reopenStatus(t));
             saveTasks(); renderTasks(); renderSheet(); playClick();
         });
+        sheetBody.addEventListener('change', (e) => {
+            const fields = { 'pet-ears':'ears', 'pet-coat':'coat', 'pet-color':'color', 'pet-accessory':'accessory' };
+            const field = fields[e.target && e.target.id];
+            if (!field || currentView !== 'widget') return;
+            aeroPet[field] = e.target.value;
+            savePet();
+            const art = sheetBody.querySelector('.aeropet-art');
+            if (art) art.innerHTML = petArt();
+        });
+
         sheetBody.addEventListener('click', (e) => {
             const btn = e.target.closest('[data-act]');
             if (!btn) { // tocar numa linha de missão (Agenda / Calendário) abre o Task Hub
@@ -6540,7 +6550,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             if (act.startsWith('note-')) return handleNoteAction(act, btn.dataset);
             if (act.startsWith('lib-')) return handleLibAction(act, btn);
             if (act.startsWith('life-')) return handleLifeAction(act, btn);
-            if (act.startsWith('wd-')) return handleWidgetAction(act, btn);
+            if (act.startsWith('wd-') || act.startsWith('pet-')) return handleWidgetAction(act, btn);
             const row = btn.closest('[data-id]');
             const t = row && findTask(row.dataset.id);
             if (!t) return;
