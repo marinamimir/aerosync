@@ -7,7 +7,7 @@
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v10';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
@@ -38,15 +38,20 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Busca na rede e atualiza o cache (só respostas válidas do próprio site)
-function fetchAndCache(request, cacheKey = request) {
-  return fetch(request).then((response) => {
+// Documento principal: rede primeiro; cache somente como fallback offline.
+async function networkFirst(request, cacheKey = request) {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
     if (response && response.ok && response.type === 'basic') {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then((cache) => cache.put(cacheKey, copy));
+      await cache.put(cacheKey, response.clone());
     }
     return response;
-  });
+  } catch (error) {
+    const cached = await caches.match(cacheKey);
+    if (cached) return cached;
+    throw error;
+  }
 }
 
 // 3. Pedidos: cache primeiro, rede em segundo plano
@@ -56,16 +61,11 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // não mexe em nada de outros sites (ex.: links úteis)
 
-  // Abrir o app (aerosync.html ou a raiz da pasta): sempre responde com o aerosync.html do cache
+  // App: sempre tenta obter o HTML publicado mais recente; cache apenas offline.
   const shell = new URL('./aerosync.html', self.registration.scope).href;
   const isApp = url.pathname === new URL(shell).pathname || url.href.split('?')[0] === self.registration.scope;
   if (req.mode === 'navigate' && isApp) {
-    event.respondWith(
-      caches.match(shell).then((cached) => {
-        const network = fetchAndCache(req, shell).catch(() => cached);
-        return cached || network;
-      })
-    );
+    event.respondWith(networkFirst(req, shell));
     return;
   }
 
