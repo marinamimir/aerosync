@@ -2047,27 +2047,30 @@
         /* Desativa a vinheta estática antiga */
         .mobile-frame::after { display: none !important; }
 
-/* ===== Camadas de Fundo Dinâmico & Vinheta Alfa Transparente ===== */
+        /* Camadas de Fundo Dinâmico e Vinheta Customizável */
         .app-bg-canvas {
             position: absolute; inset: 0; z-index: 0; pointer-events: none;
             overflow: hidden; border-radius: inherit;
-            background-size: cover; background-position: center;
             transition: opacity 0.3s ease, filter 0.3s ease;
-            /* Máscara Alfa: O centro é 100% visível e as bordas ficam transparentes, mesclando ao console */
-            -webkit-mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, black var(--bg-mask-center, 40%), transparent 100%);
-            mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, black var(--bg-mask-center, 40%), transparent 100%);
         }
-        .app-vignette-canvas { display: none !important; }
+        .app-vignette-canvas {
+            position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+            transition: opacity 0.3s ease, background 0.3s ease;
+        }
 
-        /* Fundos Presets */
+        /* Conteúdo principal e widgets ficam sobre o fundo */
+        #main-scroll { position: relative; z-index: 2; }
+
+        /* 1. Mii Plaza Ambient (Grade Isométrica Soft + Orbes Flutuantes) */
         [data-fundo="mii-plaza"] .app-bg-canvas {
             background-color: #f6f9fe;
             background-image: 
                 radial-gradient(circle at 20% 25%, rgba(167, 139, 250, 0.45) 0%, transparent 45%),
                 radial-gradient(circle at 80% 75%, rgba(56, 189, 248, 0.40) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(52, 211, 153, 0.25) 0%, transparent 50%),
                 linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+            background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px, 24px 24px;
         }
         html.dark[data-fundo="mii-plaza"] .app-bg-canvas {
             background-color: #121420;
@@ -2078,11 +2081,15 @@
                 linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
         }
+
+        /* 4. Wii U System Channels (Fitas e Ondas Acrílicas Curvas) */
         [data-fundo="wiiu-channels"] .app-bg-canvas {
             background-color: #f8fafc;
             background-image: 
                 radial-gradient(ellipse 90% 60% at 10% -10%, rgba(56, 189, 248, 0.45) 0%, transparent 60%),
-                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(99, 102, 241, 0.35) 0%, transparent 60%);
+                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(99, 102, 241, 0.35) 0%, transparent 60%),
+                linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 40%),
+                repeating-linear-gradient(45deg, rgba(241,245,249,0.6) 0px, rgba(241,245,249,0.6) 2px, transparent 2px, transparent 12px);
         }
         html.dark[data-fundo="wiiu-channels"] .app-bg-canvas {
             background-color: #0f172a;
@@ -2090,64 +2097,23 @@
                 radial-gradient(ellipse 90% 60% at 10% -10%, rgba(14, 165, 233, 0.25) 0%, transparent 60%),
                 radial-gradient(ellipse 80% 50% at 90% 110%, rgba(79, 70, 229, 0.25) 0%, transparent 60%);
         }
+
+        /* 5. Tenki Weather Prism (Prisma Holográfico & Shimmer Suave) */
         [data-fundo="tenki-prism"] .app-bg-canvas {
             background-color: #fafbfc;
             background-image: 
                 radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.40) 0%, transparent 40%),
                 radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.40) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.28) 0%, transparent 45%);
+                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.28) 0%, transparent 45%),
+                linear-gradient(120deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 100%);
         }
         html.dark[data-fundo="tenki-prism"] .app-bg-canvas {
             background-color: #161824;
             background-image: 
                 radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 40%);
+                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.15) 0%, transparent 45%);
         }
-
-        /* ===== Bento Grid de 4 Colunas para os Widgets da Tela Inicial ===== */
-        #home-sections {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            grid-auto-flow: dense;
-            grid-auto-rows: minmax(76px, auto);
-            gap: 12px 10px;
-            align-items: stretch;
-            position: relative;
-            z-index: 2;
-        }
-        .home-section {
-            grid-column: span 4;
-            margin-bottom: 0 !important;
-            position: relative;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .home-section > :not(.section-tools):not(.home-note-empty) { flex: 1; }
-
-        /* Tamanhos Bento Modulares */
-        .home-section.bento-1x1 { grid-column: span 1; grid-row: span 1; }
-        .home-section.bento-1x2, .home-section.is-half { grid-column: span 2; grid-row: span 1; }
-        .home-section.bento-2x2 { grid-column: span 2; grid-row: span 2; }
-        .home-section.bento-1x4 { grid-column: span 1; grid-row: span 4; } /* Vertical alto: 4 1x1 cabem ao lado! */
-        .home-section.bento-full, .home-section.is-full { grid-column: span 4; }
-
-        .home-section.carousel-section,
-        .home-section[data-section="tasks"],
-        .home-section[data-section="note"] {
-            grid-column: span 4 !important;
-        }
-
-        /* Botão para subir foto da galeria */
-        .btn-gallery-upload {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 11px 14px; border-radius: 16px;
-            background: rgba(255,255,255,0.85); border: 1.5px dashed var(--theme-accent, #F06AAE);
-            font-size: 11px; font-weight: 800; color: var(--theme-accent, #F06AAE);
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .btn-gallery-upload:hover { background: #fff; transform: translateY(-1px); }
-        html.dark .btn-gallery-upload { background: rgba(30,41,59,0.7); }
 
         /* Presets suaves legados */
         html:not(.dark)[data-fundo=lavanda] .mobile-frame { --surface: #EFE9FB; }
@@ -6206,42 +6172,42 @@
             const v = finNum(e.target.value); if (v > 0) { fin.limit = v; finSave(); }
             renderFinance();
         });
-// ================================================
-        //  FUNDO, FOTO DA GALERIA & MÁSCARA ALFA
+
+        // ================================================
+        //  FUNDO DO APP (cores suaves + vinheta) — escolhido em Ajustes
+        // ================================================
+        // ================================================
+        //  FUNDO DO APP (Wii U / 3DS / Cocoon) — escolhido em Ajustes
         // ================================================
         const FUNDOS = [
             ['', 'Padrão', 'var(--accent-soft)'],
             ['mii-plaza', 'Mii Plaza', 'linear-gradient(135deg, #c4b5fd, #67e8f9)'],
             ['wiiu-channels', 'Wii U', 'linear-gradient(135deg, #38bdf8, #818cf8)'],
             ['tenki-prism', 'Tenki', 'linear-gradient(135deg, #f472b6, #38bdf8)'],
-            ['custom', 'Galeria', 'linear-gradient(135deg, #f472b6, #fbbf24)']
+            ['lavanda', 'Lavanda', '#EFE9FB'],
+            ['pessego', 'Pêssego', '#FFEFE4']
         ];
         let fundo = store.get(STORAGE_KEYS.fundo, '');
         if (!FUNDOS.some(f => f[0] === fundo)) fundo = '';
 
         let bgBlur = store.get('aerosync.bg.blur', 0);
         let bgOpacity = store.get('aerosync.bg.opacity', 100);
-        let bgVignette = store.get('aerosync.bg.vignette', 40);
-        let customBgImage = store.get('aerosync.bg.customUrl', '');
+        let bgVignette = store.get('aerosync.bg.vignette', 35);
 
         const applyFundo = () => {
             if (fundo) document.documentElement.dataset.fundo = fundo;
             else delete document.documentElement.dataset.fundo;
 
             const bgEl = document.getElementById('app-bg-layer');
-            if (bgEl) {
-                if (fundo === 'custom' && customBgImage) {
-                    bgEl.style.backgroundImage = `url("${customBgImage}")`;
-                } else if (fundo === 'custom') {
-                    bgEl.style.backgroundImage = 'none';
-                }
+            const vigEl = document.getElementById('app-vignette-layer');
 
+            if (bgEl) {
                 bgEl.style.filter = bgBlur > 0 ? `blur(${bgBlur}px)` : 'none';
                 bgEl.style.opacity = (bgOpacity / 100).toString();
-
-                // Aplica a máscara alfa para mesclagem gradual transparente
-                const maskCenter = Math.max(10, 95 - bgVignette);
-                bgEl.style.setProperty('--bg-mask-center', `${maskCenter}%`);
+            }
+            if (vigEl) {
+                const alpha = (bgVignette / 100).toFixed(2);
+                vigEl.style.background = `radial-gradient(ellipse at 50% 45%, transparent 48%, rgba(30,20,50,${alpha}) 100%)`;
             }
         };
         applyFundo();
@@ -6249,7 +6215,7 @@
         function fundoMount() {
             sheetBody.insertAdjacentHTML('beforeend', `
                 <div class="sheet-section" id="fundo-sec">
-                    <h3 class="modal-label">Fundo do App & Estética</h3>
+                    <h3 class="modal-label">Fundo do App (Wii U / 3DS)</h3>
                     <div class="fundo-row" role="group" aria-label="Fundo do app">
                         ${FUNDOS.map(f => `
                             <button class="fundo-sw" style="--c:${f[2]}" data-fundo="${f[0]}" aria-pressed="${f[0] === fundo}">
@@ -6258,15 +6224,7 @@
                         `).join('')}
                     </div>
 
-                    <!-- Botão de Upload da Galeria -->
-                    <div class="mt-3">
-                        <label for="bg-photo-upload" class="btn-gallery-upload">
-                            <i class="fas fa-camera"></i> Subir foto da galeria
-                        </label>
-                        <input type="file" id="bg-photo-upload" accept="image/*" class="hidden">
-                    </div>
-
-                    <!-- Sliders de Customização -->
+                    <!-- Sliders de Blur, Opacidade e Vinheta -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
@@ -6286,38 +6244,48 @@
 
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
-                                <span><i class="fas fa-circle-notch mr-1"></i>Fusão com as Bordas (Vinheta Alfa)</span>
+                                <span><i class="fas fa-circle-dot mr-1"></i>Intensidade da Vinheta</span>
                                 <span id="lbl-bg-vignette">${bgVignette}%</span>
                             </div>
                             <input type="range" min="0" max="80" value="${bgVignette}" class="bg-range-input" id="rng-bg-vignette">
                         </div>
                     </div>
 
-                    <!-- Botão de Atualização do GitHub Pages -->
+                    <!-- Botão de Atualização do App (GitHub Pages) -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
                         <h3 class="modal-label mb-2">Versão & Sistema</h3>
                         <button type="button" id="btn-force-update" class="btn-update-app">
                             <i class="fas fa-rotate"></i>Buscar Atualizações do GitHub
                         </button>
+                        <p class="text-[10px] font-semibold text-gray-400 mt-1.5 text-center">
+                            Recarrega o app limpando o cache para refletir novidades do repositório.
+                        </p>
                     </div>
                 </div>
             `);
         }
 
-        // Listener do upload da galeria
-        sheetBody.addEventListener('change', (e) => {
-            if (e.target.id === 'bg-photo-upload') {
-                const file = e.target.files && e.target.files[0];
-                if (!file) return;
-                fileToJpeg(file, 900).then(url => {
-                    customBgImage = url;
-                    store.set('aerosync.bg.customUrl', customBgImage);
-                    fundo = 'custom';
-                    store.set(STORAGE_KEYS.fundo, fundo);
-                    applyFundo();
-                    renderSheet();
-                    toast('Foto da galeria aplicada!');
-                }).catch(() => toast('Erro ao processar imagem'));
+        sheetBody.addEventListener('click', (e) => {
+            const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
+            fundo = b.dataset.fundo; store.set(STORAGE_KEYS.fundo, fundo); applyFundo(); renderSheet(); playClick();
+        });
+
+        sheetBody.addEventListener('input', (e) => {
+            if (e.target.id === 'rng-bg-opacity') {
+                bgOpacity = parseInt(e.target.value, 10);
+                store.set('aerosync.bg.opacity', bgOpacity);
+                const l = document.getElementById('lbl-bg-opacity'); if (l) l.textContent = bgOpacity + '%';
+                applyFundo();
+            } else if (e.target.id === 'rng-bg-blur') {
+                bgBlur = parseInt(e.target.value, 10);
+                store.set('aerosync.bg.blur', bgBlur);
+                const l = document.getElementById('lbl-bg-blur'); if (l) l.textContent = bgBlur + 'px';
+                applyFundo();
+            } else if (e.target.id === 'rng-bg-vignette') {
+                bgVignette = parseInt(e.target.value, 10);
+                store.set('aerosync.bg.vignette', bgVignette);
+                const l = document.getElementById('lbl-bg-vignette'); if (l) l.textContent = bgVignette + '%';
+                applyFundo();
             }
         });
 
@@ -7378,7 +7346,7 @@
         }
         syncWidgetSections();
 
-function applyLayout() {
+        function applyLayout() {
             const ids = allSectionIds();
             layout.order = layout.order.filter(id => ids.includes(id));
             ids.forEach(id => { if (!layout.order.includes(id)) layout.order.unshift(id); if (!layout.sizes[id]) layout.sizes[id] = defaultSizeOf(id); });
@@ -7386,26 +7354,22 @@ function applyLayout() {
             layout.order.forEach(id => homeEl.appendChild(sectionEl(id)));
             layout.order.forEach((id, i) => {
                 const sec = sectionEl(id), label = sec.dataset.label;
-                const hidden = layout.hidden.includes(id);
+                const hidden = layout.hidden.includes(id), full = layout.sizes[id] === 'full', fixed = FIXED_FULL.includes(id);
                 sec.classList.toggle('is-hidden', hidden);
-
-                // Aplica tamanho Bento dinâmico
-                sec.classList.remove('bento-1x1', 'bento-1x2', 'bento-2x2', 'bento-1x4', 'bento-full', 'is-full', 'is-half');
-                let sz = layout.sizes[id] || 'full';
-                if (sz === 'half') sz = '1x2';
-                sec.classList.add(`bento-${sz}`);
-
+                sec.classList.toggle('is-full', full);
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
                 sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;
                 const sb = sec.querySelector('[data-st="size"]');
-                const fixed = FIXED_FULL.includes(id);
+                const sizeLabel = fixed ? 'Este bloco sempre usa a largura toda' : full ? 'Deixar com metade da largura' : 'Usar a largura toda';
                 sb.disabled = fixed;
-                sb.title = `Tamanho: ${sz}`;
-                sb.setAttribute('aria-label', `${label}: ${sz}`);
-                sb.innerHTML = `<i class="fas fa-up-right-and-down-left-from-center"></i>`;
+                sb.title = sizeLabel;
+                sb.setAttribute('aria-label', `${label}: ${sizeLabel}`);
+                sb.innerHTML = `<i class="fas ${full ? 'fa-down-left-and-up-right-to-center' : 'fa-up-right-and-down-left-from-center'}"></i>`;
                 const hb = sec.querySelector('[data-st="hide"]');
                 hb.classList.toggle('is-on', hidden);
                 hb.setAttribute('aria-pressed', String(hidden));
+                hb.setAttribute('aria-label', `${hidden ? 'Mostrar' : 'Ocultar'} ${label}`);
+                hb.title = hidden ? 'Mostrar bloco' : 'Ocultar bloco';
                 hb.innerHTML = `<i class="fas ${hidden ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
             });
         }
@@ -7460,10 +7424,7 @@ function applyLayout() {
             const i = layout.order.indexOf(id), o = layout.order;
             if (b.dataset.st === 'prev' && i > 0) [o[i - 1], o[i]] = [o[i], o[i - 1]];
             if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
-           if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) {
-                const cycle = { '1x2': '2x2', '2x2': '1x1', '1x1': '1x4', '1x4': 'full', 'full': '1x2', 'half': '2x2' };
-                layout.sizes[id] = cycle[layout.sizes[id] || '1x2'] || 'full';
-            }
+            if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) layout.sizes[id] = layout.sizes[id] === 'full' ? 'half' : 'full';
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
             if (b.dataset.st === 'wedit') { openWidgetEditor(id); return; }
             if (b.dataset.st === 'wdel') { removeWidget(id); return; }
