@@ -2044,8 +2044,116 @@
         html:not(.dark) .acrylic-card, html:not(.dark) .sheet-panel, html:not(.dark) .ip-panel {
             -webkit-backdrop-filter: blur(24px) saturate(1.3); backdrop-filter: blur(24px) saturate(1.3);
         }
-        /* Desativa a vinheta estática antiga */
+/* Desativa a vinheta estática antiga para dar lugar ao controle dinâmico */
         .mobile-frame::after { display: none !important; }
+
+        /* Camadas de Fundo Dinâmico e Vinheta com Transparência Gradual */
+        .app-bg-canvas {
+            position: absolute; inset: 0; z-index: 0; pointer-events: none;
+            overflow: hidden; border-radius: inherit;
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+        .app-vignette-canvas {
+            position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+            transition: opacity 0.3s ease, background 0.3s ease;
+            mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 45%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 45%, transparent 100%);
+        }
+
+        /* Conteúdo principal e widgets ficam sobre o fundo */
+        #main-scroll { position: relative; z-index: 2; overscroll-behavior: contain; }
+
+        /* 1. Mii Plaza Ambient (Grade Isométrica Soft + Orbes Flutuantes) */
+        [data-fundo="mii-plaza"] .app-bg-canvas {
+            background-color: #f6f9fe;
+            background-image: 
+                radial-gradient(circle at 20% 25%, rgba(167, 139, 250, 0.45) 0%, transparent 45%),
+                radial-gradient(circle at 80% 75%, rgba(56, 189, 248, 0.40) 0%, transparent 45%),
+                linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+        }
+        html.dark[data-fundo="mii-plaza"] .app-bg-canvas {
+            background-color: #121420;
+            background-image: 
+                radial-gradient(circle at 20% 25%, rgba(139, 92, 246, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 80% 75%, rgba(14, 165, 233, 0.25) 0%, transparent 45%),
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 24px 24px, 24px 24px;
+        }
+
+        /* 4. Wii U System Channels (Fitas e Ondas Acrílicas Curvas) */
+        [data-fundo="wiiu-channels"] .app-bg-canvas {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(56, 189, 248, 0.45) 0%, transparent 60%),
+                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(99, 102, 241, 0.35) 0%, transparent 60%);
+        }
+        html.dark[data-fundo="wiiu-channels"] .app-bg-canvas {
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(14, 165, 233, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(79, 70, 229, 0.25) 0%, transparent 60%);
+        }
+
+        /* 5. Tenki Weather Prism (Prisma Holográfico & Shimmer Suave) */
+        [data-fundo="tenki-prism"] .app-bg-canvas {
+            background-color: #fafbfc;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.40) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.40) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.28) 0%, transparent 45%);
+        }
+        html.dark[data-fundo="tenki-prism"] .app-bg-canvas {
+            background-color: #161824;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 40%);
+        }
+
+        /* Presets suaves legados */
+        html:not(.dark)[data-fundo=lavanda] .mobile-frame { --surface: #EFE9FB; }
+        html:not(.dark)[data-fundo=menta] .mobile-frame { --surface: #E6F6EE; }
+        html:not(.dark)[data-fundo=pessego] .mobile-frame { --surface: #FFEFE4; }
+        html:not(.dark)[data-fundo=nevoa] .mobile-frame { --surface: #E7F0FB; }
+
+        /* Botões seletores de fundo */
+        .fundo-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .fundo-sw { display: grid; justify-items: center; gap: 4px; font-size: 10px; font-weight: 800; color: #64748b; }
+        .fundo-sw i { width: 44px; height: 44px; border-radius: 16px; background: var(--c); border: 2.5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.15s; }
+        .fundo-sw[aria-pressed=true] i { outline: 3px solid var(--theme-accent, #3b82f6); transform: scale(1.08); }
+
+        /* Sliders táteis de Blur, Opacidade e Vinheta */
+        .bg-slider-row { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+        .bg-slider-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #64748b; }
+        .bg-range-input {
+            width: 100%; -webkit-appearance: none; height: 6px; border-radius: 999px;
+            background: #e2e8f0; outline: none; transition: background 0.2s;
+        }
+        html.dark .bg-range-input { background: #334155; }
+        .bg-range-input::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+            background: var(--theme-accent, #3b82f6); cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2); border: 2px solid #fff;
+        }
+
+        /* Botão de Atualização do App (Busca no GitHub) */
+        .btn-update-app {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px 16px; border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(241,245,249,0.85));
+            border: 1.5px solid rgba(255,255,255,0.9);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-size: 12px; font-weight: 800; color: #334155;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-update-app:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+        .btn-update-app:active { transform: scale(0.98); }
+        html.dark .btn-update-app {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-color: rgba(255,255,255,0.08); color: #f1f5f9;
+        }
 
         /* Camadas de Fundo Dinâmico e Vinheta Customizável */
         .app-bg-canvas {
@@ -2221,6 +2329,7 @@
 <body>
 
     <div class="mobile-frame">
+        
         <!-- Camadas Dinâmicas de Fundo e Vinheta (Wii U / 3DS / Cocoon) -->
         <div id="app-bg-layer" class="app-bg-canvas" aria-hidden="true"></div>
         <div id="app-vignette-layer" class="app-vignette-canvas" aria-hidden="true"></div>
@@ -6173,11 +6282,8 @@
             renderFinance();
         });
 
-        // ================================================
-        //  FUNDO DO APP (cores suaves + vinheta) — escolhido em Ajustes
-        // ================================================
-        // ================================================
-        //  FUNDO DO APP (Wii U / 3DS / Cocoon) — escolhido em Ajustes
+// ================================================
+        //  FUNDO DO APP & CUSTOMIZAÇÕES (Wii U / 3DS / Cocoon)
         // ================================================
         const FUNDOS = [
             ['', 'Padrão', 'var(--accent-soft)'],
@@ -6207,7 +6313,7 @@
             }
             if (vigEl) {
                 const alpha = (bgVignette / 100).toFixed(2);
-                vigEl.style.background = `radial-gradient(ellipse at 50% 45%, transparent 48%, rgba(30,20,50,${alpha}) 100%)`;
+                vigEl.style.background = `radial-gradient(ellipse at 50% 45%, transparent 45%, rgba(30,20,50,${alpha}) 100%)`;
             }
         };
         applyFundo();
@@ -6224,7 +6330,7 @@
                         `).join('')}
                     </div>
 
-                    <!-- Sliders de Blur, Opacidade e Vinheta -->
+                    <!-- Sliders de Customização (Blur, Opacidade, Vinheta) -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
@@ -6264,6 +6370,62 @@
                 </div>
             `);
         }
+
+        sheetBody.addEventListener('click', (e) => {
+            const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
+            fundo = b.dataset.fundo; store.set(STORAGE_KEYS.fundo, fundo); applyFundo(); renderSheet(); playClick();
+        });
+
+        sheetBody.addEventListener('input', (e) => {
+            if (e.target.id === 'rng-bg-opacity') {
+                bgOpacity = parseInt(e.target.value, 10);
+                store.set('aerosync.bg.opacity', bgOpacity);
+                const l = document.getElementById('lbl-bg-opacity'); if (l) l.textContent = bgOpacity + '%';
+                applyFundo();
+            } else if (e.target.id === 'rng-bg-blur') {
+                bgBlur = parseInt(e.target.value, 10);
+                store.set('aerosync.bg.blur', bgBlur);
+                const l = document.getElementById('lbl-bg-blur'); if (l) l.textContent = bgBlur + 'px';
+                applyFundo();
+            } else if (e.target.id === 'rng-bg-vignette') {
+                bgVignette = parseInt(e.target.value, 10);
+                store.set('aerosync.bg.vignette', bgVignette);
+                const l = document.getElementById('lbl-bg-vignette'); if (l) l.textContent = bgVignette + '%';
+                applyFundo();
+            }
+        });
+
+        // Ação do Botão de Atualização do GitHub
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('#btn-force-update');
+            if (!btn) return;
+
+            const icon = btn.querySelector('i');
+            if (icon) icon.classList.add('fa-spin');
+            btn.style.opacity = '0.7';
+            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Buscando atualizações...';
+
+            if ('caches' in window) {
+                try {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(k => caches.delete(k)));
+                } catch (err) {}
+            }
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const reg of registrations) {
+                        await reg.update();
+                    }
+                } catch (err) {}
+            }
+
+            setTimeout(() => {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.location.href = cleanUrl + '?v=' + Date.now();
+            }, 600);
+        });
 
         sheetBody.addEventListener('click', (e) => {
             const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
