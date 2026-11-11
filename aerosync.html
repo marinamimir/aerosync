@@ -3287,10 +3287,10 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const was = t.done;
             t.done = s === 'done';
             if (t.done && !was) { t.doneAt = todayISO(); // guarda o dia da conclusão
-                if (typeof aeroPet !== 'undefined' && aeroPet.adopted) { aeroPet.happiness=Math.min(100,(aeroPet.happiness||0)+3);aeroPet.bond=(aeroPet.bond||0)+5;aeroPet.xp=(aeroPet.xp||0)+15;if(aeroPet.xp>=100){aeroPet.xp-=100;aeroPet.level=(aeroPet.level||1)+1;aeroPet.stars=(aeroPet.stars||0)+1;}savePet();if(typeof syncWidgetSections==='function')syncWidgetSections(); }
             }
             if (!t.done) t.doneAt = '';
             if (t.done && liveMs(t) > 0) timerStop(t);
+            if (typeof syncWidgetSections === 'function') syncWidgetSections();
         }
         // Desmarcar uma concluída: volta para "Em Andamento" se já tinha progresso
         const reopenStatus = (t) => (totalMs(t) >= 1000 || (t.steps || []).some(s => s.done) ? 'doing' : 'todo');
