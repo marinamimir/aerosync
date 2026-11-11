@@ -2044,200 +2044,8 @@
         html:not(.dark) .acrylic-card, html:not(.dark) .sheet-panel, html:not(.dark) .ip-panel {
             -webkit-backdrop-filter: blur(24px) saturate(1.3); backdrop-filter: blur(24px) saturate(1.3);
         }
-/* Desativa a vinheta estática antiga para dar lugar ao controle dinâmico */
+        /* Desativa a vinheta estática antiga */
         .mobile-frame::after { display: none !important; }
-
-       /* ===== Camadas de Fundo Dinâmico & Vinheta Alfa Transparente ===== */
-        .app-bg-canvas {
-            position: absolute; inset: 0; z-index: 0; pointer-events: none;
-            overflow: hidden; border-radius: inherit;
-            background-size: cover; background-position: center;
-            transition: opacity 0.3s ease, filter 0.3s ease;
-            /* Máscara Alfa: O centro é 100% visível e as bordas ficam transparentes, mesclando ao console */
-            -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black var(--bg-mask-center, 40%), transparent 100%);
-            mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black var(--bg-mask-center, 40%), transparent 100%);
-        }
-        .app-vignette-canvas { display: none !important; }
-
-        /* Fundos Presets */
-        [data-fundo="mii-plaza"] .app-bg-canvas {
-            background-color: #f6f9fe;
-            background-image: 
-                radial-gradient(circle at 20% 25%, rgba(167, 139, 250, 0.45) 0%, transparent 45%),
-                radial-gradient(circle at 80% 75%, rgba(56, 189, 248, 0.40) 0%, transparent 45%),
-                linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
-        }
-        html.dark[data-fundo="mii-plaza"] .app-bg-canvas {
-            background-color: #121420;
-            background-image: 
-                radial-gradient(circle at 20% 25%, rgba(139, 92, 246, 0.3) 0%, transparent 45%),
-                radial-gradient(circle at 80% 75%, rgba(14, 165, 233, 0.25) 0%, transparent 45%),
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
-        }
-        [data-fundo="wiiu-channels"] .app-bg-canvas {
-            background-color: #f8fafc;
-            background-image: 
-                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(56, 189, 248, 0.45) 0%, transparent 60%),
-                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(99, 102, 241, 0.35) 0%, transparent 60%);
-        }
-        html.dark[data-fundo="wiiu-channels"] .app-bg-canvas {
-            background-color: #0f172a;
-            background-image: 
-                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(14, 165, 233, 0.25) 0%, transparent 60%),
-                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(79, 70, 229, 0.25) 0%, transparent 60%);
-        }
-        [data-fundo="tenki-prism"] .app-bg-canvas {
-            background-color: #fafbfc;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.40) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.40) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.28) 0%, transparent 45%);
-        }
-        html.dark[data-fundo="tenki-prism"] .app-bg-canvas {
-            background-color: #161824;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.15) 0%, transparent 45%);
-        }
-
-        /* ===== Bento Grid Modular para os Widgets da Tela Inicial ===== */
-        #home-sections {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-auto-flow: dense;
-            gap: 12px;
-            position: relative;
-            z-index: 2;
-        }
-        .home-section {
-            grid-column: span 4; /* Padrão: largura toda */
-            margin-bottom: 0 !important;
-            position: relative;
-        }
-
-        /* Classes de Bento Grid */
-        .home-section.bento-1x1 { grid-column: span 1; grid-row: span 1; }
-        .home-section.bento-1x2 { grid-column: span 2; grid-row: span 1; }
-        .home-section.bento-2x2 { grid-column: span 2; grid-row: span 2; }
-        .home-section.bento-1x4 { grid-column: span 1; grid-row: span 4; }
-        .home-section.bento-full { grid-column: span 4; }
-
-        .home-section.carousel-section,
-        .home-section[data-section="tasks"],
-        .home-section[data-section="note"] {
-            grid-column: span 4 !important; /* Carrossel, missões e notas ocupam sempre a linha cheia */
-        }
-
-        /* Controles de Foto da Galeria */
-        .btn-gallery-upload {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 10px 14px; border-radius: 14px;
-            background: rgba(255,255,255,0.85); border: 1.5px dashed var(--theme-accent, #F06AAE);
-            font-size: 11px; font-weight: 800; color: var(--theme-accent, #F06AAE);
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .btn-gallery-upload:hover { background: #fff; transform: translateY(-1px); }
-        html.dark .btn-gallery-upload { background: rgba(30,41,59,0.7); }
-
-        /* Conteúdo principal e widgets ficam sobre o fundo */
-        #main-scroll { position: relative; z-index: 2; overscroll-behavior: contain; }
-
-        /* 1. Mii Plaza Ambient (Grade Isométrica Soft + Orbes Flutuantes) */
-        [data-fundo="mii-plaza"] .app-bg-canvas {
-            background-color: #f6f9fe;
-            background-image: 
-                radial-gradient(circle at 20% 25%, rgba(167, 139, 250, 0.45) 0%, transparent 45%),
-                radial-gradient(circle at 80% 75%, rgba(56, 189, 248, 0.40) 0%, transparent 45%),
-                linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
-        }
-        html.dark[data-fundo="mii-plaza"] .app-bg-canvas {
-            background-color: #121420;
-            background-image: 
-                radial-gradient(circle at 20% 25%, rgba(139, 92, 246, 0.3) 0%, transparent 45%),
-                radial-gradient(circle at 80% 75%, rgba(14, 165, 233, 0.25) 0%, transparent 45%),
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 24px 24px, 24px 24px;
-        }
-
-        /* 4. Wii U System Channels (Fitas e Ondas Acrílicas Curvas) */
-        [data-fundo="wiiu-channels"] .app-bg-canvas {
-            background-color: #f8fafc;
-            background-image: 
-                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(56, 189, 248, 0.45) 0%, transparent 60%),
-                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(99, 102, 241, 0.35) 0%, transparent 60%);
-        }
-        html.dark[data-fundo="wiiu-channels"] .app-bg-canvas {
-            background-color: #0f172a;
-            background-image: 
-                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(14, 165, 233, 0.25) 0%, transparent 60%),
-                radial-gradient(ellipse 80% 50% at 90% 110%, rgba(79, 70, 229, 0.25) 0%, transparent 60%);
-        }
-
-        /* 5. Tenki Weather Prism (Prisma Holográfico & Shimmer Suave) */
-        [data-fundo="tenki-prism"] .app-bg-canvas {
-            background-color: #fafbfc;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.40) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.40) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.28) 0%, transparent 45%);
-        }
-        html.dark[data-fundo="tenki-prism"] .app-bg-canvas {
-            background-color: #161824;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 40%);
-        }
-
-        /* Presets suaves legados */
-        html:not(.dark)[data-fundo=lavanda] .mobile-frame { --surface: #EFE9FB; }
-        html:not(.dark)[data-fundo=menta] .mobile-frame { --surface: #E6F6EE; }
-        html:not(.dark)[data-fundo=pessego] .mobile-frame { --surface: #FFEFE4; }
-        html:not(.dark)[data-fundo=nevoa] .mobile-frame { --surface: #E7F0FB; }
-
-        /* Botões seletores de fundo */
-        .fundo-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .fundo-sw { display: grid; justify-items: center; gap: 4px; font-size: 10px; font-weight: 800; color: #64748b; }
-        .fundo-sw i { width: 44px; height: 44px; border-radius: 16px; background: var(--c); border: 2.5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.15s; }
-        .fundo-sw[aria-pressed=true] i { outline: 3px solid var(--theme-accent, #3b82f6); transform: scale(1.08); }
-
-        /* Sliders táteis de Blur, Opacidade e Vinheta */
-        .bg-slider-row { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
-        .bg-slider-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #64748b; }
-        .bg-range-input {
-            width: 100%; -webkit-appearance: none; height: 6px; border-radius: 999px;
-            background: #e2e8f0; outline: none; transition: background 0.2s;
-        }
-        html.dark .bg-range-input { background: #334155; }
-        .bg-range-input::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-            background: var(--theme-accent, #3b82f6); cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2); border: 2px solid #fff;
-        }
-
-        /* Botão de Atualização do App (Busca no GitHub) */
-        .btn-update-app {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 12px 16px; border-radius: 18px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(241,245,249,0.85));
-            border: 1.5px solid rgba(255,255,255,0.9);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            font-size: 12px; font-weight: 800; color: #334155;
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .btn-update-app:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
-        .btn-update-app:active { transform: scale(0.98); }
-        html.dark .btn-update-app {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border-color: rgba(255,255,255,0.08); color: #f1f5f9;
-        }
 
         /* Camadas de Fundo Dinâmico e Vinheta Customizável */
         .app-bg-canvas {
@@ -2413,7 +2221,6 @@
 <body>
 
     <div class="mobile-frame">
-        
         <!-- Camadas Dinâmicas de Fundo e Vinheta (Wii U / 3DS / Cocoon) -->
         <div id="app-bg-layer" class="app-bg-canvas" aria-hidden="true"></div>
         <div id="app-vignette-layer" class="app-vignette-canvas" aria-hidden="true"></div>
@@ -5862,7 +5669,7 @@
                     ${seg('wd-style', QUOTE_STYLES, w.style)}
                 `}
                 <span class="modal-label mt-4">Tamanho na tela inicial</span>
-                ${seg('wd-size', { '1x1': '1x1', '1x2': '1x2', '2x2': '2x2', '1x4': '1x4', 'full': 'Total' }, layout.sizes[w.id] || 'full')}
+                ${seg('wd-size', { half: 'Metade', full: 'Largura toda' }, layout.sizes[w.id] || defaultSizeOf(w.id))}
                 <button data-act="wd-del" class="pill-btn danger w-full mt-6"><i class="fas fa-trash mr-1"></i>Remover widget</button>
                 <p class="text-xs text-gray-400 font-semibold mt-3"><i class="fas fa-check mr-1"></i>Salvo automaticamente</p>`;
             const refresh = () => {
@@ -6366,8 +6173,11 @@
             renderFinance();
         });
 
-// ================================================
-        //  FUNDO DO APP & CUSTOMIZAÇÕES (Wii U / 3DS / Cocoon)
+        // ================================================
+        //  FUNDO DO APP (cores suaves + vinheta) — escolhido em Ajustes
+        // ================================================
+        // ================================================
+        //  FUNDO DO APP (Wii U / 3DS / Cocoon) — escolhido em Ajustes
         // ================================================
         const FUNDOS = [
             ['', 'Padrão', 'var(--accent-soft)'],
@@ -6384,43 +6194,20 @@
         let bgOpacity = store.get('aerosync.bg.opacity', 100);
         let bgVignette = store.get('aerosync.bg.vignette', 35);
 
-// ================================================
-        //  FUNDO, FOTO DA GALERIA & MÁSCARA ALFA
-        // ================================================
-        const FUNDOS = [
-            ['', 'Padrão', 'var(--accent-soft)'],
-            ['mii-plaza', 'Mii Plaza', 'linear-gradient(135deg, #c4b5fd, #67e8f9)'],
-            ['wiiu-channels', 'Wii U', 'linear-gradient(135deg, #38bdf8, #818cf8)'],
-            ['tenki-prism', 'Tenki', 'linear-gradient(135deg, #f472b6, #38bdf8)'],
-            ['custom', 'Galeria', 'linear-gradient(135deg, #f472b6, #fbbf24)']
-        ];
-        let fundo = store.get(STORAGE_KEYS.fundo, '');
-        if (!FUNDOS.some(f => f[0] === fundo)) fundo = '';
-
-        let bgBlur = store.get('aerosync.bg.blur', 0);
-        let bgOpacity = store.get('aerosync.bg.opacity', 100);
-        let bgVignette = store.get('aerosync.bg.vignette', 40); // Controla a porcentagem da máscara transparente
-        let customBgImage = store.get('aerosync.bg.customUrl', '');
-
         const applyFundo = () => {
             if (fundo) document.documentElement.dataset.fundo = fundo;
             else delete document.documentElement.dataset.fundo;
 
             const bgEl = document.getElementById('app-bg-layer');
-            if (bgEl) {
-                // Se o fundo for foto customizada da galeria:
-                if (fundo === 'custom' && customBgImage) {
-                    bgEl.style.backgroundImage = `url("${customBgImage}")`;
-                } else if (fundo === 'custom') {
-                    bgEl.style.backgroundImage = 'none';
-                }
+            const vigEl = document.getElementById('app-vignette-layer');
 
+            if (bgEl) {
                 bgEl.style.filter = bgBlur > 0 ? `blur(${bgBlur}px)` : 'none';
                 bgEl.style.opacity = (bgOpacity / 100).toString();
-
-                // Aplica a máscara alfa: o centro é preto (opaco) e a borda é transparente, gerando a fusão com o console!
-                const maskCenter = Math.max(10, 85 - bgVignette);
-                bgEl.style.setProperty('--bg-mask-center', `${maskCenter}%`);
+            }
+            if (vigEl) {
+                const alpha = (bgVignette / 100).toFixed(2);
+                vigEl.style.background = `radial-gradient(ellipse at 50% 45%, transparent 48%, rgba(30,20,50,${alpha}) 100%)`;
             }
         };
         applyFundo();
@@ -6428,7 +6215,7 @@
         function fundoMount() {
             sheetBody.insertAdjacentHTML('beforeend', `
                 <div class="sheet-section" id="fundo-sec">
-                    <h3 class="modal-label">Fundo do App & Estética</h3>
+                    <h3 class="modal-label">Fundo do App (Wii U / 3DS)</h3>
                     <div class="fundo-row" role="group" aria-label="Fundo do app">
                         ${FUNDOS.map(f => `
                             <button class="fundo-sw" style="--c:${f[2]}" data-fundo="${f[0]}" aria-pressed="${f[0] === fundo}">
@@ -6437,15 +6224,7 @@
                         `).join('')}
                     </div>
 
-                    <!-- Botão de Upload da Galeria -->
-                    <div class="mt-3">
-                        <label for="bg-photo-upload" class="btn-gallery-upload">
-                            <i class="fas fa-camera"></i> Subir foto da galeria
-                        </label>
-                        <input type="file" id="bg-photo-upload" accept="image/*" class="hidden">
-                    </div>
-
-                    <!-- Sliders de Customização -->
+                    <!-- Sliders de Blur, Opacidade e Vinheta -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
@@ -6465,99 +6244,26 @@
 
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
-                                <span><i class="fas fa-circle-notch mr-1"></i>Fusão com as Bordas (Vinheta Alfa)</span>
+                                <span><i class="fas fa-circle-dot mr-1"></i>Intensidade da Vinheta</span>
                                 <span id="lbl-bg-vignette">${bgVignette}%</span>
                             </div>
                             <input type="range" min="0" max="80" value="${bgVignette}" class="bg-range-input" id="rng-bg-vignette">
                         </div>
                     </div>
 
-                    <!-- Botão de Atualização do GitHub Pages -->
+                    <!-- Botão de Atualização do App (GitHub Pages) -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
                         <h3 class="modal-label mb-2">Versão & Sistema</h3>
                         <button type="button" id="btn-force-update" class="btn-update-app">
                             <i class="fas fa-rotate"></i>Buscar Atualizações do GitHub
                         </button>
+                        <p class="text-[10px] font-semibold text-gray-400 mt-1.5 text-center">
+                            Recarrega o app limpando o cache para refletir novidades do repositório.
+                        </p>
                     </div>
                 </div>
             `);
         }
-
-        // Upload da Imagem do Celular / Tablet
-        sheetBody.addEventListener('change', (e) => {
-            if (e.target.id === 'bg-photo-upload') {
-                const file = e.target.files && e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    customBgImage = event.target.result;
-                    store.set('aerosync.bg.customUrl', customBgImage);
-                    fundo = 'custom';
-                    store.set(STORAGE_KEYS.fundo, fundo);
-                    applyFundo();
-                    renderSheet();
-                    toast('Foto aplicada ao fundo com sucesso!');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        sheetBody.addEventListener('click', (e) => {
-            const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
-            fundo = b.dataset.fundo; store.set(STORAGE_KEYS.fundo, fundo); applyFundo(); renderSheet(); playClick();
-        });
-
-        sheetBody.addEventListener('input', (e) => {
-            if (e.target.id === 'rng-bg-opacity') {
-                bgOpacity = parseInt(e.target.value, 10);
-                store.set('aerosync.bg.opacity', bgOpacity);
-                const l = document.getElementById('lbl-bg-opacity'); if (l) l.textContent = bgOpacity + '%';
-                applyFundo();
-            } else if (e.target.id === 'rng-bg-blur') {
-                bgBlur = parseInt(e.target.value, 10);
-                store.set('aerosync.bg.blur', bgBlur);
-                const l = document.getElementById('lbl-bg-blur'); if (l) l.textContent = bgBlur + 'px';
-                applyFundo();
-            } else if (e.target.id === 'rng-bg-vignette') {
-                bgVignette = parseInt(e.target.value, 10);
-                store.set('aerosync.bg.vignette', bgVignette);
-                const l = document.getElementById('lbl-bg-vignette'); if (l) l.textContent = bgVignette + '%';
-                applyFundo();
-            }
-        });
-
-        // Ação do Botão de Atualização do GitHub
-        document.addEventListener('click', async (e) => {
-            const btn = e.target.closest('#btn-force-update');
-            if (!btn) return;
-
-            const icon = btn.querySelector('i');
-            if (icon) icon.classList.add('fa-spin');
-            btn.style.opacity = '0.7';
-            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Buscando atualizações...';
-
-            if ('caches' in window) {
-                try {
-                    const keys = await caches.keys();
-                    await Promise.all(keys.map(k => caches.delete(k)));
-                } catch (err) {}
-            }
-
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    for (const reg of registrations) {
-                        await reg.update();
-                    }
-                } catch (err) {}
-            }
-
-            setTimeout(() => {
-                const cleanUrl = window.location.origin + window.location.pathname;
-                window.location.href = cleanUrl + '?v=' + Date.now();
-            }, 600);
-        });
 
         sheetBody.addEventListener('click', (e) => {
             const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
@@ -7665,10 +7371,6 @@
                 hb.setAttribute('aria-label', `${hidden ? 'Mostrar' : 'Ocultar'} ${label}`);
                 hb.title = hidden ? 'Mostrar bloco' : 'Ocultar bloco';
                 hb.innerHTML = `<i class="fas ${hidden ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
-                // Remove classes antigas e adiciona a nova do Bento Grid
-sec.classList.remove('bento-1x1', 'bento-1x2', 'bento-2x2', 'bento-1x4', 'bento-full');
-const currentSize = layout.sizes[sec.dataset.section] || 'full';
-sec.classList.add(`bento-${currentSize}`);
             });
         }
         applyLayout();
