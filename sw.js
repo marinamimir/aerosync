@@ -2,12 +2,11 @@
    AeroSync — Service Worker (funciona offline)
    Estratégia:
    - Ao instalar: guarda o app inteiro no cache (o HTML já tem CSS, fontes e ícones embutidos)
-   - Abrir o app: mostra a versão do cache na hora e busca uma nova em segundo plano
-     ("stale-while-revalidate") — a atualização aparece na próxima vez que abrir
+   - Abrir o app: tenta a versão mais recente da rede; usa o cache apenas sem internet
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v10';
+const CACHE_VERSION = 'v11';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
@@ -54,7 +53,7 @@ async function networkFirst(request, cacheKey = request) {
   }
 }
 
-// 3. Pedidos: cache primeiro, rede em segundo plano
+// 3. Pedidos: navegação do app em rede primeiro; arquivos auxiliares em cache primeiro
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
