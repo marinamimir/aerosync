@@ -3782,7 +3782,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         // Clique no card central filtra a lista; num card vizinho, centraliza ele
         let activeFilter = null;
-        refreshCategoryUI();
         carousel.addEventListener('click',e=>{const item=e.target.closest('.carousel-item');if(!item)return;if(item.classList.contains('active')){setFilter(activeFilter===item.dataset.category?null:item.dataset.category);playClick();}else item.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});});
         function setFilter(cat) {
             activeFilter = cat;
@@ -3848,6 +3847,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         };
         const TAG_NAME = Object.fromEntries(categories.map(c=>[c.id,c.name]));
         let priority = 1, selectedTag = 'work', editingEl = null, menuTask = null;
+        refreshCategoryUI();
 
         function setPriority(n, withSound) {
             priority = n;
