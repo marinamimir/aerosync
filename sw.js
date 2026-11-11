@@ -6,7 +6,7 @@
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v19';
+const CACHE_VERSION = 'v20';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
@@ -51,6 +51,16 @@ async function networkFirst(request, cacheKey = request) {
     if (cached) return cached;
     throw error;
   }
+}
+
+// Atualiza e armazena recursos auxiliares sem interromper o app se a rede falhar.
+async function fetchAndCache(request) {
+  const response = await fetch(request);
+  if (response && response.ok && response.type === 'basic') {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response.clone());
+  }
+  return response;
 }
 
 // 3. Pedidos: navegação do app em rede primeiro; arquivos auxiliares em cache primeiro
