@@ -3847,7 +3847,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         };
         const TAG_NAME = Object.fromEntries(categories.map(c=>[c.id,c.name]));
         let priority = 1, selectedTag = 'work', editingEl = null, menuTask = null;
-        refreshCategoryUI();
 
         function setPriority(n, withSound) {
             priority = n;
@@ -4731,6 +4730,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         const esc = (s) => String(s).replace(/[&<>"']/g, c =>
             ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        refreshCategoryUI();
         const emptyMsg = (msg) => `<p class="text-sm text-gray-400 font-semibold py-2">${msg}</p>`;
 
         const toastEl = document.getElementById('toast');
