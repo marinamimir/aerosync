@@ -12,6 +12,10 @@
 /* AeroSync 2.0 — personalização e grade livre */
 :root { --user-icon-color: var(--icon, #64748b); }
 html:root i:not([style*="color:"]) { color: var(--user-icon-color) !important; }
+/* Ícones dos temas padrão usam sempre a cor definida para ícones (fallback para o destaque). */
+html:root .theme-choice i, html:root .theme-option i { color:var(--user-icon-color)!important; }
+/* Ícones financeiros preservam a cor da categoria/cartão e não herdam a cor global do tema. */
+#fin-body i[style*="color"], #fin-body .fin-chip-pick i { color:inherit; }
 /* Controles de edição mantêm contraste mesmo quando a paleta usa ícones escuros. */
 .home-edit-fab, .home-edit-fab svg { color:#fff !important; stroke:#fff !important; }
 .section-tools button { color:var(--theme-accent, #64748b) !important; background:rgba(255,255,255,.94) !important; border:1px solid rgba(100,116,139,.14); }
@@ -36,12 +40,13 @@ html:root i:not([style*="color:"]) { color: var(--user-icon-color) !important; }
 html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom-dots"] .app-bg-canvas { background-color:#171a27; }
 
 
-        /* Carrossel de categorias: reserva altura para a escala dos cards e evita sobreposição. */
-        #home-sections > .carousel-section { grid-column: span 4 !important; grid-row: span 2; min-height: 238px; overflow: visible !important; z-index: 1; }
-        .carousel-section > .relative { min-height: 238px; overflow: visible; }
-        .carousel-section .carousel-container { min-height: 218px; padding-top:30px; padding-bottom:48px; overflow-x:auto; overflow-y:hidden; align-items:center; }
+        /* Carrossel de categorias: altura intrínseca e sem sobreposição no modo Organizar. */
+        #home-sections > .carousel-section { grid-column: span 4 !important; grid-row: auto !important; min-height: 238px; height:auto; overflow:visible !important; z-index:1; }
+        .carousel-section > .relative { min-height:238px; height:auto; overflow:visible; }
+        .carousel-section .carousel-container { min-height:218px; height:auto; padding:30px 4px 48px; overflow-x:auto; overflow-y:visible; align-items:center; }
         .carousel-section .carousel-item { flex-shrink:0; }
         .carousel-section .carousel-item.active { z-index:2; }
+        .editing #home-sections > .carousel-section { margin-bottom:18px; }
         #home-sections > .home-section:not(.carousel-section) { position:relative; z-index:0; }
         .custom-theme-list { display:flex; flex-direction:column; gap:7px; padding:10px; border-radius:14px; background:rgba(148,163,184,.09); }
         .custom-theme-row { display:flex; align-items:center; gap:9px; min-height:38px; }
@@ -1076,7 +1081,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         #home-sections > .widget-section { min-width: 0; overflow: hidden; }
         #home-sections > .widget-section .w-body { height: 100%; min-height: 0; }
         #home-sections > .widget-section .w-body img { width: 100%; height: 100%; object-fit: cover; }
-        .editing #home-sections, #home-sections.editing { row-gap: 26px; }
+        .editing #home-sections, #home-sections.editing { row-gap: 30px; align-items:start; }
+        .editing #home-sections > .carousel-section { min-height:260px; overflow:visible!important; }
+        .editing .carousel-section .section-tools { position:relative; z-index:5; }
         .editing .home-section { display: flex; margin-bottom: 0; }
         .editing .home-section.is-hidden { display: flex; }
         .section-tools { flex-wrap: wrap; }
@@ -1920,6 +1927,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
            ================================================ */
         /* --- Widgets da tela inicial --- */
         .w-body { display: block; min-height: 100%; cursor: pointer; border-radius: 24px; outline-offset: 3px; }
+        .w-weather{height:100%;min-height:132px;border-radius:22px;padding:15px;display:flex;flex-direction:column;justify-content:center;gap:7px;color:var(--icon,var(--theme-accent));background:transparent;border:1px solid color-mix(in srgb,var(--theme-accent) 22%,transparent)}
+        .w-weather.has-bg{background:var(--surface);box-shadow:0 5px 18px rgba(30,40,60,.08)}
+        .w-weather-head{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+        .w-weather-refresh{padding:5px 7px;border-radius:9px;background:var(--theme-soft);color:var(--theme-accent)}
+        .w-weather-main{display:flex;align-items:center;gap:12px}.w-weather-main i{font-size:28px;color:var(--theme-accent)}.w-weather-main b{font-size:34px;line-height:1;font-weight:900}.w-weather-desc{font-size:12px;font-weight:800}.w-weather small,.w-luck-label{font-size:9px;font-weight:800;opacity:.65;text-transform:uppercase;letter-spacing:.08em}
+        .w-quote .w-luck-label{font-size:9px;font-weight:900;letter-spacing:.14em}
         .w-image { position: relative; margin: 0; height: 100%; min-height: 150px; border-radius: 24px; overflow: hidden; background: #0f1115;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 0 8px 20px -8px rgba(0,0,0,0.3); }
         .is-full > .w-body .w-image, .wd-preview.is-full .w-image { min-height: 200px; aspect-ratio: 16 / 9; }
@@ -3591,15 +3604,16 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         var currentTheme = null; // "var": o modo escuro (lá em cima) já consulta isso antes desta linha
         // A paleta colore botões, destaques, ícones e o fundo
         const THEME_VARS = [['--theme-accent', 'accent'], ['--theme-accent-2', 'accent2'], ['--theme-soft', 'soft'], ['--theme-glow', 'glow'],
-            ['--on-accent', 'on'], ['--surface', 'surface'], ['--page', 'page']];
+            ['--on-accent', 'on'], ['--surface', 'surface'], ['--page', 'page'], ['--theme-icon','iconColor']];
         function applyTheme(t) {
             currentTheme = { ...t };
             const root = document.documentElement.style;
             THEME_VARS.forEach(([v, k]) => root.setProperty(v, t[k]));
             root.setProperty('--user-icon-color', t.iconColor || t.accent || '#64748b');
+            root.setProperty('--theme-icon', t.iconColor || t.accent || '#64748b');
             syncMetaTheme();
         }
-        const saveTheme = () => store.set(STORAGE_KEYS.theme, Object.fromEntries([['id', currentTheme.id], ...THEME_VARS.map(([, k]) => [k, currentTheme[k]]), ['iconColor', currentTheme.iconColor || currentTheme.accent]]));
+        const saveTheme = () => store.set(STORAGE_KEYS.theme, Object.fromEntries([['id', currentTheme.id], ...THEME_VARS.filter(([,k])=>k!=='iconColor').map(([, k]) => [k, currentTheme[k]]), ['iconColor', currentTheme.iconColor || currentTheme.accent]]));
         // Bolinha de amostra de uma paleta (fundo + 2 cores)
         const paletteDot = (p) => `background: radial-gradient(circle at 50% 50%, ${p.surface} 0 34%, transparent 35%), linear-gradient(135deg, ${p.accent2} 0 50%, ${p.accent} 50% 100%)`;
 
@@ -5684,12 +5698,14 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 <div class="wd-add-grid">
                     <button data-act="wd-add" data-type="image" class="wd-add"><i class="fas fa-image" aria-hidden="true"></i><b>Imagem</b><small>Uma foto decorativa</small></button>
                     <button data-act="wd-add" data-type="quote" class="wd-add"><i class="fas fa-quote-left" aria-hidden="true"></i><b>Citação</b><small>Uma frase para lembrar</small></button>
+                    <button data-act="wd-add" data-type="weather" class="wd-add"><i class="fas fa-cloud-sun" aria-hidden="true"></i><b>Clima</b><small>Temperatura e condição local</small></button>
+                    <button data-act="wd-add" data-type="luck" class="wd-add"><i class="fas fa-clover" aria-hidden="true"></i><b>Sorte do dia</b><small>Uma mensagem nova por dia</small></button>
                 </div>
                 <span class="modal-label mt-5">Na tela inicial (${widgets.length})</span>
                 ${widgets.length ? widgets.map(w => `
                     <div class="wd-row" data-wid="${w.id}">
-                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : '<i class="fas fa-quote-left"></i>'}</span>
-                        <span class="wd-text"><b>${esc(sectionEl(w.id) ? sectionEl(w.id).dataset.label : WIDGET_LABEL[w.type])}</b><small>${esc(w.type === 'image' ? (w.caption || (w.image ? 'Foto' : 'Sem foto ainda')) : (w.text || 'Sem texto'))}</small></span>
+                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : w.type==='weather' ? '<i class="fas fa-cloud-sun"></i>' : w.type==='luck' ? '<i class="fas fa-clover"></i>' : '<i class="fas fa-quote-left"></i>'}</span>
+                        <span class="wd-text"><b>${esc(sectionEl(w.id) ? sectionEl(w.id).dataset.label : WIDGET_LABEL[w.type])}</b><small>${esc(w.type === 'image' ? (w.caption || (w.image ? 'Foto' : 'Sem foto ainda')) : w.type==='weather' ? 'Previsão local' : w.type==='luck' ? 'Mensagem diária' : (w.text || 'Sem texto'))}</small></span>
                         <button data-act="wd-edit" class="row-btn" aria-label="Editar widget" title="Editar"><i class="fas fa-pen"></i></button>
                         <button data-act="wd-del" class="row-btn row-danger" aria-label="Remover widget" title="Remover"><i class="fas fa-trash"></i></button>
                     </div>`).join('') : emptyMsg('Nenhum widget ainda.')}`;
@@ -5713,6 +5729,13 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <input id="wd-caption" class="task-input" maxlength="80" autocomplete="off" placeholder="Ex.: Meu cantinho" value="${esc(w.caption)}">
                     <span class="modal-label mt-4">Ajuste da foto</span>
                     ${seg('wd-fit', { cover: 'Preencher', contain: 'Foto inteira' }, w.fit)}
+                ` : w.type === 'weather' ? `
+                    <span class="modal-label mt-4">Fundo do widget</span>
+                    ${seg('wd-weather-bg',{transparent:'Transparente',solid:'Com fundo'},w.background||'transparent')}
+                    <p class="text-xs text-gray-400 font-semibold mt-3">O clima usa sua localização aproximada do navegador. Toque em Atualizar no widget para consultar a previsão.</p>
+                ` : w.type === 'luck' ? `
+                    <p class="text-xs text-gray-400 font-semibold mt-3">A mensagem é escolhida pela data local e permanece igual durante o dia, mudando automaticamente no dia seguinte.</p>
+                    <span class="modal-label mt-4">Estilo</span>${seg('wd-style',QUOTE_STYLES,w.style)}
                 ` : `
                     <label class="modal-label mt-4" for="wd-text">Citação</label>
                     <textarea id="wd-text" class="task-input lib-text" rows="3" maxlength="240" placeholder="Escreva uma frase que te faz bem">${esc(w.text)}</textarea>
@@ -5748,7 +5771,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                         renderSheet();
                     }).catch(() => toast('Não foi possível usar essa imagem'));
                 });
-            } else {
+            } else if (w.type === 'quote') {
                 const tx = document.getElementById('wd-text'), au = document.getElementById('wd-author');
                 tx.addEventListener('input', () => { w.text = tx.value.slice(0, 240); refresh(); });
                 au.addEventListener('input', () => { w.author = au.value.slice(0, 60); refresh(); });
@@ -5765,6 +5788,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             else if (act === 'wd-del') { removeWidget(w.id); }
             else if (act === 'wd-fit') { w.fit = btn.dataset.value === 'contain' ? 'contain' : 'cover'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-style') { w.style = QUOTE_STYLES[btn.dataset.value] ? btn.dataset.value : 'paper'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
+            else if (act === 'wd-weather-bg') { w.background=btn.dataset.value==='solid'?'solid':'transparent'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
+            else if (act === 'wd-weather-refresh') { refreshWeatherWidget(w); }
             else if (act === 'wd-size') { layout.sizes[w.id] = /^[1-4]x[1-4]$/.test(btn.dataset.value) ? btn.dataset.value : defaultSizeOf(w.id); saveLayout(); applyLayout(); playClick(); renderSheet(); }
             else if (act === 'wd-img-del') { w.image = ''; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-idea') {
@@ -7373,7 +7398,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
-        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação' };
+        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia' };
         const QUOTE_STYLES = { paper: 'Papel', accent: 'Destaque', minimal: 'Simples' };
         // Frases curtinhas para o botão "Inspiração" (escritas para o app; troque à vontade)
         const QUOTE_IDEAS = [
@@ -7388,6 +7413,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 if (!w || !WIDGET_LABEL[w.type]) return null;
                 const id = typeof w.id === 'string' && /^w_[a-z0-9]{1,40}$/i.test(w.id) ? w.id : uid('w_');
                 if (w.type === 'image') return { id, type: 'image', image: isThumb(w.image) ? w.image : '', caption: libText(w.caption, 80), fit: w.fit === 'contain' ? 'contain' : 'cover' };
+                if (w.type === 'weather') return { id, type:'weather', background:w.background==='solid'?'solid':'transparent', weather: w.weather&&typeof w.weather==='object'?w.weather:null };
+                if (w.type === 'luck') return { id, type:'luck', style: QUOTE_STYLES[w.style] ? w.style : 'accent' };
                 return { id, type: 'quote', text: typeof w.text === 'string' ? w.text.slice(0, 240) : '', author: libText(w.author, 60), style: QUOTE_STYLES[w.style] ? w.style : 'paper' };
             }).filter(Boolean).filter((w, i, a) => a.findIndex(x => x.id === w.id) === i).slice(0, 30);
         }
@@ -7451,12 +7478,20 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <img src="${w.image}" alt="${esc(w.caption || 'Imagem decorativa')}">
                     ${w.caption ? `<figcaption>${esc(w.caption)}</figcaption>` : ''}</figure>`;
             }
+            if (w.type === 'weather') { const d=w.weather||{};return `<div class="w-weather ${w.background==='solid'?'has-bg':''}"><div class="w-weather-head"><span><i class="fas fa-location-dot"></i> Clima local</span><button type="button" class="w-weather-refresh" data-act="wd-weather-refresh" aria-label="Atualizar clima"><i class="fas fa-rotate"></i></button></div><div class="w-weather-main"><i class="fas ${esc(d.icon||'fa-cloud-sun')}"></i><b>${d.temp==null?'--°':Math.round(d.temp)+'°'}</b></div><div class="w-weather-desc">${esc(d.label||'Toque em atualizar para consultar')}</div>${d.city?`<small>${esc(d.city)}</small>`:''}</div>`; }
+            if (w.type === 'luck') { const quotes=['Hoje, uma pequena escolha pode abrir um caminho bonito.','Sua sorte floresce quando você respeita seu próprio ritmo.','Uma surpresa gentil pode aparecer onde menos espera.','Confie no próximo passo, não precisa enxergar a escada inteira.','Hoje é um ótimo dia para acolher uma ideia nova.','O acaso também gosta de quem se permite tentar.','Pequenas alegrias estão procurando você.','Sua curiosidade é seu trevo de quatro folhas.','Uma pausa na hora certa também é sorte.','O melhor detalhe do dia pode ser o mais simples.','Permita-se receber coisas boas sem culpa.','Uma conversa leve pode mudar o tom do dia.','Hoje, escolha o que faz seu coração respirar.','Você está mais perto do que imagina.'];const day=new Date();const key=day.getFullYear()*10000+(day.getMonth()+1)*100+day.getDate();const quote=quotes[((key*9301+49297)>>>0)%quotes.length];return `<blockquote class="w-quote q-${w.style||'accent'}"><i class="fas fa-clover"></i><span class="w-luck-label">SORTE DO DIA</span><p>${quote}</p><small>${day.toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small></blockquote>`; }
             return `<blockquote class="w-quote q-${w.style}${w.text.trim() ? '' : ' is-empty'}">
                 <i class="fas fa-quote-left" aria-hidden="true"></i>
                 <p>${w.text.trim() ? esc(w.text) : 'Toque para escrever sua citação'}</p>
                 ${w.author ? `<cite>${esc(w.author)}</cite>` : ''}</blockquote>`;
         }
         // Cria/atualiza as seções dos widgets e remove as que foram apagadas
+        async function refreshWeatherWidget(w) {
+            if(!w||w.type!=='weather') return;
+            if(!navigator.geolocation){toast('Geolocalização não disponível neste navegador');return;}
+            toast('Buscando clima da sua localização…');
+            navigator.geolocation.getCurrentPosition(async pos=>{try{const lat=pos.coords.latitude,lon=pos.coords.longitude;const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`;const res=await fetch(url);if(!res.ok)throw new Error('weather');const data=await res.json();const cur=data.current||{};const codes={0:['Céu limpo','fa-sun'],1:['Predominantemente limpo','fa-cloud-sun'],2:['Parcialmente nublado','fa-cloud-sun'],3:['Nublado','fa-cloud'],45:['Neblina','fa-smog'],48:['Neblina','fa-smog'],51:['Garoa leve','fa-cloud-rain'],53:['Garoa','fa-cloud-rain'],55:['Garoa forte','fa-cloud-showers-heavy'],61:['Chuva leve','fa-cloud-rain'],63:['Chuva','fa-cloud-rain'],65:['Chuva forte','fa-cloud-showers-heavy'],71:['Neve leve','fa-snowflake'],73:['Neve','fa-snowflake'],75:['Neve forte','fa-snowflake'],80:['Pancadas','fa-cloud-showers-heavy'],81:['Pancadas','fa-cloud-showers-heavy'],82:['Pancadas fortes','fa-cloud-showers-heavy'],95:['Tempestade','fa-cloud-bolt'],96:['Tempestade com granizo','fa-cloud-bolt'],99:['Tempestade forte','fa-cloud-bolt']};const info=codes[cur.weather_code]||['Condição atual','fa-cloud'];w.weather={temp:cur.temperature_2m,label:info[0],icon:info[1],city:'Sua região',updated:Date.now()};saveWidgets();syncWidgetSections();if(widgetEditId===w.id&&sheet.classList.contains('open'))renderSheet();toast('Clima atualizado!');}catch(e){toast('Não foi possível consultar o clima agora');}},()=>toast('Permita o acesso à localização para consultar o clima.'),{enableHighAccuracy:false,timeout:10000,maximumAge:900000});
+        }
         function syncWidgetSections() {
             homeEl.querySelectorAll('[data-widget]').forEach(sec => { if (!widgetById(sec.dataset.section)) sec.remove(); });
             widgets.forEach((w, i) => {
@@ -7548,6 +7583,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         }
         // Tocar no widget (fora do modo Organizar) abre o editor dele
         homeEl.addEventListener('click', (e) => {
+            const refreshBtn=e.target.closest('[data-act="wd-weather-refresh"]');if(refreshBtn){e.preventDefault();e.stopPropagation();const sec=refreshBtn.closest('.home-section');refreshWeatherWidget(widgetById(sec?.dataset.section));return;}
             const wb = e.target.closest('.w-body');
             if (!wb || isEditing()) return;
             openWidgetEditor(wb.closest('.home-section').dataset.section);
@@ -7889,7 +7925,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
     const nowInit = new Date();
     let selectedYM = `${nowInit.getFullYear()}-${String(nowInit.getMonth()+1).padStart(2,'0')}`;
     let curTab = 'overview';
-    let financeFilters = { category:'all', card:'all', text:'', scope:'global', tabOverrides:{} };
+    let financeFilters = { category:'all', categories:['all'], card:'all', text:'', scope:'global', tabOverrides:{} };
     let editingCardId = null;
     let editingBankId = null;
     let editingCatDraft = null;
@@ -9138,11 +9174,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         if(!applicable.includes(curTab)) return;
         const scopeKey=financeFilters.scope==='tab'?curTab:'global';
         const f=financeFilters.tabOverrides[scopeKey]||financeFilters;
-        const html=`<div class="fin-filter-card"><div class="flex items-center justify-between mb-2"><b class="text-xs">Filtros financeiros</b><button data-fact="clear-fin-filters" class="text-[10px] font-bold accent-text">Limpar</button></div><div class="fin-filter-grid"><select id="fin-filter-category"><option value="all">Todas as categorias</option>${fin.categories.map(c=>`<option value="${esc(c.id)}" ${f.category===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select><select id="fin-filter-card"><option value="all">Todos os cartões</option><option value="pix" ${f.card==='pix'?'selected':''}>Pix / Conta</option>${fin.cards.map(c=>`<option value="${esc(c.id)}" ${f.card===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="flex gap-2 mt-2"><input id="fin-filter-text" class="task-input text-xs flex-1" placeholder="Buscar descrição" value="${esc(f.text||'')}"><select id="fin-filter-scope" class="task-input text-xs" style="width:auto"><option value="global" ${financeFilters.scope==='global'?'selected':''}>Todas as abas</option><option value="tab" ${financeFilters.scope==='tab'?'selected':''}>Só esta aba</option></select></div></div>`;
+        const selectedCats=Array.isArray(f.categories)?f.categories:(f.category&&f.category!=='all'?[f.category]:['all']);
+        const html=`<div class="fin-filter-card"><div class="flex items-center justify-between mb-2"><b class="text-xs">Filtros financeiros</b><button data-fact="clear-fin-filters" class="text-[10px] font-bold accent-text">Limpar</button></div><div class="fin-filter-grid"><select id="fin-filter-category" multiple size="${Math.min(5,Math.max(3,fin.categories.length))}" aria-label="Selecionar múltiplas categorias">${fin.categories.map(c=>`<option value="${esc(c.id)}" ${selectedCats.includes(c.id)?'selected':''}>${esc(c.name)}</option>`).join('')}</select><select id="fin-filter-card"><option value="all">Todos os cartões</option><option value="pix" ${f.card==='pix'?'selected':''}>Pix / Conta</option>${fin.cards.map(c=>`<option value="${esc(c.id)}" ${f.card===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="flex gap-2 mt-2"><input id="fin-filter-text" class="task-input text-xs flex-1" placeholder="Buscar descrição" value="${esc(f.text||'')}"><select id="fin-filter-scope" class="task-input text-xs" style="width:auto"><option value="global" ${financeFilters.scope==='global'?'selected':''}>Todas as abas</option><option value="tab" ${financeFilters.scope==='tab'?'selected':''}>Só esta aba</option></select></div></div>`;
         body.insertAdjacentHTML('afterbegin',html);
     }
-    function currentFinanceFilter(){const key=financeFilters.scope==='tab'?curTab:'global';return financeFilters.tabOverrides[key]||financeFilters;}
-    function matchesFinanceFilter(e){const f=currentFinanceFilter();return (f.category==='all'||e.catId===f.category)&&(f.card==='all'||(e.cardId||'pix')===f.card)&&(!f.text||String(e.desc||'').toLowerCase().includes(f.text.toLowerCase()));}
+    function currentFinanceFilter(){const key=financeFilters.scope==='tab'?curTab:'global';const f=financeFilters.tabOverrides[key]||financeFilters;return {...f,categories:Array.isArray(f.categories)?f.categories:(f.category&&f.category!=='all'?[f.category]:['all'])};}
+    function matchesFinanceFilter(e){const f=currentFinanceFilter(),cats=f.categories||['all'];return (cats.includes('all')||!cats.length||cats.includes(e.catId))&&(f.card==='all'||(e.cardId||'pix')===f.card)&&(!f.text||String(e.desc||'').toLowerCase().includes(f.text.toLowerCase()));}
     function renderFin() {
         if (monthLabelEl) monthLabelEl.textContent = formatYM(selectedYM);
         const map = {
@@ -9177,8 +9214,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         renderFin();
     });
 
-    body.addEventListener('change', e => { if(e.target.matches('#fin-filter-category,#fin-filter-card,#fin-filter-scope')) { const key=financeFilters.scope==='tab'?curTab:'global'; const f=financeFilters.tabOverrides[key]||{category:'all',card:'all',text:''}; if(e.target.id==='fin-filter-category') f.category=e.target.value; if(e.target.id==='fin-filter-card') f.card=e.target.value; if(e.target.id==='fin-filter-scope'){financeFilters.scope=e.target.value;} else financeFilters.tabOverrides[key]=f; renderFin(); } });
-    body.addEventListener('input', e => { if(e.target.id==='fin-filter-text'){ const key=financeFilters.scope==='tab'?curTab:'global'; const f=financeFilters.tabOverrides[key]||{category:'all',card:'all',text:''}; f.text=e.target.value; financeFilters.tabOverrides[key]=f; const pos=e.target.selectionStart; renderFin(); const ni=body.querySelector('#fin-filter-text'); if(ni){ni.focus();ni.setSelectionRange(pos,pos);} } });
+    body.addEventListener('change', e => { if(e.target.matches('#fin-filter-category,#fin-filter-card,#fin-filter-scope')) { const key=financeFilters.scope==='tab'?curTab:'global'; const f=financeFilters.tabOverrides[key]||{category:'all',categories:['all'],card:'all',text:''}; if(e.target.id==='fin-filter-category'){const picked=Array.from(e.target.selectedOptions).map(o=>o.value);f.categories=picked.length?picked:['all'];f.category=f.categories.length===1?f.categories[0]:'all';} if(e.target.id==='fin-filter-card') f.card=e.target.value; if(e.target.id==='fin-filter-scope'){financeFilters.scope=e.target.value;} else financeFilters.tabOverrides[key]=f; renderFin(); } });
+    body.addEventListener('input', e => { if(e.target.id==='fin-filter-text'){ const key=financeFilters.scope==='tab'?curTab:'global'; const f=financeFilters.tabOverrides[key]||{category:'all',categories:['all'],card:'all',text:''}; f.text=e.target.value; financeFilters.tabOverrides[key]=f; const pos=e.target.selectionStart; renderFin(); const ni=body.querySelector('#fin-filter-text'); if(ni){ni.focus();ni.setSelectionRange(pos,pos);} } });
     body.addEventListener('click', (e) => {
         const colorPick = e.target.closest('#bf-colors [data-color], #cd-colors [data-color], #cat-colors [data-color]');
         if (colorPick) {
