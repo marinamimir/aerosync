@@ -9249,7 +9249,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const btn = e.target.closest('[data-fact]');
         if (!btn) return;
         const act = btn.dataset.fact;
-        if(act==='clear-fin-filters'){ const key=financeFilters.scope==='tab'?curTab:'global'; financeFilters.tabOverrides[key]={category:'all',card:'all',text:''}; financeFilters.category='all';financeFilters.card='all';financeFilters.text='';renderFin();return; }
+        if(act==='clear-fin-filters'){ const key=financeFilters.scope==='tab'?curTab:'global'; financeFilters.tabOverrides[key]={category:'all',categories:['all'],card:'all',text:''}; financeFilters.category='all';financeFilters.categories=['all'];financeFilters.card='all';financeFilters.text='';renderFin();return; }
 
         // Compras: Abrir Pop-up de Nova Compra
         if (act === 'open-new-expense') {
