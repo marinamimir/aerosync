@@ -2044,10 +2044,10 @@
         html:not(.dark) .acrylic-card, html:not(.dark) .sheet-panel, html:not(.dark) .ip-panel {
             -webkit-backdrop-filter: blur(24px) saturate(1.3); backdrop-filter: blur(24px) saturate(1.3);
         }
-/* Desativa a vinheta fixa para dar lugar ao controle dinâmico */
+        /* Desativa a vinheta estática antiga */
         .mobile-frame::after { display: none !important; }
 
-        /* Camadas de Fundo e Vinheta */
+        /* Camadas de Fundo Dinâmico e Vinheta Customizável */
         .app-bg-canvas {
             position: absolute; inset: 0; z-index: 0; pointer-events: none;
             overflow: hidden; border-radius: inherit;
@@ -2058,7 +2058,7 @@
             transition: opacity 0.3s ease, background 0.3s ease;
         }
 
-        /* Garantir que o conteúdo e widgets fiquem sobre o fundo */
+        /* Conteúdo principal e widgets ficam sobre o fundo */
         #main-scroll { position: relative; z-index: 2; }
 
         /* 1. Mii Plaza Ambient (Grade Isométrica Soft + Orbes Flutuantes) */
@@ -2115,13 +2115,19 @@
                 radial-gradient(circle at 50% 85%, rgba(251, 191, 36, 0.15) 0%, transparent 45%);
         }
 
+        /* Presets suaves legados */
+        html:not(.dark)[data-fundo=lavanda] .mobile-frame { --surface: #EFE9FB; }
+        html:not(.dark)[data-fundo=menta] .mobile-frame { --surface: #E6F6EE; }
+        html:not(.dark)[data-fundo=pessego] .mobile-frame { --surface: #FFEFE4; }
+        html:not(.dark)[data-fundo=nevoa] .mobile-frame { --surface: #E7F0FB; }
+
         /* Botões seletores de fundo */
         .fundo-row { display: flex; gap: 8px; flex-wrap: wrap; }
         .fundo-sw { display: grid; justify-items: center; gap: 4px; font-size: 10px; font-weight: 800; color: #64748b; }
         .fundo-sw i { width: 44px; height: 44px; border-radius: 16px; background: var(--c); border: 2.5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.15s; }
         .fundo-sw[aria-pressed=true] i { outline: 3px solid var(--theme-accent, #3b82f6); transform: scale(1.08); }
 
-        /* Sliders de Blur, Opacidade e Vinheta */
+        /* Sliders táteis de Blur, Opacidade e Vinheta */
         .bg-slider-row { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
         .bg-slider-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #64748b; }
         .bg-range-input {
@@ -2133,6 +2139,23 @@
             -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
             background: var(--theme-accent, #3b82f6); cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2); border: 2px solid #fff;
+        }
+
+        /* Botão de Atualização do App (Busca no GitHub) */
+        .btn-update-app {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px 16px; border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(241,245,249,0.85));
+            border: 1.5px solid rgba(255,255,255,0.9);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-size: 12px; font-weight: 800; color: #334155;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-update-app:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+        .btn-update-app:active { transform: scale(0.98); }
+        html.dark .btn-update-app {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-color: rgba(255,255,255,0.08); color: #f1f5f9;
         }
         /* doca com 9 itens */
         .glass-dock.dock-9 { gap: 1px; padding: 8px; }
@@ -2198,10 +2221,10 @@
 <body>
 
     <div class="mobile-frame">
-        <div class="mobile-frame">
         <!-- Camadas Dinâmicas de Fundo e Vinheta (Wii U / 3DS / Cocoon) -->
         <div id="app-bg-layer" class="app-bg-canvas" aria-hidden="true"></div>
         <div id="app-vignette-layer" class="app-vignette-canvas" aria-hidden="true"></div>
+
         <!-- ===== BOOT SCREEN (overlay) ===== -->
         <div id="boot-screen">
             <!-- Etapa 1: logo ligando -->
@@ -6153,14 +6176,16 @@
         // ================================================
         //  FUNDO DO APP (cores suaves + vinheta) — escolhido em Ajustes
         // ================================================
-// ================================================
+        // ================================================
         //  FUNDO DO APP (Wii U / 3DS / Cocoon) — escolhido em Ajustes
         // ================================================
         const FUNDOS = [
             ['', 'Padrão', 'var(--accent-soft)'],
             ['mii-plaza', 'Mii Plaza', 'linear-gradient(135deg, #c4b5fd, #67e8f9)'],
             ['wiiu-channels', 'Wii U', 'linear-gradient(135deg, #38bdf8, #818cf8)'],
-            ['tenki-prism', 'Tenki', 'linear-gradient(135deg, #f472b6, #38bdf8)']
+            ['tenki-prism', 'Tenki', 'linear-gradient(135deg, #f472b6, #38bdf8)'],
+            ['lavanda', 'Lavanda', '#EFE9FB'],
+            ['pessego', 'Pêssego', '#FFEFE4']
         ];
         let fundo = store.get(STORAGE_KEYS.fundo, '');
         if (!FUNDOS.some(f => f[0] === fundo)) fundo = '';
@@ -6199,7 +6224,7 @@
                         `).join('')}
                     </div>
 
-                    <!-- Sliders de Customização -->
+                    <!-- Sliders de Blur, Opacidade e Vinheta -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
@@ -6224,6 +6249,17 @@
                             </div>
                             <input type="range" min="0" max="80" value="${bgVignette}" class="bg-range-input" id="rng-bg-vignette">
                         </div>
+                    </div>
+
+                    <!-- Botão de Atualização do App (GitHub Pages) -->
+                    <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <h3 class="modal-label mb-2">Versão & Sistema</h3>
+                        <button type="button" id="btn-force-update" class="btn-update-app">
+                            <i class="fas fa-rotate"></i>Buscar Atualizações do GitHub
+                        </button>
+                        <p class="text-[10px] font-semibold text-gray-400 mt-1.5 text-center">
+                            Recarrega o app limpando o cache para refletir novidades do repositório.
+                        </p>
                     </div>
                 </div>
             `);
@@ -6251,6 +6287,38 @@
                 const l = document.getElementById('lbl-bg-vignette'); if (l) l.textContent = bgVignette + '%';
                 applyFundo();
             }
+        });
+
+        // Ação do Botão de Atualização do GitHub
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('#btn-force-update');
+            if (!btn) return;
+
+            const icon = btn.querySelector('i');
+            if (icon) icon.classList.add('fa-spin');
+            btn.style.opacity = '0.7';
+            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Buscando atualizações...';
+
+            if ('caches' in window) {
+                try {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(k => caches.delete(k)));
+                } catch (err) {}
+            }
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const reg of registrations) {
+                        await reg.update();
+                    }
+                } catch (err) {}
+            }
+
+            setTimeout(() => {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.location.href = cleanUrl + '?v=' + Date.now();
+            }, 600);
         });
 
         // Eventos dentro do painel (delegação)
