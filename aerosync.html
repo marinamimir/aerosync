@@ -1026,10 +1026,15 @@
         html.dark .search-box input { color: #eef0f6; }
 
         /* ===== Blocos da tela inicial em grade (metade ou largura toda) ===== */
-        #home-sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; align-items: stretch; }
-        .home-section { margin-bottom: 0; min-width: 0; display: flex; flex-direction: column; }
-        .home-section > :not(.section-tools):not(.home-note-empty) { flex: 1; }
-        .home-section.is-full, .carousel-section, [data-section="tasks"] { grid-column: span 2; }
+        #home-sections { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(78px, auto); grid-auto-flow: row; gap: 12px 8px; align-items: stretch; }
+        .home-section { margin-bottom: 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+        .home-section > :not(.section-tools):not(.home-note-empty) { flex: 1; min-height: 0; }
+        /* Blocos nativos continuam ocupando toda a largura; widgets usam spans próprios. */
+        #home-sections > .home-section:not([data-widget]) { grid-column: span 2; }
+        #home-sections > .carousel-section, [data-section="tasks"], .home-section.is-full { grid-column: span 4; }
+        #home-sections > .widget-section { min-width: 0; overflow: hidden; }
+        #home-sections > .widget-section .w-body { height: 100%; min-height: 0; }
+        #home-sections > .widget-section .w-body img { width: 100%; height: 100%; object-fit: cover; }
         .editing #home-sections, #home-sections.editing { row-gap: 26px; }
         .editing .home-section { display: flex; margin-bottom: 0; }
         .editing .home-section.is-hidden { display: flex; }
@@ -5648,7 +5653,7 @@
             sheetBody.innerHTML = `
                 <button data-act="wd-back" class="note-tool mb-4"><i class="fas fa-chevron-left"></i>Widgets</button>
                 <span class="modal-label">Prévia</span>
-                <div class="wd-preview widget-section ${layout.sizes[w.id] === 'full' ? 'is-full' : ''}"><div class="w-body">${widgetBodyHTML(w)}</div></div>
+                <div class="wd-preview widget-section ${String(layout.sizes[w.id] || defaultSizeOf(w.id)).startsWith('4x') ? 'is-full' : ''}"><div class="w-body">${widgetBodyHTML(w)}</div></div>
                 ${w.type === 'image' ? `
                     <div class="flex gap-2 mt-4">
                         <label for="wd-file" class="pill-btn primary sm flex-1 text-center cursor-pointer" role="button" tabindex="0" data-wd-pick><i class="fas fa-camera mr-1"></i>${w.image ? 'Trocar foto' : 'Escolher foto'}</label>
@@ -5669,7 +5674,8 @@
                     ${seg('wd-style', QUOTE_STYLES, w.style)}
                 `}
                 <span class="modal-label mt-4">Tamanho na tela inicial</span>
-                ${seg('wd-size', { half: 'Metade', full: 'Largura toda' }, layout.sizes[w.id] || defaultSizeOf(w.id))}
+                <p class="text-xs text-gray-400 font-semibold mb-2">Largura × altura. A grade encaixa os widgets menores nos espaços livres.</p>
+                ${seg('wd-size', { '1x1': '1×1', '1x2': '1×2', '1x4': '1×4', '2x1': '2×1', '2x2': '2×2', '2x4': '2×4', '4x1': '4×1', '4x2': '4×2', '4x4': '4×4' }, layout.sizes[w.id] || defaultSizeOf(w.id))}
                 <button data-act="wd-del" class="pill-btn danger w-full mt-6"><i class="fas fa-trash mr-1"></i>Remover widget</button>
                 <p class="text-xs text-gray-400 font-semibold mt-3"><i class="fas fa-check mr-1"></i>Salvo automaticamente</p>`;
             const refresh = () => {
@@ -5710,7 +5716,7 @@
             else if (act === 'wd-del') { removeWidget(w.id); }
             else if (act === 'wd-fit') { w.fit = btn.dataset.value === 'contain' ? 'contain' : 'cover'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-style') { w.style = QUOTE_STYLES[btn.dataset.value] ? btn.dataset.value : 'paper'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
-            else if (act === 'wd-size') { layout.sizes[w.id] = btn.dataset.value === 'full' ? 'full' : 'half'; saveLayout(); applyLayout(); playClick(); renderSheet(); }
+            else if (act === 'wd-size') { layout.sizes[w.id] = /^[1-4]x[1-4]$/.test(btn.dataset.value) ? btn.dataset.value : defaultSizeOf(w.id); saveLayout(); applyLayout(); playClick(); renderSheet(); }
             else if (act === 'wd-img-del') { w.image = ''; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-idea') {
                 const pool = QUOTE_IDEAS.filter(q => q[0] !== w.text);
@@ -6193,6 +6199,8 @@
         let bgBlur = store.get('aerosync.bg.blur', 0);
         let bgOpacity = store.get('aerosync.bg.opacity', 100);
         let bgVignette = store.get('aerosync.bg.vignette', 35);
+        let bgCustomImage = store.get('aerosync.bg.image', '');
+        if (!isThumb(bgCustomImage)) bgCustomImage = '';
 
         const applyFundo = () => {
             if (fundo) document.documentElement.dataset.fundo = fundo;
@@ -6204,10 +6212,20 @@
             if (bgEl) {
                 bgEl.style.filter = bgBlur > 0 ? `blur(${bgBlur}px)` : 'none';
                 bgEl.style.opacity = (bgOpacity / 100).toString();
+                bgEl.style.backgroundImage = bgCustomImage ? `url("${bgCustomImage}")` : '';
+                bgEl.style.backgroundSize = bgCustomImage ? 'cover' : '';
+                bgEl.style.backgroundPosition = bgCustomImage ? 'center' : '';
+                bgEl.style.backgroundRepeat = bgCustomImage ? 'no-repeat' : '';
+                // A borda da imagem some gradualmente e revela o fundo/paleta por baixo.
+                const fadeStart = Math.max(35, 100 - (bgVignette * 0.8));
+                const edgeMask = `radial-gradient(ellipse at center, #000 ${fadeStart}%, transparent 100%)`;
+                bgEl.style.webkitMaskImage = bgCustomImage ? edgeMask : '';
+                bgEl.style.maskImage = bgCustomImage ? edgeMask : '';
             }
             if (vigEl) {
-                const alpha = (bgVignette / 100).toFixed(2);
-                vigEl.style.background = `radial-gradient(ellipse at 50% 45%, transparent 48%, rgba(30,20,50,${alpha}) 100%)`;
+                // A vinheta não pinta mais as bordas de preto/roxo: a transparência da imagem faz a mesclagem.
+                vigEl.style.background = 'transparent';
+                vigEl.style.opacity = '0';
             }
         };
         applyFundo();
@@ -6222,6 +6240,16 @@
                                 <i></i>${f[1]}
                             </button>
                         `).join('')}
+                    </div>
+
+                    <div class="mt-4">
+                        <span class="modal-label">Imagem de fundo personalizada</span>
+                        <div class="flex gap-2">
+                            <label for="bg-image-file" class="pill-btn primary sm flex-1 text-center cursor-pointer"><i class="fas fa-image mr-1"></i>${bgCustomImage ? 'Trocar imagem' : 'Escolher imagem do celular'}</label>
+                            ${bgCustomImage ? '<button type="button" id="bg-image-remove" class="pill-btn ghost sm"><i class="fas fa-xmark mr-1"></i>Remover</button>' : ''}
+                        </div>
+                        <input id="bg-image-file" type="file" accept="image/*" class="hidden" aria-label="Escolher imagem de fundo">
+                        <p class="text-xs text-gray-400 font-semibold mt-1.5">A imagem se mistura suavemente com o fundo nas bordas.</p>
                     </div>
 
                     <!-- Sliders de Blur, Opacidade e Vinheta -->
@@ -6244,7 +6272,7 @@
 
                         <div class="bg-slider-row">
                             <div class="bg-slider-label">
-                                <span><i class="fas fa-circle-dot mr-1"></i>Intensidade da Vinheta</span>
+                                <span><i class="fas fa-circle-dot mr-1"></i>Mesclagem transparente nas bordas</span>
                                 <span id="lbl-bg-vignette">${bgVignette}%</span>
                             </div>
                             <input type="range" min="0" max="80" value="${bgVignette}" class="bg-range-input" id="rng-bg-vignette">
@@ -6268,6 +6296,27 @@
         sheetBody.addEventListener('click', (e) => {
             const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
             fundo = b.dataset.fundo; store.set(STORAGE_KEYS.fundo, fundo); applyFundo(); renderSheet(); playClick();
+        });
+        sheetBody.addEventListener('change', (e) => {
+            if (e.target.id !== 'bg-image-file') return;
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            fileToJpeg(file, 1100).then(url => {
+                const previous = bgCustomImage;
+                bgCustomImage = url;
+                if (!store.set('aerosync.bg.image', bgCustomImage)) {
+                    bgCustomImage = previous;
+                    toast('Imagem muito grande para o armazenamento local');
+                    return;
+                }
+                applyFundo(); renderSheet(); playPop();
+            }).catch(() => toast('Não foi possível carregar essa imagem'));
+        });
+        sheetBody.addEventListener('click', (e) => {
+            if (!e.target.closest('#bg-image-remove')) return;
+            bgCustomImage = '';
+            store.remove('aerosync.bg.image');
+            applyFundo(); renderSheet(); playClick();
         });
 
         sheetBody.addEventListener('input', (e) => {
@@ -7269,7 +7318,7 @@
         if (Array.isArray(rawWidgets) && rawWidgets.length && JSON.stringify(rawWidgets) !== JSON.stringify(widgets)) saveWidgets(); // grava a versão limpa
         const widgetById = (id) => widgets.find(w => w.id === id);
         const allSectionIds = () => [...SECTION_IDS, ...widgets.map(w => w.id)];
-        const defaultSizeOf = (id) => DEFAULT_SIZES[id] || ((widgetById(id) || {}).type === 'quote' ? 'full' : 'half');
+        const defaultSizeOf = (id) => DEFAULT_SIZES[id] || ((widgetById(id) || {}).type === 'quote' ? '4x2' : '2x2');
         const defaultLayout = () => ({ order: [...widgets.map(w => w.id), ...SECTION_IDS], hidden: [], sizes: Object.fromEntries(allSectionIds().map(id => [id, defaultSizeOf(id)])) });
         // A versão anterior juntava Progresso+Hoje ("summary") e Foco+Tempo ("focus")
         const OLD_IDS = { summary: ['progress', 'date'], focus: ['focus', 'time'] };
@@ -7285,7 +7334,11 @@
         layout.order = [...widgets.map(w => w.id).filter(id => !layout.order.includes(id)), ...layout.order];
         if (savedLayout.sizes && typeof savedLayout.sizes === 'object') {
             knownIds.forEach(id => {
-                if (!FIXED_FULL.includes(id) && ['half', 'full'].includes(savedLayout.sizes[id])) layout.sizes[id] = savedLayout.sizes[id];
+                if (!FIXED_FULL.includes(id)) {
+                    const oldSize = savedLayout.sizes[id];
+                    if (['half', 'full'].includes(oldSize)) layout.sizes[id] = oldSize === 'full' ? '4x2' : '2x2';
+                    else if (/^[1-4]x[1-4]$/.test(oldSize || '') && widgetById(id)) layout.sizes[id] = oldSize;
+                }
             });
         }
         const saveLayout = () => store.set(STORAGE_KEYS.layout, { v: 2, ...layout });
@@ -7354,13 +7407,23 @@
             layout.order.forEach(id => homeEl.appendChild(sectionEl(id)));
             layout.order.forEach((id, i) => {
                 const sec = sectionEl(id), label = sec.dataset.label;
-                const hidden = layout.hidden.includes(id), full = layout.sizes[id] === 'full', fixed = FIXED_FULL.includes(id);
+                const hidden = layout.hidden.includes(id), size = layout.sizes[id] || defaultSizeOf(id), fixed = FIXED_FULL.includes(id);
+                const full = size === 'full' || size.startsWith('4x');
                 sec.classList.toggle('is-hidden', hidden);
                 sec.classList.toggle('is-full', full);
+                if (sec.dataset.widget) {
+                    const [cols, rows] = /^([1-4])x([1-4])$/.test(size) ? size.split('x').map(Number) : [2, 2];
+                    sec.style.gridColumn = `span ${cols}`;
+                    sec.style.gridRow = `span ${rows}`;
+                    sec.dataset.size = `${cols}x${rows}`;
+                } else {
+                    sec.style.gridColumn = '';
+                    sec.style.gridRow = '';
+                }
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
                 sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;
                 const sb = sec.querySelector('[data-st="size"]');
-                const sizeLabel = fixed ? 'Este bloco sempre usa a largura toda' : full ? 'Deixar com metade da largura' : 'Usar a largura toda';
+                const sizeLabel = fixed ? 'Este bloco sempre usa a largura toda' : sec.dataset.widget ? `Tamanho atual ${size}; alternar largura` : full ? 'Deixar com metade da largura' : 'Usar a largura toda';
                 sb.disabled = fixed;
                 sb.title = sizeLabel;
                 sb.setAttribute('aria-label', `${label}: ${sizeLabel}`);
@@ -7424,7 +7487,10 @@
             const i = layout.order.indexOf(id), o = layout.order;
             if (b.dataset.st === 'prev' && i > 0) [o[i - 1], o[i]] = [o[i], o[i - 1]];
             if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
-            if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) layout.sizes[id] = layout.sizes[id] === 'full' ? 'half' : 'full';
+            if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) {
+                if (sec.dataset.widget) layout.sizes[id] = (layout.sizes[id] || '2x2') === '4x2' ? '2x2' : '4x2';
+                else layout.sizes[id] = layout.sizes[id] === 'full' ? 'half' : 'full';
+            }
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
             if (b.dataset.st === 'wedit') { openWidgetEditor(id); return; }
             if (b.dataset.st === 'wdel') { removeWidget(id); return; }
