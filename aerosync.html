@@ -151,13 +151,20 @@
         }
 
         /* Base e Tipografia */
+        html, body {
+            height: 100%;
+            max-height: 100vh;
+            overflow: hidden;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
             font-family: 'Nunito', sans-serif;
             background-color: var(--page);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             margin: 0;
             /* Um padrão de fundo sutil de pontilhados para dar cara de console */
             background-image: radial-gradient(#d1d5db 1px, transparent 1px);
@@ -624,7 +631,7 @@
         }
         #sheet.open .sheet-panel { transform: none; }
         .sheet-grip { width: 44px; height: 5px; border-radius: 99px; background: #e5e7eb; margin: 0 auto 14px; }
-        .sheet-body { overflow-y: auto; flex: 1; padding-bottom: 8px; }
+        .sheet-body { overflow-y: auto; flex: 1; padding-bottom: 24px; overscroll-behavior: contain; }
         .sheet-section { margin-bottom: 18px; }
 
         .agenda-row {
@@ -2416,7 +2423,7 @@
         </div>
 
         <!-- Área rolável: as seções da tela inicial (a ordem pode ser trocada no modo Organizar) -->
-        <div id="main-scroll" class="flex-1 overflow-y-auto no-scrollbar pb-28 px-6 pt-3">
+        <div id="main-scroll" class="flex-1 overflow-y-auto no-scrollbar pb-28 px-6 pt-3" style="overscroll-behavior: contain;">
             <div id="home-sections">
 
                 <section class="home-section" data-section="progress" data-label="Progresso">
@@ -2599,8 +2606,6 @@
                 <button class="nav-btn" data-view="profile" aria-label="Ajustes"><i class="fas fa-cog"></i></button>
             </div>
         </div>
-
-    </div>
 
     <script>
         // ================================================
@@ -7254,6 +7259,8 @@
 
     #fin-sheet {
         position: absolute; inset: 0; z-index: 86;
+        overflow: hidden;
+        overscroll-behavior: contain;
         background: rgba(15, 23, 42, 0.16);
         backdrop-filter: blur(8px) brightness(0.95);
         -webkit-backdrop-filter: blur(8px) brightness(0.95);
@@ -9161,6 +9168,7 @@
 })();
 </script>
 <!-- ==================== FIM DO MÓDULO DE FINANÇAS V6 ==================== -->
+    </div> <!-- fecha .mobile-frame contendo todas as telas, modais e folhas -->
 
 </body>
 </html>
