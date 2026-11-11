@@ -7246,7 +7246,8 @@
     </script>
 
 
-<!-- ==================== MÓDULO DE FINANÇAS V5 (ESTATÍSTICAS NA VISÃO GERAL, GRÁFICO PIE, GRÁFICO DE BARRAS & ABA COMPARATIVO 5 MESES COM LINE GRAPH) ==================== -->
+
+<!-- ==================== MÓDULO DE FINANÇAS V6 (NOVA COMPRA EM POP-UP DETALHADO + EXTRATO EXTERNO) ==================== -->
 <style>
     /* Oculta o modal antigo de finanças caso acionado */
     #fin-modal { display: none !important; }
@@ -7449,7 +7450,7 @@
             <button type="button" class="fin-month-nav" id="fin-next-m" title="Próximo mês"><i class="fas fa-chevron-right"></i></button>
         </div>
 
-        <!-- Abas: Visão Geral, Cartões, Compras, Categorias, Salário, Comparativo (nova!), Simulador, Recorrentes, Lixeira -->
+        <!-- Abas: Visão Geral, Cartões, Compras, Categorias, Salário, Comparativo, Simulador, Recorrentes, Lixeira -->
         <div class="fin-tabs no-scrollbar" id="fin-tabs">
             <button class="fin-tab active" data-ftab="overview"><i class="fas fa-layer-group mr-1"></i>Visão Geral</button>
             <button class="fin-tab" data-ftab="cards"><i class="fas fa-credit-card mr-1"></i>Cartões</button>
@@ -7725,7 +7726,6 @@
     }
 
     function buildFiveMonthsComparison(currentYM) {
-        // Coleta 5 meses (4 anteriores + o atual selecionado)
         const months = [];
         for (let i = 4; i >= 0; i--) {
             const ym = shiftYM(currentYM, -i);
@@ -7740,7 +7740,6 @@
         const curSpent = months[4].spent;
         const diffFromAvg = avgSpent > 0 ? Math.round(((curSpent - avgSpent) / avgSpent) * 100) : 0;
 
-        // SVG Line Graph (curva suave de tendência com pontos interativos e preenchimento gradiente)
         const svgW = 320;
         const svgH = 120;
         const padX = 26;
@@ -7780,43 +7779,63 @@
     }
 
     // =========================================================================
-    //  POP-UPS: EDIÇÃO INDIVIDUAL E EDIÇÃO EM MASSA ("Editar todas")
+    //  POP-UP MODAL: INTERFACE DETALHADA PARA COMPRA (NOVA OU EDITAR)
     // =========================================================================
-    function openSingleExpensePopup(groupId) {
-        const groupItems = fin.expenses.filter(e => (e.groupId || e.id) === groupId).sort((a,b) => (a.instIndex||1) - (b.instIndex||1));
-        if (!groupItems.length) return;
-        const target = groupItems[0];
-        const totalAmount = groupItems.reduce((s, x) => s + (Number(x.amount)||0), 0);
-        const selCard = target.cardId || 'pix';
-        const selCat = target.catId || (fin.categories[0] && fin.categories[0].id);
+    function openExpenseModal(groupId = null) {
+        let isEdit = !!groupId;
+        let desc = '';
+        let totalAmount = '';
+        let instTotal = 1;
+        let purchaseDate = todayISO();
+        let time = nowHM();
+        let selCard = fin.cards[0]?.id || 'pix';
+        let selCat = fin.categories[0]?.id || 'c1';
+
+        if (isEdit) {
+            const groupItems = fin.expenses.filter(e => (e.groupId || e.id) === groupId).sort((a,b) => (a.instIndex||1) - (b.instIndex||1));
+            if (!groupItems.length) return;
+            const target = groupItems[0];
+            desc = target.desc || '';
+            totalAmount = groupItems.reduce((s, x) => s + (Number(x.amount)||0), 0);
+            totalAmount = Number(totalAmount.toFixed(2));
+            instTotal = target.instTotal || 1;
+            purchaseDate = target.purchaseDate || target.date || todayISO();
+            time = target.time || '12:00';
+            selCard = target.cardId || 'pix';
+            selCat = target.catId || (fin.categories[0] && fin.categories[0].id);
+        }
 
         popupContent.innerHTML = `
             <div class="flex items-center justify-between mb-3">
-                <h3 class="text-base font-extrabold text-gray-800">Editar Compra</h3>
+                <h3 class="text-base font-extrabold text-gray-800">${isEdit ? 'Editar Compra' : 'Nova Compra'}</h3>
                 <button type="button" class="modal-x" data-popact="close"><i class="fas fa-times"></i></button>
             </div>
-            <label class="modal-label">Nome / Descrição</label>
-            <input id="pop-ex-desc" class="task-input mb-2" value="${esc(target.desc)}">
+            
+            <label class="modal-label">Nome / Descrição da Compra</label>
+            <input id="pop-ex-desc" class="task-input mb-2" placeholder="Ex: Mercado, Shein, Papelaria..." value="${esc(desc)}">
+            
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div>
                     <label class="text-[10px] font-extrabold text-gray-400 uppercase">Valor Total (R$)</label>
-                    <input id="pop-ex-val" type="number" step="0.01" class="task-input" value="${Number(totalAmount.toFixed(2))}">
+                    <input id="pop-ex-val" type="number" step="0.01" class="task-input" placeholder="0.00" value="${totalAmount !== '' ? totalAmount : ''}">
                 </div>
                 <div>
                     <label class="text-[10px] font-extrabold text-gray-400 uppercase">Parcelas</label>
-                    <input id="pop-ex-inst" type="number" min="1" max="48" class="task-input" value="${target.instTotal || 1}">
+                    <input id="pop-ex-inst" type="number" min="1" max="48" class="task-input" value="${instTotal}">
                 </div>
             </div>
+
             <div class="grid grid-cols-2 gap-2 mb-2">
                 <div>
                     <label class="text-[10px] font-extrabold text-gray-400 uppercase">Data da Compra</label>
-                    <input id="pop-ex-date" type="date" class="task-input text-xs" value="${esc(target.purchaseDate || target.date)}">
+                    <input id="pop-ex-date" type="date" class="task-input text-xs" value="${esc(purchaseDate)}">
                 </div>
                 <div>
                     <label class="text-[10px] font-extrabold text-gray-400 uppercase">Horário</label>
-                    <input id="pop-ex-time" type="time" class="task-input text-xs" value="${esc(target.time || '12:00')}">
+                    <input id="pop-ex-time" type="time" class="task-input text-xs" value="${esc(time)}">
                 </div>
             </div>
+
             <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Cartão / Forma de Pagamento</label>
             <div class="fin-pills-scroll no-scrollbar mb-2" id="pop-ex-cards">
                 <button type="button" data-payid="pix" class="tag-pill ${selCard==='pix'?'selected':''}" style="--pill:#10b981">
@@ -7828,7 +7847,11 @@
                     </button>
                 `).join('')}
             </div>
-            <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria (Pílulas Horizontais)</label>
+
+            <div class="flex items-center justify-between mb-1 mt-2">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase m-0">Categoria</label>
+                <button type="button" data-popact="goto-categories" class="text-[11px] font-bold accent-text"><i class="fas fa-plus mr-0.5"></i>Nova Categoria</button>
+            </div>
             <div class="fin-pills-scroll no-scrollbar mb-4" id="pop-ex-cats">
                 ${fin.categories.map(c => `
                     <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${selCat===c.id?'selected':''}" style="--pill:${esc(c.color)}">
@@ -7836,8 +7859,11 @@
                     </button>
                 `).join('')}
             </div>
+
             <div class="flex gap-2">
-                <button type="button" data-popact="save-single" data-gid="${esc(groupId)}" class="pill-btn primary flex-1">Salvar Alterações</button>
+                <button type="button" data-popact="save-expense" data-gid="${isEdit ? esc(groupId) : ''}" class="pill-btn primary flex-1">
+                    ${isEdit ? 'Salvar Alterações' : 'Salvar Compra'}
+                </button>
                 <button type="button" data-popact="close" class="pill-btn ghost">Cancelar</button>
             </div>
         `;
@@ -7912,8 +7938,13 @@
 
         if (act === 'close') {
             closePopup();
-        } else if (act === 'save-single') {
-            const gid = actBtn.dataset.gid;
+        } else if (act === 'goto-categories') {
+            closePopup();
+            curTab = 'categories';
+            document.querySelectorAll('#fin-tabs .fin-tab').forEach(t => t.classList.toggle('active', t.dataset.ftab === 'categories'));
+            renderFin();
+        } else if (act === 'save-expense') {
+            const gid = actBtn.dataset.gid || '';
             const desc = document.getElementById('pop-ex-desc').value.trim();
             const totalAmount = parseFloat(document.getElementById('pop-ex-val').value);
             if (!desc || !(totalAmount > 0)) return;
@@ -7924,12 +7955,16 @@
             const catId = (popupContent.querySelector('#pop-ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id);
             const catObj = fin.categories.find(c => c.id === catId);
 
-            fin.expenses = fin.expenses.filter(e => (e.groupId || e.id) !== gid);
+            const effectiveGid = gid ? gid : ('grp' + Date.now() + Math.random().toString(36).slice(2,5));
+            if (gid) {
+                fin.expenses = fin.expenses.filter(e => (e.groupId || e.id) !== gid);
+            }
+
             const perInst = Number((totalAmount / instTotal).toFixed(2));
             for (let i = 1; i <= instTotal; i++) {
                 fin.expenses.push({
-                    id: gid + '_' + i,
-                    groupId,
+                    id: effectiveGid + '_' + i,
+                    groupId: effectiveGid,
                     desc,
                     amount: perInst,
                     purchaseDate,
@@ -7981,7 +8016,7 @@
     });
 
     // =========================================================================
-    //  ABA 1: VISÃO GERAL (INCLUI ESTATÍSTICAS, PIE CHART E BAR CHART ABAIXO DAS CATEGORIAS)
+    //  ABA 1: VISÃO GERAL
     // =========================================================================
     function renderOverview() {
         const ym = selectedYM;
@@ -8008,7 +8043,6 @@
             .filter(e => (!e.cardId || e.cardId === 'pix') && getEffectiveBillingYM(e) === ym)
             .reduce((s, e) => s + (Number(e.amount) || 0), 0);
 
-        // Agrupamento por categoria considerando preservação histórica de nomes
         const catMap = {};
         curExpenses.forEach(e => {
             const cat = resolveExpenseCat(e);
@@ -8022,7 +8056,6 @@
             return { ...c, pct };
         }).sort((a,b) => b.sum - a.sum);
 
-        // Padrões de comportamento (horário e pico de compras)
         const periods = { 'Manhã (06h-12h)': 0, 'Tarde (12h-18h)': 0, 'Noite (18h-00h)': 0, 'Madrugada (00h-06h)': 0 };
         const byDate = {};
         curExpenses.forEach(e => {
@@ -8123,7 +8156,7 @@
                 `).join('')}
             </div>
 
-            <!-- ESTATÍSTICAS INTEGRADAS NA VISÃO GERAL (ABAIXO DE TODAS AS CATEGORIAS) -->
+            <!-- ESTATÍSTICAS INTEGRADAS NA VISÃO GERAL -->
             <div class="fin-card">
                 <div class="flex items-center justify-between mb-1">
                     <span class="modal-label m-0">Estatísticas do Mês (${esc(formatYM(ym))})</span>
@@ -8268,72 +8301,34 @@
     }
 
     // =========================================================================
-    //  ABA 3: COMPRAS (PÍLULAS HORIZONTAIS + SELEÇÃO EM MASSA)
+    //  ABA 3: COMPRAS (COM BOTÃO DESTACADO PARA ABRIR O POP-UP + EXTRATO EXTERNO)
     // =========================================================================
     function renderExpenses() {
         const ym = selectedYM;
         const list = getMonthExpenses(ym, false).sort((a,b) => ((b.purchaseDate||b.date||'')+(b.time||'')).localeCompare((a.purchaseDate||a.date||'')+(a.time||'')));
-        const selectedCardId = fin.cards[0]?.id || 'pix';
-        const selectedCatId = fin.categories[0]?.id || 'c1';
         const selCount = selectedExpenseGroupIds.size;
 
         body.innerHTML = `
+            <!-- Botão de Abertura da Interface Detalhada de Compra -->
             <div class="fin-card">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="modal-label m-0">Registrar Nova Compra / Gasto</span>
-                    <button type="button" data-fact="goto-categories" class="text-xs font-bold accent-text"><i class="fas fa-tags mr-1"></i>Gerenciar Categorias</button>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mb-2">
-                    <input id="ex-desc" class="task-input" placeholder="Descrição (ex: Supermercado)">
-                    <input id="ex-val" type="number" step="0.01" class="task-input" placeholder="Valor Total R$ 0,00">
-                </div>
-                <div class="grid grid-cols-3 gap-2 mb-2">
-                    <div>
-                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Data da Compra</label>
-                        <input id="ex-date" type="date" class="task-input text-xs" value="${todayISO()}">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Horário</label>
-                        <input id="ex-time" type="time" class="task-input text-xs" value="${nowHM()}">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-extrabold text-gray-400 uppercase">Parcelas</label>
-                        <input id="ex-inst" type="number" min="1" max="48" class="task-input text-xs" value="1">
-                    </div>
-                </div>
-
-                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Forma de Pagamento / Cartão</label>
-                <div class="fin-pills-scroll no-scrollbar mb-2" id="ex-cards">
-                    <button type="button" data-payid="pix" class="tag-pill ${selectedCardId==='pix'?'selected':''}" style="--pill:#10b981">
-                        <i class="fas fa-bolt mr-1"></i>Pix / Conta
+                <div class="flex items-center justify-between gap-2">
+                    <button type="button" data-fact="open-new-expense" class="pill-btn primary flex-1 py-3 text-sm font-extrabold flex items-center justify-center gap-2">
+                        <i class="fas fa-plus"></i>Nova Compra
                     </button>
-                    ${fin.cards.map(c => `
-                        <button type="button" data-payid="${esc(c.id)}" class="tag-pill ${selectedCardId===c.id?'selected':''}" style="--pill:${esc(c.color)}">
-                            <i class="fas fa-credit-card mr-1"></i>${esc(c.name)}
-                        </button>
-                    `).join('')}
+                    <button type="button" data-fact="goto-categories" class="fin-mini-pill py-2.5 px-3" title="Gerenciar Categorias">
+                        <i class="fas fa-tags mr-1"></i>Categorias
+                    </button>
                 </div>
-
-                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Categoria (Pílulas Horizontais)</label>
-                <div class="fin-pills-scroll no-scrollbar mb-3" id="ex-cats">
-                    ${fin.categories.map(c => `
-                        <button type="button" data-cid="${esc(c.id)}" class="tag-pill ${selectedCatId===c.id?'selected':''}" style="--pill:${esc(c.color)}">
-                            <i class="fas ${esc(c.icon)} mr-1"></i>${esc(c.name)}
-                        </button>
-                    `).join('')}
-                </div>
-
-                <button type="button" data-fact="save-expense" class="pill-btn primary w-full">Adicionar Compra</button>
             </div>
 
-            <!-- Importação em Lote -->
+            <!-- Importação em Lote / Extrato Colado (Mantido fora do modal) -->
             <div class="fin-card">
                 <span class="modal-label">Importar Fatura / Extrato Colado (100% Offline)</span>
                 <p class="text-[11px] text-gray-400 font-semibold mb-2">
                     Cole linhas no formato: <b>Nome;Valor;AAAA-MM-DD;Parcelas(opcional)</b>
                 </p>
                 <textarea id="ex-bulk" class="task-input text-xs" rows="2" placeholder="iFood;45.90;${todayISO()}&#10;Vet Mocca;300.00;${todayISO()};3"></textarea>
-                <button type="button" data-fact="import-bulk" class="pill-btn ghost w-full mt-2 text-xs">Importar compras para o cartão selecionado</button>
+                <button type="button" data-fact="import-bulk" class="pill-btn ghost w-full mt-2 text-xs">Importar linhas de extrato acima</button>
             </div>
 
             <!-- Cabeçalho da Lista com Botão "Selecionar várias" -->
@@ -8516,13 +8511,12 @@
     }
 
     // =========================================================================
-    //  ABA 6: NOVA ABA COMPARATIVO (HISTÓRICO COM 4 MESES ANTERIORES + LINE GRAPH + BARRAS + PIE)
+    //  ABA 6: COMPARATIVO (HISTÓRICO 5 MESES + LINE GRAPH + BARRAS + PIE)
     // =========================================================================
     function renderComparative() {
         const ym = selectedYM;
         const comp = buildFiveMonthsComparison(ym);
 
-        // Agrupamento de categorias acumulado dos 5 meses para o Pie Chart comparativo
         const all5Expenses = fin.expenses.filter(e => {
             const bYM = getEffectiveBillingYM(e);
             return comp.months.some(m => m.ym === bYM);
@@ -8542,7 +8536,6 @@
         }).sort((a,b) => b.sum - a.sum);
 
         body.innerHTML = `
-            <!-- Resumo dos Indicadores Comparativos -->
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <div class="stat-box">
                     <div class="text-lg font-black text-gray-800">${brl(comp.curSpent)}</div>
@@ -8572,18 +8565,13 @@
                                 <stop offset="100%" stop-color="var(--theme-accent, #3b82f6)" stop-opacity="0.0" />
                             </linearGradient>
                         </defs>
-                        <!-- Linha média tracejada de referência -->
                         <line x1="${comp.padX}" y1="${((comp.svgH - comp.padY) - ((comp.avgSpent / comp.maxSpent) * (comp.svgH - comp.padY * 2))).toFixed(1)}" 
                               x2="${comp.svgW - comp.padX}" y2="${((comp.svgH - comp.padY) - ((comp.avgSpent / comp.maxSpent) * (comp.svgH - comp.padY * 2))).toFixed(1)}" 
                               stroke="#cbd5e1" stroke-dasharray="4 4" stroke-width="1.2" />
                         
-                        <!-- Área preenchida sob a curva -->
                         <path d="${comp.areaPath}" fill="url(#finGradLine)" />
-
-                        <!-- Linha principal suave -->
                         <path d="${comp.linePath}" fill="none" stroke="var(--theme-accent, #3b82f6)" stroke-width="3" stroke-linecap="round" />
 
-                        <!-- Pontos dos 5 meses -->
                         ${comp.pts.map(p => `
                             <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.m.isCurrent ? 5.5 : 4}" fill="${p.m.isCurrent ? 'var(--theme-accent, #3b82f6)' : '#fff'}" stroke="var(--theme-accent, #3b82f6)" stroke-width="2.5" />
                             <text x="${p.x.toFixed(1)}" y="${p.y < 35 ? (p.y + 16).toFixed(1) : (p.y - 10).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="#475569">
@@ -8822,8 +8810,13 @@
         if (!btn) return;
         const act = btn.dataset.fact;
 
+        // Compras: Abrir Pop-up de Nova Compra
+        if (act === 'open-new-expense') {
+            openExpenseModal();
+        }
+
         // Atalhos de navegação
-        if (act === 'goto-comparative') {
+        else if (act === 'goto-comparative') {
             curTab = 'comparative';
             document.querySelectorAll('#fin-tabs .fin-tab').forEach(t => t.classList.toggle('active', t.dataset.ftab === 'comparative'));
             renderFin();
@@ -9030,42 +9023,10 @@
             saveFin(); renderFin();
         }
 
-        // Compras
-        else if (act === 'save-expense') {
-            const desc = document.getElementById('ex-desc').value.trim();
-            const totalAmount = parseFloat(document.getElementById('ex-val').value);
-            if (!desc || !(totalAmount > 0)) return;
-            const purchaseDate = document.getElementById('ex-date').value || todayISO();
-            const time = document.getElementById('ex-time').value || nowHM();
-            const instTotal = Math.max(1, Math.min(48, parseInt(document.getElementById('ex-inst').value, 10) || 1));
-            const cardId = (body.querySelector('#ex-cards .selected') || {}).dataset?.payid || 'pix';
-            const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id);
-            const catObj = fin.categories.find(c => c.id === catId);
-
-            const groupId = 'grp' + Date.now() + Math.random().toString(36).slice(2,5);
-            const perInstallment = Number((totalAmount / instTotal).toFixed(2));
-            for (let i = 1; i <= instTotal; i++) {
-                fin.expenses.push({
-                    id: groupId + '_' + i,
-                    groupId,
-                    desc,
-                    amount: perInstallment,
-                    purchaseDate,
-                    date: purchaseDate,
-                    time,
-                    cardId,
-                    catId,
-                    catNameSnapshot: catObj ? catObj.name : '',
-                    catColorSnapshot: catObj ? catObj.color : '',
-                    catIconSnapshot: catObj ? catObj.icon : '',
-                    instIndex: i,
-                    instTotal
-                });
-            }
-            saveFin(); renderFin();
-        } else if (act === 'edit-expense') {
+        // Compras: Editar existente
+        else if (act === 'edit-expense') {
             const row = btn.closest('[data-gid]');
-            openSingleExpensePopup(row.dataset.gid);
+            openExpenseModal(row.dataset.gid);
         } else if (act === 'del-expense') {
             const row = btn.closest('[data-gid]');
             const gid = row.dataset.gid;
@@ -9077,8 +9038,8 @@
         } else if (act === 'import-bulk') {
             const raw = document.getElementById('ex-bulk').value.trim();
             if (!raw) return;
-            const cardId = (body.querySelector('#ex-cards .selected') || {}).dataset?.payid || 'pix';
-            const catId = (body.querySelector('#ex-cats .selected') || {}).dataset?.cid || (fin.categories[0] && fin.categories[0].id) || 'c1';
+            const cardId = fin.cards[0]?.id || 'pix';
+            const catId = fin.categories[0]?.id || 'c1';
             const catObj = fin.categories.find(c => c.id === catId);
             raw.split('\n').forEach((line, idx) => {
                 const [d, v, dt, instStr] = line.split(';').map(s => (s||'').trim());
@@ -9199,7 +9160,7 @@
     });
 })();
 </script>
-<!-- ==================== FIM DO MÓDULO DE FINANÇAS V5 ==================== -->
+<!-- ==================== FIM DO MÓDULO DE FINANÇAS V6 ==================== -->
 
 </body>
 </html>
