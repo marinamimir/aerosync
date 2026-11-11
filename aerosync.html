@@ -1076,8 +1076,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .home-section { margin-bottom: 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
         .home-section > :not(.section-tools):not(.home-note-empty) { flex: 1; min-height: 0; }
         /* Blocos nativos continuam ocupando toda a largura; widgets usam spans próprios. */
-        #home-sections > .home-section:not([data-widget]) { grid-column: span 2; }
-        #home-sections > .carousel-section, [data-section="tasks"], .home-section.is-full { grid-column: span 4; }
+        #home-sections > .home-section:not([data-widget]):not([data-section="tasks"]) { grid-column: span 2; }
+        #home-sections > .carousel-section, .home-section.is-full { grid-column: span 4; }
+        #home-sections > [data-section="tasks"] { grid-column: span 4; grid-row: auto; min-width:0; min-height:fit-content; height:auto; overflow:visible; }
+        #home-sections > [data-section="tasks"] > .relative { flex:0 0 auto; min-height:0; overflow:visible; }
+        #home-sections > [data-section="tasks"] #task-list { min-width:0; min-height:0; overflow:visible; }
+        #home-sections > [data-section="tasks"] .task-item { min-width:0; max-width:100%; }
         #home-sections > .widget-section { min-width: 0; overflow: hidden; }
         #home-sections > .widget-section .w-body { height: 100%; min-height: 0; }
         #home-sections > .widget-section .w-body img { width: 100%; height: 100%; object-fit: cover; }
@@ -2145,6 +2149,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         }
         #app-status-bar, #app-header { position: relative !important; z-index: 20 !important; isolation:isolate; background:transparent; }
         #app-status-bar { flex:0 0 auto; }
+        #app-status-bar #clock { display:inline-flex; align-items:center; min-height:20px; transition:all .2s ease; }
+        #app-status-bar[data-clock-style="pill"] #clock { padding:4px 10px; border-radius:999px; background:color-mix(in srgb,var(--theme-accent, var(--accent)) 12%, transparent); color:var(--theme-accent, var(--accent)); }
+        #app-status-bar[data-clock-style="mono"] #clock { font-family:'VT323',monospace; font-size:18px; letter-spacing:1px; padding:1px 7px; border-radius:5px; background:#252a35; color:#a7f3d0; text-shadow:0 0 5px rgba(167,243,208,.55); }
+        #app-status-bar[data-clock-style="bold"] #clock { font-size:14px; font-weight:900; letter-spacing:-.5px; color:var(--theme-accent, var(--accent)); }
+        #app-status-bar[data-clock-style="kawaii"] #clock { padding:4px 9px; border-radius:12px; background:linear-gradient(135deg,color-mix(in srgb,var(--theme-accent-2, var(--accent)) 22%,white),color-mix(in srgb,var(--theme-accent, var(--accent)) 13%,white)); color:var(--theme-accent, var(--accent)); box-shadow:0 2px 8px var(--theme-glow,rgba(0,0,0,.08)); }
+        #app-status-bar[data-clock-style="kawaii"] #clock::before { content:'♡'; margin-right:5px; font-size:11px; }
         #app-header { flex:0 0 auto; }
         #app-header > *, #app-status-bar > * { position:relative; z-index:1; }
         #edit-bar { position: relative; z-index: 3; }
@@ -6355,6 +6365,16 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         let bgOpacity = store.get('aerosync.bg.opacity', 100);
         let bgVignette = store.get('aerosync.bg.vignette', 35);
         let bgCustomImage = store.get('aerosync.bg.image', '');
+        let clockStyle = store.get('aerosync.clock.style', 'default');
+        if (!['default','pill','mono','bold','kawaii'].includes(clockStyle)) clockStyle = 'default';
+        const applyClockStyle = () => {
+            const bar = document.getElementById('app-status-bar');
+            if (!bar) return;
+            bar.dataset.clockStyle = clockStyle;
+            const clock = document.getElementById('clock');
+            if (clock) clock.setAttribute('aria-label', 'Horário atual');
+        };
+        applyClockStyle();
         if (!isThumb(bgCustomImage)) bgCustomImage = '';
 
         const applyFundo = () => {
@@ -6371,11 +6391,11 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 bgEl.style.backgroundSize = bgCustomImage ? 'cover' : '';
                 bgEl.style.backgroundPosition = bgCustomImage ? 'center' : '';
                 bgEl.style.backgroundRepeat = bgCustomImage ? 'no-repeat' : '';
-                // A borda da imagem some gradualmente e revela o fundo/paleta por baixo.
-                const fadeStart = Math.max(35, 100 - (bgVignette * 0.8));
+                // Mescla também os fundos CSS (Grid/Bolinhas), não apenas imagens personalizadas.
+                const fadeStart = Math.max(28, 100 - (bgVignette * 0.9));
                 const edgeMask = `radial-gradient(ellipse at center, #000 ${fadeStart}%, transparent 100%)`;
-                bgEl.style.webkitMaskImage = bgCustomImage ? edgeMask : '';
-                bgEl.style.maskImage = bgCustomImage ? edgeMask : '';
+                bgEl.style.webkitMaskImage = bgVignette > 0 ? edgeMask : '';
+                bgEl.style.maskImage = bgVignette > 0 ? edgeMask : '';
             }
             if (vigEl) {
                 // A vinheta não pinta mais as bordas de preto/roxo: a transparência da imagem faz a mesclagem.
@@ -6397,6 +6417,16 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                         `).join('')}
                     </div>
 
+                    <div class="mt-4">
+                        <label class="modal-label" for="bg-clock-style">Estilo do relógio</label>
+                        <select id="bg-clock-style" class="w-full rounded-xl p-2 mt-1 text-sm font-bold" style="background:var(--surface);border:1px solid rgba(148,163,184,.3)">
+                            <option value="default" ${clockStyle==='default'?'selected':''}>Clássico</option>
+                            <option value="pill" ${clockStyle==='pill'?'selected':''}>Pílula delicada</option>
+                            <option value="mono" ${clockStyle==='mono'?'selected':''}>Digital retrô</option>
+                            <option value="bold" ${clockStyle==='bold'?'selected':''}>Minimalista forte</option>
+                            <option value="kawaii" ${clockStyle==='kawaii'?'selected':''}>Kawaii ♡</option>
+                        </select>
+                    </div>
                     <div class="mt-4">
                         <span class="modal-label">Imagem de fundo personalizada</span>
                         <div class="flex gap-2">
@@ -6453,6 +6483,10 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             fundo = b.dataset.fundo; store.set(STORAGE_KEYS.fundo, fundo); applyFundo(); renderSheet(); playClick();
         });
         sheetBody.addEventListener('change', (e) => {
+            if (e.target.id === 'bg-clock-style') {
+                clockStyle = ['default','pill','mono','bold','kawaii'].includes(e.target.value) ? e.target.value : 'default';
+                store.set('aerosync.clock.style', clockStyle); applyClockStyle(); playClick(); return;
+            }
             if (e.target.id !== 'bg-image-file') return;
             const file = e.target.files && e.target.files[0];
             if (!file) return;
@@ -7453,8 +7487,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const homeEl = document.getElementById('home-sections');
         const mainScroll = document.getElementById('main-scroll');
         const SECTION_IDS = ['progress', 'date', 'carousel', 'focus', 'time', 'note', 'tasks'];
-        const FIXED_FULL = ['carousel', 'tasks']; // esses precisam da largura toda
-        const DEFAULT_SIZES = { progress: 'half', date: 'half', carousel: 'full', focus: 'half', time: 'half', note: 'full', tasks: 'full' };
+        const FIXED_FULL = ['carousel']; // tarefas agora podem ser redimensionadas
+        const DEFAULT_SIZES = { progress: 'half', date: 'half', carousel: 'full', focus: 'half', time: 'half', note: 'full', tasks: '4x2' };
 
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
@@ -7639,6 +7673,11 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     const [cols, rows] = /^([1-4])x([1-4])$/.test(size) ? size.split('x').map(Number) : [2, 2];
                     sec.style.gridColumn = `span ${cols}`;
                     sec.style.gridRow = `span ${rows}`;
+                    sec.dataset.size = `${cols}x${rows}`;
+                } else if (id === 'tasks') {
+                    const [cols, rows] = /^([1-4])x([1-4])$/.test(size) ? size.split('x').map(Number) : [4, 2];
+                    sec.style.gridColumn = `span ${cols}`;
+                    sec.style.gridRow = rows > 1 ? `span ${rows}` : 'auto';
                     sec.dataset.size = `${cols}x${rows}`;
                 } else {
                     sec.style.gridColumn = '';
