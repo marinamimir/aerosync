@@ -1090,6 +1090,15 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .st-label { flex-basis: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .st-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 
+        .aeropet-card,.aeropet-editor{background:var(--surface);border:1px solid color-mix(in srgb,var(--theme-accent) 24%,transparent);border-radius:22px;padding:16px;color:var(--icon);text-align:center}
+        .aeropet-figure,.aeropet-art{width:100%;max-width:190px;margin:0 auto 10px}.aeropet-figure svg,.aeropet-art svg{width:100%;height:auto;filter:drop-shadow(0 4px 2px rgba(80,60,70,.08))}
+        .aeropet-name{font-size:18px;font-weight:900;color:var(--theme-accent)}.aeropet-level,.aeropet-card small{font-size:11px;opacity:.72;font-weight:800}
+        .aeropet-actions,.pet-species,.pet-chip-list{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+        .aeropet-actions button,.pet-species button,.pet-chip-list button{border:1px solid color-mix(in srgb,var(--theme-accent) 35%,transparent);border-radius:999px;padding:8px 12px;background:var(--surface);font-size:11px;font-weight:800}
+        .pet-species button.selected,.pet-chip-list button.selected{background:var(--theme-soft);border-color:var(--theme-accent);color:var(--theme-accent)}
+        .aeropet-editor{text-align:left}.aeropet-editor h3{text-align:center;font-weight:900;font-size:18px;color:var(--theme-accent)}.aeropet-editor>p{text-align:center;font-size:12px;margin:6px 0 14px}
+        .aeropet-editor label{display:block;font-size:12px;font-weight:800;margin:12px 0}.aeropet-editor input,.aeropet-editor select{display:block;width:100%;padding:10px;border:1px solid rgba(148,163,184,.35);border-radius:12px;background:var(--surface);margin-top:5px;font-size:13px}
+        .pet-custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pet-chip-list{justify-content:flex-start}
         /* ===== Painéis maiores (quase a tela toda) ===== */
         .sheet-panel { height: calc(100% - 56px); max-height: none; }
         .note-editor-wrap { display: flex; flex-direction: column; min-height: 100%; padding: 16px; }
@@ -5801,6 +5810,11 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const w = id ? widgetById(id) : null;
             if (act === 'wd-add') { addWidget(btn.dataset.type); return; }
             if (act === 'wd-back') { playClick(); openSheet('widgets'); return; }
+            if (act === 'pet-species' && !aeroPet.adopted) { aeroPet.species=btn.dataset.value==='dog'?'dog':'cat'; savePet(); renderSheet(); return; }
+            if (act === 'pet-personality') { const v=btn.dataset.value;const a=aeroPet.personality||[];aeroPet.personality=a.includes(v)?a.filter(x=>x!==v):a.length<3?[...a,v]:a;savePet();renderSheet();return; }
+            if (act === 'pet-trait') { const v=btn.dataset.value;const a=aeroPet.traits||[];aeroPet.traits=a.includes(v)?a.filter(x=>x!==v):[...a,v];savePet();renderSheet();return; }
+            if (act === 'pet-save') { const name=(document.getElementById('pet-name')?.value||'').trim();if(!name){toast('Escolha um nome para seu pet ♡');return;}aeroPet.name=name.slice(0,24);aeroPet.ears=document.getElementById('pet-ears')?.value||'upright';aeroPet.coat=document.getElementById('pet-coat')?.value||'short';aeroPet.color=document.getElementById('pet-color')?.value||'snow';aeroPet.accessory=document.getElementById('pet-accessory')?.value||'bow';if(!aeroPet.adopted){aeroPet.gender=document.getElementById('pet-gender')?.value||'unspecified';aeroPet.adopted=true;aeroPet.createdAt=Date.now();}savePet();syncWidgetSections();renderSheet();playSuccess();toast(aeroPet.adopted?'Seu pet está salvo! ♡':'');return; }
+            if (act === 'pet-care') { if(!aeroPet.adopted)return;const day=new Date().toISOString().slice(0,10);if(aeroPet.lastCareDay===day){toast('Você já deu carinho hoje. Volte amanhã! ♡');return;}aeroPet.lastCareDay=day;aeroPet.happiness=Math.min(100,(aeroPet.happiness||0)+5);aeroPet.bond=(aeroPet.bond||0)+(btn.dataset.value==='task'?10:5);aeroPet.xp=(aeroPet.xp||0)+10;if(aeroPet.xp>=100){aeroPet.xp-=100;aeroPet.level=(aeroPet.level||1)+1;aeroPet.stars=(aeroPet.stars||0)+1;toast('Seu pet subiu de nível! ✨');}savePet();syncWidgetSections();playSuccess();return; }
             if (!w) return;
             if (act === 'wd-edit') { openWidgetEditor(w.id); }
             else if (act === 'wd-del') { removeWidget(w.id); }
@@ -7611,6 +7625,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         }
         // Tocar no widget (fora do modo Organizar) abre o editor dele
         homeEl.addEventListener('click', (e) => {
+            const petCare=e.target.closest('[data-act="pet-care"]');if(petCare){e.preventDefault();e.stopPropagation();handleWidgetAction('pet-care',petCare);return;}
             const refreshBtn=e.target.closest('[data-act="wd-weather-refresh"]');if(refreshBtn){e.preventDefault();e.stopPropagation();const sec=refreshBtn.closest('.home-section');refreshWeatherWidget(widgetById(sec?.dataset.section));return;}
             const wb = e.target.closest('.w-body');
             if (!wb || isEditing()) return;
