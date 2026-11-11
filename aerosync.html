@@ -794,14 +794,14 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 4px 10px var(--accent-glow);
         }
         .cal-dots { display: flex; gap: 2px; height: 5px; }
-        .cal-dot, .cal-note { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
-        .cal-dot[data-tag="study"] { background: var(--tag-study); }
-        .cal-dot[data-tag="work"] { background: var(--tag-work); }
-        .cal-dot[data-tag="play"] { background: var(--tag-play); }
-        .cal-dot[data-tag="life"] { background: var(--tag-life); }
+        .cal-dot, .cal-note { width: 5px; height: 5px; border-radius: 50%; background: var(--cal-dot, var(--accent)); }
+        .cal-dot[data-tag="study"] { background: var(--cal-dot, var(--tag-study)); }
+        .cal-dot[data-tag="work"] { background: var(--cal-dot, var(--tag-work)); }
+        .cal-dot[data-tag="play"] { background: var(--cal-dot, var(--tag-play)); }
+        .cal-dot[data-tag="life"] { background: var(--cal-dot, var(--tag-life)); }
         .cal-dot-done { background: #cbd5e1; }
         .cal-note { border-radius: 1.5px; background: #facc15; }
-        .cal-day.is-selected .cal-dot, .cal-day.is-selected .cal-note { background: #fff; opacity: 0.9; }
+        .cal-day.is-selected .cal-dot, .cal-day.is-selected .cal-note { background: #fff !important; opacity: 0.9; }
         .day-note { min-height: 90px; resize: vertical; font-family: inherit; }
 
         /* ===== Bloco de notas ===== */
@@ -1784,6 +1784,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .ip-colors { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .ip-color { width: 26px; height: 26px; border-radius: 50%; background: var(--ipc); border: 3px solid #fff; box-shadow: 0 0 0 1px #e5e7eb; transition: transform 0.15s, box-shadow 0.2s; }
         .ip-color:active { transform: scale(0.88); }
+        .ip-custom-color-row{display:flex;align-items:center;gap:10px;margin:-2px 0 12px;padding:9px 11px;border:1px solid rgba(148,163,184,.2);border-radius:13px;background:rgba(148,163,184,.06)}.ip-custom-color-row label{font-size:12px;font-weight:800;color:var(--icon);flex:1}.ip-custom-color-row input[type=color]{width:38px;height:30px;padding:2px;border:0;border-radius:8px;background:transparent;cursor:pointer}.category-banner-icon{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;font-size:32px}.category-thumb-icon{font-size:24px}.category-manager-icon{font-size:19px}.category-icon-editor{display:flex;flex-direction:column;gap:7px;justify-content:flex-start}.category-icon-editor>span{font-size:11px;font-weight:800;color:var(--icon)}.category-icon-editor .icon-pick-btn{width:42px;height:42px}
         .ip-color.selected { box-shadow: 0 0 0 2px var(--ipc); transform: scale(1.1); }
         .ip-search { margin-bottom: 10px; }
         .ip-grid { --ipc: #37352F; flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; padding: 2px; }
@@ -2404,7 +2405,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <button data-ip="close" class="modal-x" aria-label="Fechar"><i class="fas fa-times"></i></button>
                 </div>
                 <span class="modal-label">Cor</span>
-                <div id="ip-colors" class="ip-colors" role="radiogroup" aria-label="Cor do ícone"></div>
+                <div id="ip-colors" class="ip-colors" role="radiogroup" aria-label="Cores predefinidas"></div>
+                <span class="modal-label">Minhas cores salvas</span><div id="ip-custom-colors" class="ip-colors" role="radiogroup" aria-label="Cores personalizadas salvas"></div>
+                <div class="ip-custom-color-row"><label for="ip-custom-color">Criar uma cor</label><input id="ip-custom-color" type="color" value="#D94F98" aria-label="Escolher uma cor personalizada"><button type="button" id="ip-save-color" class="pill-btn ghost sm">Salvar cor</button></div>
                 <label class="search-box ip-search"><i class="fas fa-magnifying-glass"></i>
                     <input id="ip-search" type="search" placeholder="Buscar (ex.: bug, livro, café)" autocomplete="off" aria-label="Buscar ícone"></label>
                 <div id="ip-grid" class="ip-grid no-scrollbar" role="listbox" aria-label="Ícones"></div>
@@ -3012,14 +3015,34 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         const isThumb = (s) => typeof s === 'string' && s.length < 400000 && /^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s);
         const CATEGORY_ARTS=['🌸','🎀','☁️','🍓','🧸','✨','🌷','🫧','🍰','🌙','🐰','💌'];
-        const CATEGORY_DEFAULTS=[{id:'study',name:'Estudo',color:'#8b9ed8',icon:'fa-book',art:'📚'},{id:'work',name:'Trabalho',color:'#d98eb4',icon:'fa-briefcase',art:'💻'},{id:'play',name:'Lazer',color:'#e5a36d',icon:'fa-gamepad',art:'🎮'},{id:'life',name:'Rotina',color:'#79b9aa',icon:'fa-leaf',art:'🌿'}];
-        function normCategories(raw){const src=Array.isArray(raw)?raw:CATEGORY_DEFAULTS;const out=src.map((c,i)=>{if(!c||typeof c!=='object')return null;const id=typeof c.id==='string'&&/^[a-z0-9_-]{2,40}$/i.test(c.id)?c.id:'';const name=typeof c.name==='string'?c.name.trim().slice(0,32):'';if(!id||!name)return null;return{id,name,color:/^#[0-9a-f]{6}$/i.test(c.color)?c.color:'#d98eb4',icon:/^fa-[a-z0-9-]+$/.test(c.icon||'')?c.icon:'fa-folder',art:CATEGORY_ARTS.includes(c.art)?c.art:'✨',image:isThumb(c.image)?c.image:''};}).filter(Boolean);CATEGORY_DEFAULTS.forEach(d=>{if(!out.some(c=>c.id===d.id))out.push({...d,image:''});});return out.slice(0,30);}
+        const CATEGORY_DEFAULTS=[
+            {id:'study',name:'Estudo',color:'#8b9ed8',icon:{n:'fa-book',c:'#8b9ed8'},art:'📚'},
+            {id:'work',name:'Trabalho',color:'#d98eb4',icon:{n:'fa-briefcase',c:'#d98eb4'},art:'💻'},
+            {id:'play',name:'Lazer',color:'#e5a36d',icon:{n:'fa-gamepad',c:'#e5a36d'},art:'🎮'},
+            {id:'life',name:'Rotina',color:'#79b9aa',icon:{n:'fa-leaf',c:'#79b9aa'},art:'🌿'}
+        ];
+        function normCategories(raw){
+            const src=Array.isArray(raw)?raw:CATEGORY_DEFAULTS;
+            const out=src.map(c=>{
+                if(!c||typeof c!=='object')return null;
+                const id=typeof c.id==='string'&&/^[a-z0-9_-]{2,40}$/i.test(c.id)?c.id:'';
+                const name=typeof c.name==='string'?c.name.trim().slice(0,32):'';
+                if(!id||!name)return null;
+                const color=/^#[0-9a-f]{6}$/i.test(c.color)?c.color:'#d98eb4';
+                const legacyName=typeof c.icon==='string'?c.icon:'';
+                const icon=normIcon(c.icon)||normIcon({n:legacyName,c:/^#[0-9a-f]{6}$/i.test(c.iconColor||'')?c.iconColor:color})||{n:'fa-folder',c:color};
+                return{id,name,color,icon,art:CATEGORY_ARTS.includes(c.art)?c.art:'✨',image:isThumb(c.image)?c.image:''};
+            }).filter(Boolean);
+            CATEGORY_DEFAULTS.forEach(d=>{if(!out.some(c=>c.id===d.id))out.push({...d,image:''});});
+            return out.slice(0,30);
+        }
         let categories=normCategories(store.get('aerosync.categories',null));
         const saveCategories=()=>store.set('aerosync.categories',categories);
         const categoryById=id=>categories.find(c=>c.id===id)||categories.find(c=>c.id==='work');
         const categoryName=id=>categoryById(id)?.name||'Trabalho';
         const categoryArt=id=>categoryById(id)?.art||'✨';
         const categoryImage=id=>categoryById(id)?.image||'';
+        const categoryIconHTML=(id,cls='')=>{const c=categoryById(id);return iconHTML(normIcon(c?.icon)||{n:'fa-folder',c:c?.color||'#64748b'},cls);};
 
         function safeUrl(s) {
             if (typeof s !== 'string') return '';
@@ -3750,8 +3773,26 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         let currentIndex = 0;
         let rafPending = false;
-        let categoryEditingId=null,categoryDraftImage='';
-        function refreshCategoryUI(){const strip=document.getElementById('categoryCarousel');if(strip){strip.innerHTML=categories.map(c=>'<div class="carousel-item" data-category="'+esc(c.id)+'" style="background:'+(c.image?"linear-gradient(0deg,rgba(20,20,30,.35),rgba(20,20,30,.08)),url('"+c.image+"') center/cover":"linear-gradient(135deg,"+c.color+",color-mix(in srgb,"+c.color+" 55%,white))")+'"><div class="banner-art">'+(c.image?'':'<span class="banner-icon" style="font-size:34px">'+c.art+'</span>')+'<h3 class="font-bold text-lg drop-shadow-md">'+esc(c.name)+'</h3><p class="text-xs font-semibold opacity-90 drop-shadow-md">0 Tarefas</p></div></div>').join('');items=strip.querySelectorAll('.carousel-item');}const dotsEl=document.getElementById('carousel-dots');if(dotsEl)dotsEl.innerHTML=categories.map((c,i)=>'<div class="w-2 h-2 rounded-full '+(i===0?'accent-dot':'bg-gray-300')+' transition-colors"></div>').join('');const wrap=modal.querySelector('.tag-pill')?.parentElement;if(wrap)wrap.innerHTML=categories.map(c=>'<button type="button" class="tag-pill '+(selectedTag===c.id?'selected':'')+'" data-tag="'+esc(c.id)+'" style="--pill:'+c.color+'">'+(c.image?'<img src="'+c.image+'" alt="" style="width:18px;height:18px;object-fit:cover;border-radius:50%;vertical-align:middle;margin-right:4px">':c.art+' ')+esc(c.name)+'</button>').join('');items=carousel.querySelectorAll('.carousel-item');items.forEach((it,i)=>{it.classList.toggle('active',i===currentIndex);it.classList.toggle('is-filter',it.dataset.category===activeFilter);});const ds=document.getElementById('carousel-dots')?.children||[];Array.from(ds).forEach((d,i)=>d.className='w-2 h-2 rounded-full '+(i===currentIndex?'accent-dot':'bg-gray-300')+' transition-colors');}
+        let categoryEditingId=null,categoryDraftImage='',categoryDraftIcon=null;
+        function refreshCategoryUI(){
+            const strip=document.getElementById('categoryCarousel');
+            if(strip){
+                strip.innerHTML=categories.map(c=>{
+                    const bg=c.image?"linear-gradient(0deg,rgba(20,20,30,.35),rgba(20,20,30,.08)),url('"+c.image+"') center/cover":"linear-gradient(135deg,"+c.color+",color-mix(in srgb,"+c.color+" 55%,white))";
+                    return '<div class="carousel-item" data-category="'+esc(c.id)+'" style="background:'+bg+'"><div class="banner-art"><span class="banner-icon category-banner-icon" style="color:'+c.icon.c+'"><i class="fas '+c.icon.n+'" aria-hidden="true"></i></span><h3 class="font-bold text-lg drop-shadow-md">'+esc(c.name)+'</h3><p class="text-xs font-semibold opacity-90 drop-shadow-md">0 Tarefas</p></div></div>';
+                }).join('');
+                items=strip.querySelectorAll('.carousel-item');
+            }
+            const dotsEl=document.getElementById('carousel-dots');
+            if(dotsEl)dotsEl.innerHTML=categories.map((c,i)=>'<div class="w-2 h-2 rounded-full '+(i===0?'accent-dot':'bg-gray-300')+' transition-colors"></div>').join('');
+            const wrap=modal.querySelector('.tag-pill')?.parentElement;
+            if(wrap)wrap.innerHTML=categories.map(c=>'<button type="button" class="tag-pill '+(selectedTag===c.id?'selected':'')+'" data-tag="'+esc(c.id)+'" style="--pill:'+c.color+'">'+categoryIconHTML(c.id,'mr-1')+esc(c.name)+'</button>').join('');
+            items=carousel.querySelectorAll('.carousel-item');
+            currentIndex=Math.max(0,Math.min(currentIndex,items.length-1));
+            items.forEach((it,i)=>{it.classList.toggle('active',i===currentIndex);it.classList.toggle('is-filter',it.dataset.category===activeFilter);});
+            const ds=document.getElementById('carousel-dots')?.children||[];
+            Array.from(ds).forEach((d,i)=>d.className='w-2 h-2 rounded-full '+(i===currentIndex?'accent-dot':'bg-gray-300')+' transition-colors');
+        }
 
         // Descobre qual card está mais perto do centro (medido na tela)
         function updateActiveCard() {
@@ -4122,7 +4163,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         let lastAddedId = null;
 
         // ---------- Card da missão: thumbnail + título + metadados ----------
-        const TAG_ICON = Object.fromEntries(categories.map(c=>[c.id,c.icon]));
+        const TAG_ICON = Object.fromEntries(categories.map(c=>[c.id,c.icon.n]));
         const STATUS_NAME = { todo: 'A Fazer', doing: 'Em Andamento', done: 'Concluído' };
         const STATUS_EMPTY = { todo: 'Nada a fazer por aqui', doing: 'Arraste uma missão para cá', done: 'Solte aqui o que terminar' };
         const fmtEst = (m) => (m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, '0') : ''}` : `${m}min`);
@@ -4141,7 +4182,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 img.alt = ''; img.src = t.thumb; img.draggable = false;
                 th.appendChild(img);
             } else {
-                th.className='task-thumb thumb-default';th.style.background=categoryById(t.tag)?.color||'#d98eb4';const src=categoryImage(t.tag);if(src){const img=document.createElement('img');img.alt='';img.src=src;img.draggable=false;th.appendChild(img);}else{const art=document.createElement('span');art.className='category-thumb-art';art.textContent=categoryArt(t.tag);th.appendChild(art);}
+                th.className='task-thumb thumb-default';
+                const cat=categoryById(t.tag);
+                th.style.background=cat?.color||'#d98eb4';
+                const src=categoryImage(t.tag);
+                if(src){const img=document.createElement('img');img.alt='';img.src=src;img.draggable=false;th.appendChild(img);}
+                else {const art=document.createElement('span');art.className='category-thumb-art';art.innerHTML=categoryIconHTML(t.tag,'category-thumb-icon');th.appendChild(art);}
             }
             return th;
         }
@@ -4722,7 +4768,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const sheetBody = document.getElementById('sheet-body');
         const sheetTitle = document.getElementById('sheet-title');
         const navBtns = document.querySelectorAll('.nav-btn[data-view]'); // o botão Relaxar (lótus) é tratado à parte
-        const TAG_COLOR = { study: 'var(--tag-study)', work: 'var(--tag-work)', play: 'var(--tag-play)', life: 'var(--tag-life)' };
+        const TAG_COLOR = Object.fromEntries(categories.map(c=>[c.id,c.color]));
         const VIEW_TITLE = { agenda: 'Todas as missões', calendar: 'Calendário', notes: 'Anotações', stats: 'Estatísticas', profile: 'Ajustes', library: 'Organização', life: 'Mundo Pessoal', finance: 'Finanças', widgets: 'Widgets', widget: 'Editar widget' };
         const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         let currentView = 'home', draft = null;
@@ -5024,7 +5070,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     const pend = dayTasks.filter(t => !t.done);
                     const pendSingle = pend.filter(t => !taskSpan(t).multi); // as de vários dias já aparecem como pílula
                     const hasNote = !!dayNotes[iso];
-                    let dots = [...new Set(pendSingle.map(t => t.tag))].slice(0, 3).map(tag => `<i class="cal-dot" data-tag="${tag}"></i>`).join('');
+                    let dots = [...new Set(pendSingle.map(t => t.tag))].slice(0, 3).map(tag => `<i class="cal-dot" data-tag="${esc(tag)}" style="--cal-dot:${TAG_COLOR[tag]||'#94a3b8'}"></i>`).join('');
                     if (dayTasks.length && !pend.length) dots += '<i class="cal-dot cal-dot-done"></i>';
                     if (hasNote) dots += '<i class="cal-note"></i>';
                     const nBreaks = breaks.filter(b => b.date === iso).length;
@@ -5255,7 +5301,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             if (p.steps.length) parts.push(`<span>${plural(p.steps.length, 'passo', 'passos')}</span>`);
             return parts.join('');
         }
-        const presetIconHTML = (p) => (p.icon ? iconHTML(p.icon, '') : `<i class="fas ${TAG_ICON[p.tag]}" style="color:var(--tag-${p.tag})" aria-hidden="true"></i>`);
+        const presetIconHTML = (p) => (p.icon ? iconHTML(p.icon, '') : categoryIconHTML(p.tag));
 
         function renderLibrary() {
             if (libDraft) return renderPresetEditor();
@@ -5404,7 +5450,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <select id="lp-where" class="date-input lib-select">${where}</select>
                     <span class="modal-label mt-4">Tag</span>
                     <div class="hub-tags" role="radiogroup" aria-label="Tag">
-                        ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${p.tag === tag ? ' selected' : ''}" data-act="lib-ed-tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${p.tag === tag}"><i class="fas ${TAG_ICON[tag]} mr-1"></i>${TAG_NAME[tag]}</button>`).join('')}
+                        ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${p.tag === tag ? ' selected' : ''}" data-act="lib-ed-tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${p.tag === tag}">${categoryIconHTML(tag,'mr-1')}${TAG_NAME[tag]}</button>`).join('')}
                     </div>
                     <div class="modal-split mt-4">
                         <div>
@@ -6437,10 +6483,59 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         };
         applyFundo();
 
-        function renderCategoryManager(){const list=document.getElementById('category-manager-list');if(!list)return;list.innerHTML=categories.map(c=>'<div class="category-manager-row"><div class="category-manager-art" style="background:'+c.color+'">'+(c.image?'<img src="'+c.image+'" alt="">':c.art)+'</div><b class="text-sm">'+esc(c.name)+'</b><div class="category-manager-actions"><button type="button" data-cat-edit="'+esc(c.id)+'" aria-label="Editar '+esc(c.name)+'"><i class="fas fa-pen"></i></button>'+(CATEGORY_DEFAULTS.some(d=>d.id===c.id)?'<button type="button" disabled title="Categoria principal protegida"><i class="fas fa-lock"></i></button>':'<button type="button" data-cat-delete="'+esc(c.id)+'" aria-label="Excluir '+esc(c.name)+'"><i class="fas fa-trash"></i></button>')+'</div></div>').join('');}
-        function openCategoryEditor(id){categoryEditingId=id||null;const c=id?categoryById(id):null;categoryDraftImage=c?.image||'';const box=document.getElementById('category-editor');if(!box)return;box.style.display='block';document.getElementById('category-editor-title').textContent=c?'Editar categoria':'Nova categoria';document.getElementById('cat-name').value=c?.name||'';document.getElementById('cat-color').value=c?.color||'#d98eb4';document.getElementById('cat-art').value=c?.art||CATEGORY_ARTS[0];document.getElementById('cat-image').value='';}
-        function saveCategoryEditor(){const name=(document.getElementById('cat-name')?.value||'').trim();if(!name){toast('Dê um nome para a categoria ♡');return;}const id=categoryEditingId||('cat_'+uid('x').replace(/[^a-z0-9_-]/gi,'').slice(-18));if(categories.some(c=>c.id!==id&&c.name.toLowerCase()===name.toLowerCase())){toast('Já existe uma categoria com esse nome');return;}const data={id,name,color:document.getElementById('cat-color').value,art:document.getElementById('cat-art').value,image:categoryDraftImage,icon:'fa-folder'};const idx=categories.findIndex(c=>c.id===id);if(idx>=0)categories[idx]=data;else{if(categories.length>=30){toast('Limite de 30 categorias');return;}categories.push(data);}saveCategories();Object.keys(TAG_NAME).forEach(k=>delete TAG_NAME[k]);Object.keys(TAG_ICON).forEach(k=>delete TAG_ICON[k]);categories.forEach(c=>{TAG_NAME[c.id]=c.name;TAG_ICON[c.id]=c.icon;});LIB_TAGS.splice(0,LIB_TAGS.length,...categories.map(c=>c.id));refreshCategoryUI();syncCounts();renderTasks();renderCategoryManager();document.getElementById('category-editor').style.display='none';playSuccess();toast('Categoria salva ♡');}
-        function deleteCategory(id){if(CATEGORY_DEFAULTS.some(c=>c.id===id)){toast('As categorias principais são protegidas');return;}const c=categoryById(id);if(!c)return;if(!confirm('Excluir “'+c.name+'”? As tarefas e presets serão movidos para Trabalho.'))return;tasks.forEach(t=>{if(t.tag===id)t.tag='work';});library.groups.forEach(g=>g.subs.forEach(sg=>sg.presets.forEach(p=>{if(p.tag===id)p.tag='work';})));categories=categories.filter(x=>x.id!==id);if(activeFilter===id)setFilter(null);saveTasks();saveCategories();Object.keys(TAG_NAME).forEach(k=>delete TAG_NAME[k]);Object.keys(TAG_ICON).forEach(k=>delete TAG_ICON[k]);categories.forEach(x=>{TAG_NAME[x.id]=x.name;TAG_ICON[x.id]=x.icon;});LIB_TAGS.splice(0,LIB_TAGS.length,...categories.map(x=>x.id));refreshCategoryUI();syncCounts();renderTasks();renderCategoryManager();toast('Categoria excluída');}
+        function renderCategoryManager(){
+            const list=document.getElementById('category-manager-list');
+            if(!list)return;
+            list.innerHTML=categories.map(c=>'<div class="category-manager-row"><div class="category-manager-art" style="background:'+c.color+'">'+categoryIconHTML(c.id,'category-manager-icon')+'</div><b class="text-sm">'+esc(c.name)+'</b><div class="category-manager-actions"><button type="button" data-cat-edit="'+esc(c.id)+'" aria-label="Editar '+esc(c.name)+'"><i class="fas fa-pen"></i></button>'+(CATEGORY_DEFAULTS.some(d=>d.id===c.id)?'<button type="button" disabled title="Categoria principal protegida"><i class="fas fa-lock"></i></button>':'<button type="button" data-cat-delete="'+esc(c.id)+'" aria-label="Excluir '+esc(c.name)+'"><i class="fas fa-trash"></i></button>')+'</div></div>').join('');
+        }
+        function openCategoryEditor(id){
+            categoryEditingId=id||null;
+            const c=id?categories.find(x=>x.id===id):null;
+            categoryDraftImage=c?.image||'';
+            categoryDraftIcon=normIcon(c?.icon)||{n:'fa-folder',c:c?.color||'#37352F'};
+            const box=document.getElementById('category-editor');
+            if(!box)return;
+            box.style.display='block';
+            document.getElementById('category-editor-title').textContent=c?'Editar categoria':'Nova categoria';
+            document.getElementById('cat-name').value=c?.name||'';
+            document.getElementById('cat-color').value=c?.color||'#d98eb4';
+            document.getElementById('cat-image').value='';
+            const iconBtn=document.getElementById('cat-icon-pick');
+            if(iconBtn){iconBtn.innerHTML=iconBtnHTML(categoryDraftIcon);iconBtn.classList.add('has-icon');}
+        }
+        function syncCategoryMaps(){
+            Object.keys(TAG_NAME).forEach(k=>delete TAG_NAME[k]);
+            Object.keys(TAG_ICON).forEach(k=>delete TAG_ICON[k]);
+            Object.keys(TAG_COLOR).forEach(k=>delete TAG_COLOR[k]);
+            categories.forEach(c=>{TAG_NAME[c.id]=c.name;TAG_ICON[c.id]=c.icon.n;TAG_COLOR[c.id]=c.color;});
+            LIB_TAGS.splice(0,LIB_TAGS.length,...categories.map(c=>c.id));
+        }
+        function saveCategoryEditor(){
+            const name=(document.getElementById('cat-name')?.value||'').trim();
+            if(!name){toast('Dê um nome para a categoria ♡');return;}
+            const id=categoryEditingId||('cat_'+uid('x').replace(/[^a-z0-9_-]/gi,'').slice(-18));
+            if(categories.some(c=>c.id!==id&&c.name.toLowerCase()===name.toLowerCase())){toast('Já existe uma categoria com esse nome');return;}
+            const bgColor=document.getElementById('cat-color').value;
+            const icon=normIcon(categoryDraftIcon)||{n:'fa-folder',c:bgColor};
+            const existing=categories.find(c=>c.id===id);
+            const data={id,name,color:bgColor,icon,art:existing?.art||'✨',image:categoryDraftImage};
+            const idx=categories.findIndex(c=>c.id===id);
+            if(idx>=0)categories[idx]=data;
+            else{if(categories.length>=30){toast('Limite de 30 categorias');return;}categories.push(data);}
+            saveCategories();syncCategoryMaps();refreshCategoryUI();syncCounts();renderTasks();renderCategoryManager();
+            document.getElementById('category-editor').style.display='none';
+            playSuccess();toast('Categoria salva ♡');
+        }
+        function deleteCategory(id){
+            if(CATEGORY_DEFAULTS.some(c=>c.id===id)){toast('As categorias principais são protegidas');return;}
+            const c=categoryById(id);if(!c)return;
+            if(!confirm('Excluir “'+c.name+'”? As tarefas e presets serão movidos para Trabalho.'))return;
+            tasks.forEach(t=>{if(t.tag===id)t.tag='work';});
+            library.groups.forEach(g=>g.subs.forEach(sg=>sg.presets.forEach(p=>{if(p.tag===id)p.tag='work';})));
+            categories=categories.filter(x=>x.id!==id);
+            if(activeFilter===id)setFilter(null);
+            saveTasks();saveCategories();syncCategoryMaps();refreshCategoryUI();syncCounts();renderTasks();renderCategoryManager();toast('Categoria excluída');
+        }
         function fundoMount() {
             sheetBody.insertAdjacentHTML('beforeend', `
                 <div class="sheet-section" id="fundo-sec">
@@ -6469,11 +6564,11 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     </div>
                     <div class="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800" id="category-manager">
                         <div class="flex items-center justify-between gap-2"><h3 class="modal-label">Categorias de tarefas</h3><button type="button" class="pill-btn primary sm" data-cat-new><i class="fas fa-plus mr-1"></i>Nova</button></div>
-                        <p class="text-xs text-gray-400 mt-1">Escolha uma ilustração da galeria ou envie uma imagem sua.</p><div id="category-manager-list" class="category-manager-list"></div>
+                        <p class="text-xs text-gray-400 mt-1">Use o mesmo seletor de ícones e cores das tarefas; também pode enviar uma imagem para a miniatura.</p><div id="category-manager-list" class="category-manager-list"></div>
                         <div id="category-editor" class="mt-3 p-3 rounded-xl" style="background:var(--surface-2,rgba(148,163,184,.08));display:none">
                             <b id="category-editor-title" class="text-sm">Nova categoria</b><div class="category-editor-grid mt-3">
                                 <label>Nome<input id="cat-name" maxlength="32" placeholder="Ex.: Projetos"></label><label>Cor<input id="cat-color" type="color" value="#d98eb4"></label>
-                                <label>Ilustração da galeria<select id="cat-art">${CATEGORY_ARTS.map(a=>`<option value="${a}">${a}</option>`).join("")}</select></label><label>Imagem própria<input id="cat-image" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+                                <div class="category-icon-editor"><span>Ícone da categoria</span><button type="button" id="cat-icon-pick" class="icon-pick-btn has-icon" data-cat-icon aria-label="Escolher ícone da categoria"></button></div><label>Imagem própria<input id="cat-image" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
                             </div><div class="flex gap-2 mt-3"><button type="button" class="pill-btn primary sm flex-1" data-cat-save>Salvar categoria</button><button type="button" class="pill-btn ghost sm" data-cat-cancel>Cancelar</button></div>
                             <p class="text-[10px] text-gray-400 mt-2">Ao excluir uma categoria personalizada, tarefas e presets passam para Trabalho.</p></div></div>
                     <div class="mt-4">
@@ -6528,7 +6623,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             renderCategoryManager();
         }
 
-        sheetBody.addEventListener('click',e=>{const n=e.target.closest('[data-cat-new]');if(n){openCategoryEditor(null);return;}const ed=e.target.closest('[data-cat-edit]');if(ed){openCategoryEditor(ed.dataset.catEdit);return;}const del=e.target.closest('[data-cat-delete]');if(del){deleteCategory(del.dataset.catDelete);return;}if(e.target.closest('[data-cat-cancel]')){document.getElementById('category-editor').style.display='none';return;}if(e.target.closest('[data-cat-save]')){saveCategoryEditor();return;}});
+        sheetBody.addEventListener('click',e=>{const icon=e.target.closest('[data-cat-icon]');if(icon){openIconPicker(categoryDraftIcon,ic=>{categoryDraftIcon=normIcon(ic)||{n:'fa-folder',c:document.getElementById('cat-color')?.value||'#37352F'};const b=document.getElementById('cat-icon-pick');if(b){b.innerHTML=iconBtnHTML(categoryDraftIcon);b.classList.add('has-icon');}});return;}const n=e.target.closest('[data-cat-new]');if(n){openCategoryEditor(null);return;}const ed=e.target.closest('[data-cat-edit]');if(ed){openCategoryEditor(ed.dataset.catEdit);return;}const del=e.target.closest('[data-cat-delete]');if(del){deleteCategory(del.dataset.catDelete);return;}if(e.target.closest('[data-cat-cancel]')){document.getElementById('category-editor').style.display='none';return;}if(e.target.closest('[data-cat-save]')){saveCategoryEditor();return;}});
         sheetBody.addEventListener('change',e=>{if(e.target.id==='cat-image'){const file=e.target.files?.[0];if(file)fileToJpeg(file,900).then(url=>{categoryDraftImage=url;toast('Imagem adicionada ♡');}).catch(()=>toast('Não foi possível carregar a imagem'));}});
         sheetBody.addEventListener('click', (e) => {
             const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
@@ -6777,7 +6872,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <input id="hub-title" class="hub-title" maxlength="60" autocomplete="off" value="${esc(t.name)}" aria-label="Título da missão">
                 </div>
                 <div class="hub-tags" role="radiogroup" aria-label="Tag">
-                    ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${t.tag === tag ? ' selected' : ''}" data-hub="tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${t.tag === tag}"><i class="fas ${TAG_ICON[tag]} mr-1"></i>${TAG_NAME[tag]}</button>`).join('')}
+                    ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${t.tag === tag ? ' selected' : ''}" data-hub="tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${t.tag === tag}">${categoryIconHTML(tag,'mr-1')}${TAG_NAME[tag]}</button>`).join('')}
                 </div>
 
                 <span class="modal-label mt-5">Status</span>
@@ -7097,17 +7192,29 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         let ipColor = ICON_COLORS[0][0], ipCurrent = null, ipStartColor = null, ipCallback = null, ipReturnFocus = null;
         const ipOpen = () => ipEl.classList.contains('open');
         const ipNorm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-        ipColors.innerHTML = ICON_COLORS.map(([c, name]) =>
-            `<button class="ip-color" data-color="${c}" style="--ipc:${c}" role="radio" aria-label="Cor ${name}" title="${name}"></button>`).join('');
+        const ipCustomColors = document.getElementById('ip-custom-colors');
+        const ipCustomColorInput = document.getElementById('ip-custom-color');
+        const ipSaveColorButton = document.getElementById('ip-save-color');
+        let savedIconColors = (Array.isArray(store.get('aerosync.customIconColors',[]))?store.get('aerosync.customIconColors',[]):[])
+            .filter(c=>typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c))
+            .map(c=>c.toUpperCase()).filter((c,i,a)=>a.indexOf(c)===i).slice(-32);
+        const renderIconColors = () => {
+            ipColors.innerHTML = ICON_COLORS.map(([c,name]) =>
+                '<button type="button" class="ip-color" data-color="'+c+'" style="--ipc:'+c+'" role="radio" aria-label="Cor '+name+'" title="'+name+'"></button>').join('');
+            ipCustomColors.innerHTML = savedIconColors.map((c,i) =>
+                '<button type="button" class="ip-color" data-color="'+c+'" style="--ipc:'+c+'" role="radio" aria-label="Minha cor '+(i+1)+' '+c+'" title="Minha cor '+c+'"></button>').join('');
+        };
+        renderIconColors();
         ipGrid.innerHTML = ICON_CHOICES.map(([n, words]) =>
             `<button class="ip-icon" data-icon="${n}" data-words="${ipNorm(words + ' ' + n.slice(3))}" role="option" aria-label="Ícone ${words.split(' ')[0]}"><i class="fas ${n}" aria-hidden="true"></i></button>`).join('');
         function ipPaint() {
             ipGrid.style.setProperty('--ipc', ipColor);
-            ipColors.querySelectorAll('.ip-color').forEach(b => {
+            if(ipCustomColorInput)ipCustomColorInput.value=ipColor;
+            [ipColors,ipCustomColors].forEach(group=>group.querySelectorAll('.ip-color').forEach(b => {
                 const on = b.dataset.color === ipColor;
                 b.classList.toggle('selected', on);
                 b.setAttribute('aria-checked', String(on));
-            });
+            }));
             ipGrid.querySelectorAll('.ip-icon').forEach(b => {
                 const on = !!ipCurrent && ipCurrent.n === b.dataset.icon;
                 b.classList.toggle('selected', on);
@@ -7163,6 +7270,23 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         });
         // Fechar pelo X: se só trocou a cor do ícone que já tinha, guarda a cor nova
         const ipColorChanged = () => !!ipCurrent && ipStartColor !== null && ipCurrent.c !== ipStartColor;        const ipDismiss = () => closeIconPicker(ipColorChanged() ? ipCurrent : undefined);
+        ipCustomColorInput.addEventListener('input',()=>{
+            ipColor=ipCustomColorInput.value.toUpperCase();
+            if(ipCurrent)ipCurrent={n:ipCurrent.n,c:ipColor};
+            ipPaint();
+        });
+        ipSaveColorButton.addEventListener('click',()=>{
+            const color=ipCustomColorInput.value.toUpperCase();
+            ipColor=color;
+            if(!ICON_COLORS.some(([c])=>c.toUpperCase()===color)&&!savedIconColors.includes(color)){
+                savedIconColors.push(color);
+                savedIconColors=savedIconColors.slice(-32);
+                store.set('aerosync.customIconColors',savedIconColors);
+                renderIconColors();
+            }
+            if(ipCurrent)ipCurrent={n:ipCurrent.n,c:color};
+            ipPaint();playSuccess();toast('Cor personalizada salva ♡');
+        });
         ipSearch.addEventListener('input', ipFilter);
         ipSearch.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { const b = [...ipGrid.querySelectorAll('.ip-icon')].find(x => x.style.display !== 'none'); if (b) b.click(); }
