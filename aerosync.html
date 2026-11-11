@@ -3188,7 +3188,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             t.status = s;
             const was = t.done;
             t.done = s === 'done';
-            if (t.done && !was) t.doneAt = todayISO(); // guarda o dia da conclusão (calendário: executado)
+            if (t.done && !was) { t.doneAt = todayISO(); // guarda o dia da conclusão
+                if (typeof aeroPet !== 'undefined' && aeroPet.adopted) { aeroPet.happiness=Math.min(100,(aeroPet.happiness||0)+3);aeroPet.bond=(aeroPet.bond||0)+5;aeroPet.xp=(aeroPet.xp||0)+15;if(aeroPet.xp>=100){aeroPet.xp-=100;aeroPet.level=(aeroPet.level||1)+1;aeroPet.stars=(aeroPet.stars||0)+1;}savePet();if(typeof syncWidgetSections==='function')syncWidgetSections(); }
+            }
             if (!t.done) t.doneAt = '';
             if (t.done && liveMs(t) > 0) timerStop(t);
         }
@@ -5743,7 +5745,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 ` : w.type === 'pet' ? `
                     <section class="aeropet-editor">
                       <div class="aeropet-art">${petArt()}</div>
-                      ${!aeroPet.adopted ? `<h3>Vamos conhecer seu novo amiguinho? ♡</h3><p>Escolha gato ou cachorro. A espécie fica fixa depois da adoção.</p><div class="pet-species"><button data-act="pet-species" data-value="cat" class="${aeroPet.species==='cat'?'selected':''}">🐱 Gatinho</button><button data-act="pet-species" data-value="dog" data-value="dog" class="${aeroPet.species==='dog'?'selected':''}">🐶 Cachorrinho</button></div>` : `<h3>${esc(aeroPet.name)} ♡</h3><p>A espécie escolhida na adoção é permanente.</p>`}
+                      ${!aeroPet.adopted ? `<h3>Vamos conhecer seu novo amiguinho? ♡</h3><p>Escolha gato ou cachorro. A espécie fica fixa depois da adoção.</p><div class="pet-species"><button data-act="pet-species" data-value="cat" class="${aeroPet.species==='cat'?'selected':''}">🐱 Gatinho</button><button data-act="pet-species" data-value="dog" class="${aeroPet.species==='dog'?'selected':''}">🐶 Cachorrinho</button></div>` : `<h3>${esc(aeroPet.name)} ♡</h3><p>A espécie escolhida na adoção é permanente.</p>`}
                       <label>Nome do pet<input id="pet-name" maxlength="24" value="${esc(aeroPet.name)}" placeholder="Ex.: Mocca"></label>
                       ${!aeroPet.adopted ? `<label>Gênero<select id="pet-gender"><option value="unspecified">Não especificado</option><option value="female" ${aeroPet.gender==='female'?'selected':''}>Feminino</option><option value="male" ${aeroPet.gender==='male'?'selected':''}>Masculino</option><option value="nonbinary" ${aeroPet.gender==='nonbinary'?'selected':''}>Não binário</option></select></label>` : ''}
                       <div class="pet-custom-grid">
