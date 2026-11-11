@@ -1095,6 +1095,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         /* Mascotinho AeroPets: animação idle independente das opções escolhidas */
         .aeropet-figure svg,.aeropet-art svg{overflow:visible}
         .pet-idle{transform-box:fill-box;transform-origin:center bottom;animation:pet-idle-bob 3.2s ease-in-out infinite}
+        .pet-face{transform-box:fill-box;transform-origin:center 65%;animation:pet-face-bob 3.2s ease-in-out infinite}
+        @keyframes pet-face-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
         .pet-ear{transform-box:fill-box;transform-origin:bottom center;animation:pet-ear-wiggle 4.8s ease-in-out infinite}
         .pet-ear-right{animation-delay:.18s}
         .pet-tail{transform-box:fill-box;transform-origin:0% 50%;animation:pet-tail-wag 1.9s ease-in-out infinite}
@@ -7465,35 +7467,43 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         function savePet(){return store.set(STORAGE_KEYS.pet,aeroPet);}
         function petArt(p=aeroPet){
             const dog=p.species==='dog',long=p.coat==='long',floppy=p.ears==='floppy',c=PET_COLORS[p.color]||PET_COLORS.snow;
-            const ear=dog&&floppy
-                ? '<path class="pet-ear pet-ear-left" d="M48 68Q13 44 18 91Q23 116 54 99Q64 83 48 68Z"/><path class="pet-ear pet-ear-right" d="M152 68Q187 44 182 91Q177 116 146 99Q136 83 152 68Z"/>'
+            const outline='#514b55',pink='#f2b8d0',inner='#f8dce8';
+            const ears=dog&&floppy
+                ? '<path class="pet-ear pet-ear-left" d="M47 78Q10 63 18 111Q24 137 57 119Q68 99 47 78Z"/><path class="pet-ear pet-ear-right" d="M153 78Q190 63 182 111Q176 137 143 119Q132 99 153 78Z"/>'
                 : dog
-                    ? '<path class="pet-ear pet-ear-left" d="M48 70Q27 24 39 15Q67 18 76 65Z"/><path class="pet-ear pet-ear-right" d="M152 70Q173 24 161 15Q133 18 124 65Z"/>'
-                    : '<path class="pet-ear pet-ear-left" d="M43 76Q27 22 43 15Q67 28 76 65Z"/><path class="pet-ear pet-ear-right" d="M157 76Q173 22 157 15Q133 28 124 65Z"/>';
+                    ? '<path class="pet-ear pet-ear-left" d="M39 86Q24 20 48 12Q75 18 83 79Z"/><path class="pet-ear pet-ear-right" d="M161 86Q176 20 152 12Q125 18 117 79Z"/>'
+                    : '<path class="pet-ear pet-ear-left" d="M38 88Q23 18 49 13Q75 24 82 81Z"/><path class="pet-ear pet-ear-right" d="M162 88Q177 18 151 13Q125 24 118 81Z"/>';
             const head=long
-                ? 'M24 104Q17 75 43 63Q50 40 77 52Q100 35 123 52Q150 40 157 63Q183 75 176 104Q184 143 151 158Q128 177 100 163Q72 177 49 158Q16 143 24 104Z'
-                : 'M27 105Q22 76 47 64Q56 43 79 54Q100 39 121 54Q144 43 153 64Q178 76 173 105Q180 141 150 155Q126 170 100 159Q74 170 50 155Q20 141 27 105Z';
-            const muzzle=dog?'<ellipse cx="100" cy="125" rx="17" ry="12" fill="#fff8fb" stroke="#a9959f" stroke-width="2.5"/><ellipse cx="100" cy="119" rx="5" ry="3.5" fill="#8c7d85"/>':'<path d="M94 119Q100 114 106 119Q103 125 100 125Q97 125 94 119Z" fill="#e9a8bd"/>';
-            const tail=dog?'<path class="pet-tail" d="M163 139Q190 135 184 113Q180 102 172 111" fill="none" stroke="'+c+'" stroke-width="11" stroke-linecap="round"/><path d="M163 139Q190 135 184 113Q180 102 172 111" fill="none" stroke="#a9959f" stroke-width="2.5" stroke-linecap="round"/>':'<path class="pet-tail" d="M39 143Q14 157 27 169" fill="none" stroke="'+c+'" stroke-width="8" stroke-linecap="round"/><path d="M39 143Q14 157 27 169" fill="none" stroke="#a9959f" stroke-width="2" stroke-linecap="round"/>';
-            const bow=p.accessory==='bow'?'<g class="pet-bow" fill="#f3a9c5" stroke="#a98998" stroke-width="2.4" stroke-linejoin="round"><path d="M132 55Q111 35 116 27Q128 22 139 43Q150 22 164 29Q172 39 145 57Z"/><circle cx="140" cy="45" r="5" fill="#ffeaf2"/></g>':'';
-            const coatTufts=long?'<path d="M52 59Q43 47 54 39M75 52Q68 39 79 33M124 52Q132 39 121 33M148 61Q160 48 151 40" fill="none" stroke="#fff8fb" stroke-width="5" stroke-linecap="round"/>':'';
-            return `<svg class="pet-mascot" viewBox="0 0 200 190" role="img" aria-label="Mascotinho do seu pet">
+                ? 'M19 111Q13 69 43 57Q53 35 82 43Q100 32 118 43Q147 35 157 57Q187 69 181 111Q185 157 148 168Q125 180 100 170Q75 180 52 168Q15 157 19 111Z'
+                : 'M20 111Q15 70 44 58Q55 38 82 45Q100 34 118 45Q145 38 156 58Q185 70 180 111Q184 155 148 166Q125 177 100 168Q75 177 52 166Q16 155 20 111Z';
+            const body=dog
+                ? '<path d="M70 157Q72 148 85 151L115 151Q128 148 130 157L134 179Q130 188 119 184L108 174L92 174L81 184Q70 188 66 179Z" fill="'+c+'" stroke="'+outline+'" stroke-width="3.4" stroke-linejoin="round"/><path d="M72 157Q53 151 49 166Q47 177 62 177" fill="none" stroke="'+outline+'" stroke-width="5" stroke-linecap="round"/><path d="M128 157Q147 151 151 166Q153 177 138 177" fill="none" stroke="'+outline+'" stroke-width="5" stroke-linecap="round"/>'
+                : '<path d="M73 157Q100 147 127 157L131 181Q126 190 115 183L106 174L94 174L85 183Q74 190 69 181Z" fill="'+c+'" stroke="'+outline+'" stroke-width="3.4" stroke-linejoin="round"/>';
+            const tail=dog
+                ? '<path class="pet-tail" d="M145 160Q180 163 178 139Q177 128 167 132" fill="none" stroke="'+outline+'" stroke-width="8" stroke-linecap="round"/>'
+                : '<path class="pet-tail" d="M53 161Q22 177 35 188" fill="none" stroke="'+outline+'" stroke-width="6" stroke-linecap="round"/>';
+            const muzzle=dog
+                ? '<ellipse cx="100" cy="137" rx="15" ry="10" fill="#fff9fb" stroke="'+outline+'" stroke-width="2.6"/><ellipse cx="100" cy="133" rx="4.2" ry="3" fill="'+outline+'"/>'
+                : '<path d="M94 137Q100 133 106 137Q103 143 100 143Q97 143 94 137Z" fill="'+pink+'" stroke="'+outline+'" stroke-width="1.8"/>';
+            const fur=long?'<path d="M48 59Q39 49 47 40M69 47Q64 37 73 33M130 47Q136 37 127 33M151 59Q161 49 153 40" fill="none" stroke="#fff8fb" stroke-width="5" stroke-linecap="round"/>':'';
+            const bow=p.accessory==='bow'?'<g class="pet-bow" fill="'+pink+'" stroke="'+outline+'" stroke-width="2.4" stroke-linejoin="round"><path d="M132 67Q112 48 117 41Q130 36 140 57Q151 36 165 43Q173 54 146 69Z"/><circle cx="141" cy="57" r="4.5" fill="#fff4f8"/></g>':'';
+            return `<svg class="pet-mascot" viewBox="0 0 200 200" role="img" aria-label="Mascotinho do seu pet">
                 <g class="pet-idle">
                     ${tail}
-                    <g fill="${c}" stroke="#a9959f" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">${ear}<path d="${head}"/></g>
-                    ${coatTufts}
+                    ${body}
+                    <g fill="${c}" stroke="${outline}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">${ears}<path d="${head}"/></g>
+                    ${fur}
                     <g class="pet-face">
-                        <g class="pet-eyes" fill="#756873"><ellipse cx="72" cy="105" rx="6.5" ry="9"/><ellipse cx="128" cy="105" rx="6.5" ry="9"/></g>
-                        <g fill="#fff"><circle cx="74" cy="101" r="2.2"/><circle cx="130" cy="101" r="2.2"/></g>
+                        <g class="pet-eyes" fill="${outline}">
+                            <circle cx="69" cy="119" r="8.2"/><circle cx="131" cy="119" r="8.2"/>
+                        </g>
+                        <g fill="#fff"><circle cx="71.5" cy="116.5" r="2.2"/><circle cx="133.5" cy="116.5" r="2.2"/></g>
+                        <g fill="${pink}" opacity=".8"><ellipse cx="48" cy="139" rx="12" ry="6.5"/><ellipse cx="152" cy="139" rx="12" ry="6.5"/></g>
                         ${muzzle}
-                        <path d="M100 128Q94 136 88 130M100 128Q106 136 112 130" fill="none" stroke="#8d7c85" stroke-width="2.6" stroke-linecap="round"/>
-                        <g fill="#f2a9c2" opacity=".72"><ellipse cx="54" cy="124" rx="12" ry="6"/><ellipse cx="146" cy="124" rx="12" ry="6"/></g>
+                        <path d="M100 142Q94 150 87 144M100 142Q106 150 113 144" fill="none" stroke="${outline}" stroke-width="2.8" stroke-linecap="round"/>
                     </g>
                     ${bow}
-                    <ellipse cx="76" cy="166" rx="16" ry="5" fill="${c}" opacity=".9" stroke="#a9959f" stroke-width="2"/>
-                    <ellipse cx="124" cy="166" rx="16" ry="5" fill="${c}" opacity=".9" stroke="#a9959f" stroke-width="2"/>
                 </g>
-                <path d="M25 178Q100 185 175 178" fill="none" stroke="#f3c8d8" stroke-width="2" stroke-linecap="round" opacity=".6"/>
             </svg>`;
         }
         const QUOTE_STYLES = { paper: 'Papel', accent: 'Destaque', minimal: 'Simples' };
