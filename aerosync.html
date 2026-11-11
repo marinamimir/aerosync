@@ -3727,6 +3727,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const now = new Date();
             const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('clock').textContent = timeStr;
+            document.querySelectorAll('.w-clock-time').forEach(el=>{el.textContent=timeStr;});
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -5849,6 +5850,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                         renderSheet();
                     }).catch(() => toast('Não foi possível usar essa imagem'));
                 });
+            } else if (w.type === 'clock') {
+                const sel=document.getElementById('wd-clock-style');
+                if(sel) sel.addEventListener('change',()=>{w.style=sel.value;saveWidgets();refresh();});
             } else if (w.type === 'quote') {
                 const tx = document.getElementById('wd-text'), au = document.getElementById('wd-author');
                 tx.addEventListener('input', () => { w.text = tx.value.slice(0, 240); refresh(); });
@@ -7656,8 +7660,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             }
             if (w.type === 'clock') return `<div class="w-clock w-clock-${w.style||'soft'}"><span class="w-clock-time">${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span><small>${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})}</small></div>`;
             if (w.type === 'pet') { if(!aeroPet.adopted)return `<div class="aeropet-card"><div class="aeropet-figure">${petArt()}</div><b>Seu novo amiguinho está esperando!</b><span>Toque para começar a adoção ♡</span></div>`;return `<div class="aeropet-card"><div class="aeropet-figure">${petArt()}</div><div class="aeropet-name">${esc(aeroPet.name)} ♡</div><div class="aeropet-level">Nível ${aeroPet.level} · ${aeroPet.xp}/100 XP</div><div class="aeropet-actions"><button data-act="pet-care" data-value="love">♡ Carinho</button><button data-act="pet-care" data-value="play">✧ Brincar</button><button data-act="pet-care" data-value="task">★ Recompensa</button></div><small>♡ ${aeroPet.bond} carinho · ★ ${aeroPet.stars} estrelinhas</small></div>`; }
-            if (w.type === 'clock') { const sel=document.getElementById('wd-clock-style'); if(sel) sel.addEventListener('change',()=>{w.style=sel.value;saveWidgets();refresh();}); }
-            else if (w.type === 'weather') { const d=w.weather||{};return `<div class="w-weather ${w.background==='solid'?'has-bg':''}"><div class="w-weather-head"><span><i class="fas fa-location-dot"></i> Clima local</span><button type="button" class="w-weather-refresh" data-act="wd-weather-refresh" aria-label="Atualizar clima"><i class="fas fa-rotate"></i></button></div><div class="w-weather-main"><i class="fas ${esc(d.icon||'fa-cloud-sun')}"></i><b>${d.temp==null?'--°':Math.round(d.temp)+'°'}</b></div><div class="w-weather-desc">${esc(d.label||'Toque em atualizar para consultar')}</div>${d.city?`<small>${esc(d.city)}</small>`:''}</div>`; }
+            if (w.type === 'weather') { const d=w.weather||{};return `<div class="w-weather ${w.background==='solid'?'has-bg':''}"><div class="w-weather-head"><span><i class="fas fa-location-dot"></i> Clima local</span><button type="button" class="w-weather-refresh" data-act="wd-weather-refresh" aria-label="Atualizar clima"><i class="fas fa-rotate"></i></button></div><div class="w-weather-main"><i class="fas ${esc(d.icon||'fa-cloud-sun')}"></i><b>${d.temp==null?'--°':Math.round(d.temp)+'°'}</b></div><div class="w-weather-desc">${esc(d.label||'Toque em atualizar para consultar')}</div>${d.city?`<small>${esc(d.city)}</small>`:''}</div>`; }
             if (w.type === 'luck') { const quotes=['Hoje, uma pequena escolha pode abrir um caminho bonito.','Sua sorte floresce quando você respeita seu próprio ritmo.','Uma surpresa gentil pode aparecer onde menos espera.','Confie no próximo passo, não precisa enxergar a escada inteira.','Hoje é um ótimo dia para acolher uma ideia nova.','O acaso também gosta de quem se permite tentar.','Pequenas alegrias estão procurando você.','Sua curiosidade é seu trevo de quatro folhas.','Uma pausa na hora certa também é sorte.','O melhor detalhe do dia pode ser o mais simples.','Permita-se receber coisas boas sem culpa.','Uma conversa leve pode mudar o tom do dia.','Hoje, escolha o que faz seu coração respirar.','Você está mais perto do que imagina.'];const day=new Date();const key=day.getFullYear()*10000+(day.getMonth()+1)*100+day.getDate();const quote=quotes[((key*9301+49297)>>>0)%quotes.length];return `<blockquote class="w-quote q-${w.style||'accent'}"><i class="fas fa-clover"></i><span class="w-luck-label">SORTE DO DIA</span><p>${quote}</p><small>${day.toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small></blockquote>`; }
             return `<blockquote class="w-quote q-${w.style}${w.text.trim() ? '' : ' is-empty'}">
                 <i class="fas fa-quote-left" aria-hidden="true"></i>
