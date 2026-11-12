@@ -1,6 +1,6 @@
 {
-  "version": "2026.11.12.5",
-  "build": 2026111205,
+  "version": "2026.11.12.6",
+  "build": 2026111206,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
     "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
