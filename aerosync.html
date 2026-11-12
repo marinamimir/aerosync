@@ -3518,8 +3518,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             .filter(n => n && (typeof n.title === 'string' || typeof n.body === 'string'))
             .map((n, i) => ({
                 id: String(n.id || `n${Date.now()}${i}`),
-                title: String(n.title || '').slice(0, 60),
-                body: String(n.body || '').slice(0, 2000),
+                title: String(n.title || '').slice(0, 100),
+                body: String(n.body || '').slice(0, 12000),
                 color: typeof n.color === 'string' && Object.hasOwn(NOTE_COLORS, n.color) ? n.color : 'amarelo',
                 notebookId: typeof n.notebookId === 'string' ? n.notebookId : '',
                 rich: typeof n.rich === 'string' ? n.rich.slice(0,30000) : '',
@@ -5295,7 +5295,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 ${book?'<div class="note-book-tools"><button data-act="notebook-rename" class="note-tool">Renomear</button><button data-act="notebook-color" class="note-tool">Mudar cor</button><button data-act="notebook-delete" class="note-tool">Excluir</button></div>':''}
                 <button data-act="note-new" class="pill-btn primary w-full mb-4"><i class="fas fa-plus mr-2"></i>Novo post / nota</button>
                 ${list.length ? `<div class="notes-grid note-post-grid">${list.map(n => `
-                    <button class="note-card" data-act="note-open" data-note="${esc(n.id)}" data-color="${n.color}" aria-label="Abrir nota ${esc(n.title || 'sem título')}">
+                    <button class="note-card note-post-card" data-act="note-open" data-note="${esc(n.id)}" data-color="${n.color}" aria-label="Abrir nota ${esc(n.title || 'sem título')}">
                         <span class="note-flags">${n.home ? '<i class="fas fa-house" aria-label="Na tela inicial"></i>' : ''}${n.pinned ? '<i class="fas fa-thumbtack note-pin" aria-label="Fixada"></i>' : ''}</span>
                         <p class="note-title">${esc(n.title || 'Sem título')}</p>
                         <p class="note-body">${esc(n.body.slice(0, 260))}</p>
@@ -5341,7 +5341,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                         <span class="text-xs text-gray-400 font-semibold whitespace-nowrap"><i class="fas fa-check mr-1"></i>Salvo</span>
                     </div>
                 </div>`;
-            const ti=document.getElementById('note-title'),bo=document.getElementById('note-body'),nb=document.getElementById('note-notebook');const upd=()=>{const d=new DOMParser().parseFromString(bo.innerHTML,'text/html'),allowed=['P','BR','STRONG','B','EM','I','U','H1','H2','H3','UL','OL','LI','BLOCKQUOTE','DIV'];const walk=node=>[...node.childNodes].forEach(ch=>{if(ch.nodeType===1){if(!allowed.includes(ch.tagName)){ch.replaceWith(...ch.childNodes);return;}[...ch.attributes].forEach(a=>ch.removeAttribute(a.name));walk(ch);}else if(ch.nodeType!==3)ch.remove();});walk(d.body);n.title=ti.value.slice(0,100);n.rich=d.body.innerHTML.slice(0,30000);n.body=bo.innerText.slice(0,12000);n.updated=Date.now();saveNotes();if(n.home)renderHomeNote();};ti.addEventListener('input',upd);bo.addEventListener('input',upd);nb.addEventListener('change',()=>{n.notebookId=nb.value;saveNotes();});sheetBody.querySelectorAll('[data-act="note-format"],[data-act="note-text-color"]').forEach(btn=>btn.addEventListener('mousedown',e=>e.preventDefault()));
+            const ti=document.getElementById('note-title'),bo=document.getElementById('note-body'),nb=document.getElementById('note-notebook');const upd=()=>{const d=new DOMParser().parseFromString(bo.innerHTML,'text/html'),allowed=['P','BR','STRONG','B','EM','I','U','H1','H2','H3','UL','OL','LI','BLOCKQUOTE','DIV','SPAN','FONT'];const walk=node=>[...node.childNodes].forEach(ch=>{if(ch.nodeType===1){if(!allowed.includes(ch.tagName)){ch.replaceWith(...ch.childNodes);return;}const color=ch.style?.color;[...ch.attributes].forEach(a=>ch.removeAttribute(a.name));if(color&&(/^(#[0-9a-f]{3,8}|rgb\\()/i.test(color)))ch.style.color=color;walk(ch);}else if(ch.nodeType!==3)ch.remove();});walk(d.body);n.title=ti.value.slice(0,100);n.rich=d.body.innerHTML.slice(0,30000);n.body=bo.innerText.slice(0,12000);n.updated=Date.now();saveNotes();if(n.home)renderHomeNote();};ti.addEventListener('input',upd);bo.addEventListener('input',upd);nb.addEventListener('change',()=>{n.notebookId=nb.value;saveNotes();});sheetBody.querySelectorAll('[data-act="note-format"],[data-act="note-text-color"]').forEach(btn=>btn.addEventListener('mousedown',e=>e.preventDefault()));
         }
 
         // Nota escolhida para aparecer na tela inicial
