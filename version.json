@@ -1,10 +1,11 @@
 {
-  "version": "2026.11.12.4",
-  "build": 2026111204,
+  "version": "2026.11.12.5",
+  "build": 2026111205,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
     "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
     "Novo Overview financeiro com indicadores e gráficos configuráveis e atalho discreto para registrar compras.",
-    "Galeria de widgets organizada por áreas: Vida pessoal, Finanças, Produtividade e Decoração."
+    "Galeria de widgets organizada por áreas: Vida pessoal, Finanças, Produtividade e Decoração.",
+    "Cadernos para organizar publicações e notas em formato de blog, com editor rico, títulos, listas, citações e cores."
   ]
 }
