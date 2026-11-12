@@ -1,0 +1,10 @@
+{
+  "version": "2026.11.12.1",
+  "build": 2026111201,
+  "releasedAt": "2026-11-12",
+  "releaseNotes": [
+    "Integração Google Calendar pausada temporariamente.",
+    "Avisos de atualização pelo GitHub com opção Mais tarde.",
+    "AeroSync responsivo em tablets e celulares e instalável como PWA."
+  ]
+}
