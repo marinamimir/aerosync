@@ -93,7 +93,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
 
         /* AeroSync Colorful Glass: preserva as paletas existentes e adiciona apenas profundidade opcional. */
-        html[data-glass="soft"] .widget-section,html[data-glass="full"] .widget-section{border:1px solid color-mix(in srgb,var(--theme-accent) 20%,rgba(255,255,255,.72));background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(13px) saturate(135%);backdrop-filter:blur(13px) saturate(135%);box-shadow:0 8px 24px rgba(40,45,65,.07),inset 0 1px 0 rgba(255,255,255,.42)}
+        html[data-glass="soft"] .widget-section,html[data-glass="full"] .widget-section{border-radius:24px;overflow:hidden;clip-path:inset(0 round 24px);border:1px solid color-mix(in srgb,var(--theme-accent) 20%,rgba(255,255,255,.72));background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(13px) saturate(135%);backdrop-filter:blur(13px) saturate(135%);box-shadow:0 8px 24px rgba(40,45,65,.07),inset 0 1px 0 rgba(255,255,255,.42)}
         html[data-glass="full"] .widget-section{background:color-mix(in srgb,var(--surface) 58%,transparent);border-color:color-mix(in srgb,var(--theme-accent) 27%,rgba(255,255,255,.8));-webkit-backdrop-filter:blur(20px) saturate(155%);backdrop-filter:blur(20px) saturate(155%);box-shadow:0 12px 30px rgba(40,45,65,.10),inset 0 1px 0 rgba(255,255,255,.58)}
         .w-finance,.w-daily,.w-focus,.w-wishlist,.w-countdown{height:100%;min-height:100px;padding:14px;border-radius:17px;color:var(--icon);background:color-mix(in srgb,var(--theme-soft) 62%,var(--surface));border:1px solid color-mix(in srgb,var(--theme-accent) 14%,transparent);display:flex;flex-direction:column;justify-content:center;gap:7px}
         .wf-kicker{font-size:9px;font-weight:900;letter-spacing:.11em;opacity:.72;display:flex;align-items:center;gap:7px}.wf-kicker i{font-size:12px;color:var(--theme-accent)}
@@ -1940,7 +1940,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         html.dark .tl-block b { color: #eef0f6; }
         html.dark .tl-block .tl-time { color: color-mix(in srgb, var(--pc) 60%, white); }
 
-        /* Mundo Pessoal: abas de listas */
+        /* Pessoal: abas de listas */
         .life-tabs { display: flex; gap: 6px; overflow-x: auto; margin: 0 -22px 12px; padding: 2px 22px 4px; }
         .life-tab {
             flex-shrink: 0; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: 999px;
@@ -1955,6 +1955,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .life-tab-add { padding: 8px 11px; }
         html:root .life-tab-add i { color: var(--icon) !important; }
         .life-listedit { margin-bottom: 12px; }
+        .life-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 12px}.life-overview>div{padding:10px 8px;border-radius:15px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));text-align:center}.life-overview b{display:block;font-size:19px;font-weight:900;color:var(--accent)}.life-overview small{display:block;font-size:10px;font-weight:800;color:var(--icon);opacity:.7}.life-search{margin-bottom:12px}.life-search input{min-width:0;width:100%;background:transparent;color:var(--icon)}
+        html.dark .life-overview>div{background:color-mix(in srgb,var(--accent) 14%,#1e2130)}
         .life-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .life-filter { flex: 1; min-width: 0; }
         .life-filter button { padding: 7px 2px; font-size: 11px; white-space: nowrap; }
@@ -3084,7 +3086,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 const color=/^#[0-9a-f]{6}$/i.test(c.color)?c.color:'#d98eb4';
                 const legacyName=typeof c.icon==='string'?c.icon:'';
                 const icon=normIcon(c.icon)||normIcon({n:legacyName,c:/^#[0-9a-f]{6}$/i.test(c.iconColor||'')?c.iconColor:color})||{n:'fa-folder',c:color};
-                return{id,name,color,icon,art:CATEGORY_ARTS.includes(c.art)?c.art:'✨',image:isThumb(c.image)?c.image:''};
+                return{id,name,color,icon,locked:c.locked!==undefined?!!c.locked:CATEGORY_DEFAULTS.some(d=>d.id===id),art:CATEGORY_ARTS.includes(c.art)?c.art:'✨',image:isThumb(c.image)?c.image:''};
             }).filter(Boolean);
             CATEGORY_DEFAULTS.forEach(d=>{if(!out.some(c=>c.id===d.id))out.push({...d,image:''});});
             return out.slice(0,30);
@@ -5598,7 +5600,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         // ================================================
         //  MUNDO PESSOAL — listas e cards detalhados (painel da doca)
         // ================================================
-        let lifeListId = null, lifeFilter = 'all', lifeItemId = null;
+        let lifeListId = null, lifeFilter = 'all', lifeItemId = null, lifeSearch = '';
         let lifeEditList = null; // { mode: 'new'|'rename' }
         const LIFE_DURATION_HINT = { watch: 'Ex.: 2h 10min · 3 temporadas', play: 'Ex.: 40 horas', read: 'Ex.: 320 páginas', places: 'Ex.: 1 tarde · fim de semana' };
         const curLifeList = () => lifeList(lifeListId) || life.lists[0];
@@ -5624,7 +5626,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const L = curLifeList();
             lifeListId = L.id;
             const inList = life.items.filter(x => x.list === L.id).sort((a, b) => b.updated - a.updated);
-            const shown = lifeFilter === 'all' ? inList : inList.filter(x => x.status === lifeFilter);
+            const statusShown = lifeFilter === 'all' ? inList : inList.filter(x => x.status === lifeFilter);
+            const q=lifeSearch.trim().toLocaleLowerCase('pt-BR');
+            const shown=statusShown.filter(x=>!q||[x.title,x.place,x.duration,x.description,...x.tags].join(' ').toLocaleLowerCase('pt-BR').includes(q));
             const countOf = (st) => inList.filter(x => x.status === st).length;
             sheetBody.innerHTML = `
                 <div class="life-tabs no-scrollbar" role="tablist" aria-label="Listas">
@@ -5638,6 +5642,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                         <button data-act="life-list-icon" class="pill-btn ghost sm flex-1">${lifeListIcon(L)}<span style="margin-left:6px">Ícone</span></button>
                         <button data-act="life-list-del" class="pill-btn danger sm flex-1"><i class="fas fa-trash mr-1"></i>Excluir lista</button></div>` : ''}
                 </div>` : ''}
+                <div class="life-overview"><div><b>${life.items.length}</b><small>salvos</small></div><div><b>${life.items.filter(x=>x.status==='doing').length}</b><small>em andamento</small></div><div><b>${life.items.filter(x=>x.status==='done').length}</b><small>concluídos</small></div></div>
+                <label class="search-box life-search"><i class="fas fa-magnifying-glass"></i><input id="life-search" type="search" placeholder="Buscar nesta lista…" value="${esc(lifeSearch)}" autocomplete="off"></label>
                 <div class="life-bar">
                     <div class="seg life-filter" role="radiogroup" aria-label="Filtrar por status">
                         <button data-act="life-filter" data-value="all" class="${lifeFilter === 'all' ? 'selected' : ''}" role="radio" aria-checked="${lifeFilter === 'all'}">Todos</button>
@@ -5664,6 +5670,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <p class="font-extrabold text-gray-800">${inList.length ? 'Nada com esse status' : `"${esc(L.name)}" está vazia`}</p>
                     <p class="text-sm text-gray-500 font-semibold mt-1">${inList.length ? 'Troque o filtro para ver os outros.' : 'Guarde aqui o que você quer curtir, com capa, local e anotações.'}</p>
                    </div>`}`;
+            const searchEl=sheetBody.querySelector('#life-search');if(searchEl){searchEl.addEventListener('input',()=>{lifeSearch=searchEl.value;const pos=searchEl.selectionStart;renderLife();const next=sheetBody.querySelector('#life-search');if(next){next.focus();next.setSelectionRange(pos,pos);}});}
             const li = sheetBody.querySelector('.life-input');
             if (li) {
                 li.focus();
@@ -6563,11 +6570,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         function renderCategoryManager(){
             const list=document.getElementById('category-manager-list');
             if(!list)return;
-            list.innerHTML=categories.map(c=>'<div class="category-manager-row"><div class="category-manager-art" style="background:'+c.color+'">'+categoryIconHTML(c.id,'category-manager-icon')+'</div><b class="text-sm">'+esc(c.name)+'</b><div class="category-manager-actions"><button type="button" data-cat-edit="'+esc(c.id)+'" aria-label="Editar '+esc(c.name)+'"><i class="fas fa-pen"></i></button>'+(CATEGORY_DEFAULTS.some(d=>d.id===c.id)?'<button type="button" disabled title="Categoria principal protegida"><i class="fas fa-lock"></i></button>':'<button type="button" data-cat-delete="'+esc(c.id)+'" aria-label="Excluir '+esc(c.name)+'"><i class="fas fa-trash"></i></button>')+'</div></div>').join('');
+            list.innerHTML=categories.map(c=>'<div class="category-manager-row"><div class="category-manager-art" style="background:'+c.color+'">'+categoryIconHTML(c.id,'category-manager-icon')+'</div><b class="text-sm">'+esc(c.name)+'</b><div class="category-manager-actions"><button type="button" data-cat-edit="'+esc(c.id)+'" aria-label="Editar '+esc(c.name)+'" '+(c.locked?'disabled title="Desbloqueie para editar"':'')+'><i class="fas fa-pen"></i></button><button type="button" data-cat-lock="'+esc(c.id)+'" aria-label="'+(c.locked?'Desbloquear':'Bloquear')+' '+esc(c.name)+'" title="'+(c.locked?'Desbloquear categoria':'Bloquear categoria')+'"><i class="fas '+(c.locked?'fa-lock':'fa-lock-open')+'"></i></button>'+(CATEGORY_DEFAULTS.some(d=>d.id===c.id)?'':'<button type="button" data-cat-delete="'+esc(c.id)+'" aria-label="Excluir '+esc(c.name)+'"><i class="fas fa-trash"></i></button>')+'</div></div>').join('');
         }
         function openCategoryEditor(id){
             categoryEditingId=id||null;
             const c=id?categories.find(x=>x.id===id):null;
+            if(c?.locked){toast('Desbloqueie esta categoria para editar ♡');return;}
             categoryDraftImage=c?.image||'';
             categoryDraftIcon=normIcon(c?.icon)||{n:'fa-folder',c:c?.color||'#37352F'};
             const box=document.getElementById('category-editor');
@@ -6595,7 +6603,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const bgColor=document.getElementById('cat-color').value;
             const icon=normIcon(categoryDraftIcon)||{n:'fa-folder',c:bgColor};
             const existing=categories.find(c=>c.id===id);
-            const data={id,name,color:bgColor,icon,art:existing?.art||'✨',image:categoryDraftImage};
+            const data={id,name,color:bgColor,icon:{...icon,c:icon.c||bgColor},locked:existing?.locked??false,art:existing?.art||'✨',image:categoryDraftImage};
             const idx=categories.findIndex(c=>c.id===id);
             if(idx>=0)categories[idx]=data;
             else{if(categories.length>=30){toast('Limite de 30 categorias');return;}categories.push(data);}
@@ -6700,7 +6708,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             renderCategoryManager();
         }
 
-        sheetBody.addEventListener('click',e=>{const icon=e.target.closest('[data-cat-icon]');if(icon){openIconPicker(categoryDraftIcon,ic=>{categoryDraftIcon=normIcon(ic)||{n:'fa-folder',c:document.getElementById('cat-color')?.value||'#37352F'};const b=document.getElementById('cat-icon-pick');if(b){b.innerHTML=iconBtnHTML(categoryDraftIcon);b.classList.add('has-icon');}});return;}const n=e.target.closest('[data-cat-new]');if(n){openCategoryEditor(null);return;}const ed=e.target.closest('[data-cat-edit]');if(ed){openCategoryEditor(ed.dataset.catEdit);return;}const del=e.target.closest('[data-cat-delete]');if(del){deleteCategory(del.dataset.catDelete);return;}if(e.target.closest('[data-cat-cancel]')){document.getElementById('category-editor').style.display='none';return;}if(e.target.closest('[data-cat-save]')){saveCategoryEditor();return;}});
+        sheetBody.addEventListener('click',e=>{const icon=e.target.closest('[data-cat-icon]');if(icon){openIconPicker(categoryDraftIcon,ic=>{categoryDraftIcon=normIcon(ic)||{n:'fa-folder',c:document.getElementById('cat-color')?.value||'#37352F'};const b=document.getElementById('cat-icon-pick');if(b){b.innerHTML=iconBtnHTML(categoryDraftIcon);b.classList.add('has-icon');}});return;}const n=e.target.closest('[data-cat-new]');if(n){openCategoryEditor(null);return;}const ed=e.target.closest('[data-cat-edit]');if(ed){openCategoryEditor(ed.dataset.catEdit);return;}const del=e.target.closest('[data-cat-delete]');if(del){deleteCategory(del.dataset.catDelete);return;}const lock=e.target.closest('[data-cat-lock]');if(lock){const c=categories.find(x=>x.id===lock.dataset.catLock);if(c){c.locked=!c.locked;saveCategories();renderCategoryManager();toast(c.locked?'Categoria bloqueada':'Categoria desbloqueada ♡');}return;}if(e.target.closest('[data-cat-cancel]')){document.getElementById('category-editor').style.display='none';return;}if(e.target.closest('[data-cat-save]')){saveCategoryEditor();return;}});
+        sheetBody.addEventListener('input',e=>{if(e.target.id==='cat-color'){if(categoryDraftIcon)categoryDraftIcon={...categoryDraftIcon,c:e.target.value};const b=document.getElementById('cat-icon-pick');if(b&&categoryDraftIcon)b.innerHTML=iconBtnHTML(categoryDraftIcon);}});
         sheetBody.addEventListener('change',e=>{if(e.target.id==='cat-image'){const file=e.target.files?.[0];if(file)fileToJpeg(file,900).then(url=>{categoryDraftImage=url;toast('Imagem adicionada ♡');}).catch(()=>toast('Não foi possível carregar a imagem'));}});
         sheetBody.addEventListener('click', (e) => {
             const b = e.target.closest('.fundo-sw'); if (!b || currentView !== 'profile') return;
