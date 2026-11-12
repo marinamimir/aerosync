@@ -2445,6 +2445,18 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
  .wd-preview:not(.is-full){width:min(75%,640px)}
 }
 @media(min-width:1200px){#home-sections{grid-auto-rows:minmax(78px,auto);gap:16px}.wd-add-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Widget resize interaction v2: single selected corner handle, touch-first */
+#home-sections.editing .home-section{touch-action:pan-y}
+#home-sections.editing .home-section.is-resize-selected{touch-action:none!important;z-index:70!important;overflow:visible!important}
+#home-sections.editing .widget-resize-handle{display:none!important}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{display:block!important;position:absolute;right:8px;bottom:8px;top:auto;left:auto;transform:none;width:44px;height:44px;border:2px solid rgba(255,255,255,.98);border-radius:15px;background:var(--theme-accent,var(--accent));box-shadow:0 3px 12px rgba(90,50,75,.22);touch-action:none!important;pointer-events:auto;z-index:80}
+#home-sections.editing .home-section.is-resizing>.widget-resize-handle.resize-se{background:var(--theme-accent-2,var(--theme-accent,var(--accent)))}
+#home-sections.editing .widget-resize-handle.resize-se::after{content:'';position:absolute;right:11px;bottom:11px;width:15px;height:15px;border-right:3px solid #fff;border-bottom:3px solid #fff;border-radius:0 0 3px 0;left:auto;top:auto;transform:none;pointer-events:none}
+#home-sections.editing .home-section:not(.is-resize-selected)>.widget-resize-handle{display:none!important}
+#home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
+.widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
+@media(max-width:799px){#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{right:6px;bottom:6px;width:48px;height:48px}}
 </style>
 <style id="aerosync-youtube-widget">
 .w-youtube{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);overflow:hidden}
@@ -7897,7 +7909,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button class="st-btn st-danger" data-st="wdel" aria-label="Remover ${esc(label)}" title="Remover"><i class="fas fa-trash"></i></button>` : ''}
                 </div>`;
             sec.prepend(tools);
-            sec.insertAdjacentHTML('beforeend', '<button type="button" class="widget-resize-handle resize-n" data-st="resize" data-dir="n" aria-label="Redimensionar para cima"></button><button type="button" class="widget-resize-handle resize-e" data-st="resize" data-dir="e" aria-label="Redimensionar para a direita"></button><button type="button" class="widget-resize-handle resize-s" data-st="resize" data-dir="s" aria-label="Redimensionar para baixo"></button><button type="button" class="widget-resize-handle resize-w" data-st="resize" data-dir="w" aria-label="Redimensionar para a esquerda"></button><button type="button" class="widget-resize-handle resize-ne" data-st="resize" data-dir="ne" aria-label="Redimensionar para cima e direita"></button><button type="button" class="widget-resize-handle resize-se" data-st="resize" data-dir="se" aria-label="Redimensionar para baixo e direita"></button><button type="button" class="widget-resize-handle resize-sw" data-st="resize" data-dir="sw" aria-label="Redimensionar para baixo e esquerda"></button><button type="button" class="widget-resize-handle resize-nw" data-st="resize" data-dir="nw" aria-label="Redimensionar para cima e esquerda"></button>');
+            sec.insertAdjacentHTML('beforeend', '<button type="button" class="widget-resize-handle resize-se" data-st="resize" data-dir="se" aria-label="Arraste para redimensionar o widget"></button>');
         }
         SECTION_IDS.forEach(id => addSectionTools(sectionEl(id), false));
 
@@ -8072,6 +8084,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         homeEl.addEventListener('click', (e) => {
             const b = e.target.closest('[data-st]');
             if (!b || !homeEl.classList.contains('editing')) return;
+            if(b.dataset.st==='resize')return;
             e.stopPropagation();
             const sec = b.closest('.home-section');
             const id = sec.dataset.section;
@@ -8104,35 +8117,61 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         homeEl.addEventListener('pointerdown',e=>{const handle=e.target.closest('.section-tools .st-label');if(!handle||!isEditing()||e.pointerType==='mouse')return;const sec=handle.closest('.home-section');pointerDragState={id:sec.dataset.section,startX:e.clientX,startY:e.clientY,active:false};});
         homeEl.addEventListener('pointermove',e=>{if(!pointerDragState||!isEditing())return;if(!pointerDragState.active&&Math.hypot(e.clientX-pointerDragState.startX,e.clientY-pointerDragState.startY)>8)pointerDragState.active=true;if(!pointerDragState.active)return;const under=document.elementFromPoint(e.clientX,e.clientY),target=under?.closest?.('.home-section');if(!target||target.dataset.section===pointerDragState.id)return;const from=layout.order.indexOf(pointerDragState.id),to=layout.order.indexOf(target.dataset.section);if(from<0||to<0)return;layout.order.splice(from,1);layout.order.splice(to,0,pointerDragState.id);applyLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));target.classList.add('drop-target');});
         homeEl.addEventListener('pointerup',()=>{if(pointerDragState?.active){saveLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));}pointerDragState=null;});homeEl.addEventListener('pointercancel',()=>{pointerDragState=null;});
-        let resizeState=null;
-        const finishWidgetResize=(e)=>{if(!resizeState||e.pointerId!==resizeState.pointerId)return;saveLayout();try{if(homeEl.hasPointerCapture?.(e.pointerId))homeEl.releasePointerCapture(e.pointerId);}catch(_){}resizeState.sec?.classList.remove('is-resizing');resizeState=null;document.documentElement.classList.remove('widget-resizing');};
+        let resizeState=null, selectedResizeSection=null;
+        const setResizeSelection=(sec)=>{
+            homeEl.querySelectorAll('.home-section.is-resize-selected').forEach(x=>x.classList.remove('is-resize-selected'));
+            selectedResizeSection=sec?.dataset.section||null;
+            if(sec&&isEditing()&&!FIXED_FULL.includes(selectedResizeSection))sec.classList.add('is-resize-selected');
+        };
+        const finishWidgetResize=(e)=>{
+            if(!resizeState||e.pointerId!==resizeState.pointerId)return;
+            const st=resizeState;resizeState=null;
+            st.sec.classList.remove('is-resizing');
+            document.documentElement.classList.remove('widget-resizing');
+            try{if(st.grip.hasPointerCapture?.(e.pointerId))st.grip.releasePointerCapture(e.pointerId);}catch(_){}
+            layout.sizes[st.id]=st.previewSize;
+            applyLayout();saveLayout();
+        };
+        homeEl.addEventListener('click',e=>{
+            if(!isEditing())return;
+            if(e.target.closest('[data-st="resize"],[data-st]'))return;
+            const sec=e.target.closest('.home-section');
+            if(sec&&!FIXED_FULL.includes(sec.dataset.section)){setResizeSelection(sec);e.stopPropagation();}
+            else setResizeSelection(null);
+        },true);
         homeEl.addEventListener('pointerdown',e=>{
-            const grip=e.target.closest('[data-st="resize"]');if(!grip||!isEditing()||e.isPrimary===false)return;
+            const grip=e.target.closest('[data-st="resize"]');
+            if(!grip||!isEditing()||e.isPrimary===false||e.button>0)return;
             const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;
-            e.preventDefault();e.stopPropagation();
-            const id=sec.dataset.section,wide=window.matchMedia('(min-width:800px)').matches;
+            e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+            setResizeSelection(sec);
+            const id=sec.dataset.section,wide=window.matchMedia('(min-width:800px)').matches,totalCols=wide?12:4;
             const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
-            const gridStyle=getComputedStyle(homeEl),colTracks=gridStyle.gridTemplateColumns.split(' ').filter(Boolean),totalCols=wide?12:4;
-            const gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
+            const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
             const colStep=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
             const rowStep=(parseFloat(gridStyle.gridAutoRows)||68)+gapY;
-            resizeState={id,sec,dir:grip.dataset.dir||'se',startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,wide,colStep:Math.max(24,colStep),rowStep:Math.max(48,rowStep),minCols:sec.dataset.widget==='youtube'?(wide?3:9):1,pointerId:e.pointerId};sec.classList.add('is-resizing');
-            try{homeEl.setPointerCapture(e.pointerId);}catch(_){}
-            document.documentElement.classList.add('widget-resizing');
+            resizeState={id,sec,grip,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,wide,colStep:Math.max(24,colStep),rowStep:Math.max(48,rowStep),minCols:sec.dataset.widget==='youtube'?(wide?3:9):1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
+            try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
         window.addEventListener('pointermove',e=>{
             if(!resizeState||e.pointerId!==resizeState.pointerId)return;
-            e.preventDefault();const st=resizeState,dx=e.clientX-st.startX,dy=e.clientY-st.startY;
-            const hasX=st.dir.includes('e')||st.dir.includes('w'),hasY=st.dir.includes('n')||st.dir.includes('s'),xSign=st.dir.includes('w')?-1:1,ySign=st.dir.includes('n')?-1:1;
-            const deltaCols=hasX?Math.round(dx*xSign/st.colStep)*(st.wide?1:3):0,deltaRows=hasY?Math.round(dy*ySign/st.rowStep):0;
+            if(e.cancelable)e.preventDefault();
+            const st=resizeState,dx=e.clientX-st.startX,dy=e.clientY-st.startY;
+            const deltaCols=Math.round(dx/st.colStep)*(st.wide?1:3),deltaRows=Math.round(dy/st.rowStep);
             const col=Math.max(st.minCols,Math.min(12,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
-            const next=`${col}x${row}`;if(layout.sizes[st.id]!==next){layout.sizes[st.id]=next;applyLayout();}
+            const next=`${col}x${row}`;
+            if(st.previewSize!==next){
+                st.previewSize=next;
+                st.sec.style.gridColumn=`span ${st.wide?col:Math.max(1,Math.ceil(col/3))}`;
+                st.sec.style.gridRow=`span ${row}`;
+                st.sec.dataset.size=next;
+            }
         },{passive:false});
         window.addEventListener('pointerup',finishWidgetResize);
         window.addEventListener('pointercancel',finishWidgetResize);
-        window.addEventListener('lostpointercapture',finishWidgetResize);
-        
-        const setDragEnabled = enabled => homeEl.querySelectorAll('.home-section').forEach(sec=>{ sec.draggable=!!enabled; sec.style.touchAction=enabled?'pan-y':'auto'; });
+
+        const setDragEnabled = enabled => homeEl.querySelectorAll('.home-section').forEach(sec=>{ sec.draggable=false; sec.style.removeProperty('touch-action'); });
         const isEditing = () => homeEl.classList.contains('editing');
         function enterEditMode() {
             if (isEditing()) return;
@@ -8147,6 +8186,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         function exitEditMode() {
             if (!isEditing()) return;
             homeEl.classList.remove('editing');
+            setResizeSelection(null);
             setDragEnabled(false);
             frame.classList.remove('is-editing');
             document.getElementById('edit-bar').classList.add('hidden');
