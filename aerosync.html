@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111208">
+    <meta name="aero-build" content="2026111209">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -1145,31 +1145,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .st-label { flex-basis: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .st-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 
-        .aeropet-card,.aeropet-editor{background:var(--surface);border:1px solid color-mix(in srgb,var(--theme-accent) 24%,transparent);border-radius:22px;padding:16px;color:var(--icon);text-align:center}
-        .aeropet-figure,.aeropet-art{width:100%;max-width:190px;margin:0 auto 10px}.aeropet-figure svg,.aeropet-art svg{width:100%;height:auto;filter:drop-shadow(0 4px 2px rgba(80,60,70,.08))}
-        /* Mascotinho AeroPets: animação idle independente das opções escolhidas */
-        .aeropet-figure svg,.aeropet-art svg{overflow:visible}
-        .pet-idle{transform-box:fill-box;transform-origin:center bottom;animation:pet-idle-bob 3.2s ease-in-out infinite}
-        .pet-face{transform-box:fill-box;transform-origin:center 65%;animation:pet-face-bob 3.2s ease-in-out infinite}
-        @keyframes pet-face-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-        .pet-ear{transform-box:fill-box;transform-origin:bottom center;animation:pet-ear-wiggle 4.8s ease-in-out infinite}
-        .pet-ear-right{animation-delay:.18s}
-        .pet-tail{transform-box:fill-box;transform-origin:0% 50%;animation:pet-tail-wag 1.9s ease-in-out infinite}
-        .pet-eyes{transform-box:fill-box;transform-origin:center;animation:pet-blink 5.6s infinite}
-        .pet-bow{transform-box:fill-box;transform-origin:center;animation:pet-bow-sway 3.2s ease-in-out infinite}
-        @keyframes pet-idle-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-1deg)}}
-        @keyframes pet-ear-wiggle{0%,82%,100%{transform:rotate(0)}86%{transform:rotate(-5deg)}92%{transform:rotate(3deg)}}
-        @keyframes pet-tail-wag{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(12deg)}}
-        @keyframes pet-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.08)}}
-        @keyframes pet-bow-sway{0%,100%{transform:rotate(0)}50%{transform:rotate(5deg)}}
-        @media(prefers-reduced-motion:reduce){.pet-idle,.pet-ear,.pet-tail,.pet-eyes,.pet-bow{animation:none!important}}
-        .aeropet-name{font-size:18px;font-weight:900;color:var(--theme-accent)}.aeropet-level,.aeropet-card small{font-size:11px;opacity:.72;font-weight:800}
-        .aeropet-actions,.pet-species,.pet-chip-list{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-        .aeropet-actions button,.pet-species button,.pet-chip-list button{border:1px solid color-mix(in srgb,var(--theme-accent) 35%,transparent);border-radius:999px;padding:8px 12px;background:var(--surface);font-size:11px;font-weight:800}
-        .pet-species button.selected,.pet-chip-list button.selected{background:var(--theme-soft);border-color:var(--theme-accent);color:var(--theme-accent)}
-        .aeropet-editor{text-align:left}.aeropet-editor h3{text-align:center;font-weight:900;font-size:18px;color:var(--theme-accent)}.aeropet-editor>p{text-align:center;font-size:12px;margin:6px 0 14px}
-        .aeropet-editor label{display:block;font-size:12px;font-weight:800;margin:12px 0}.aeropet-editor input,.aeropet-editor select{display:block;width:100%;padding:10px;border:1px solid rgba(148,163,184,.35);border-radius:12px;background:var(--surface);margin-top:5px;font-size:13px}
-        .pet-custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pet-chip-list{justify-content:flex-start}
         /* ===== Painéis maiores (quase a tela toda) ===== */
         .sheet-panel { height: calc(100% - 56px); max-height: none; }
         .note-editor-wrap { display: flex; flex-direction: column; min-height: 100%; padding: 16px; }
@@ -3047,7 +3022,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             breaks: 'aerosync.breaks', // Pausas pro Café (aparecem no calendário)
             finance: 'aerosync.finance', // Finanças (gastos e categorias) — separado das tarefas
             fundo: 'aerosync.fundo', // fundo suave do app
-            pet: 'aerosync.pet', // AeroPets: um único pet
             categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors', overdueIndicators: 'aerosync.overdueIndicators' // categorias personalizadas e paleta de ícones
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
@@ -5993,22 +5967,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <input id="wd-youtube-url" class="task-input" type="url" autocomplete="url" spellcheck="false" placeholder="https://www.youtube.com/watch?v=... ou /playlist?list=..." value="${esc(w.url||'')}" />
                     <p class="text-xs text-gray-400 font-semibold mt-2">O player é recolhido sem remover o iframe; a reprodução pode continuar enquanto o navegador mantiver o player ativo.</p>
                     <button data-act="wd-youtube-save" class="pill-btn primary w-full mt-3"><i class="fas fa-check mr-1"></i>Salvar vídeo / playlist</button>
-                ` : w.type === 'pet' ? `
-                    <section class="aeropet-editor">
-                      <div class="aeropet-art">${petArt()}</div>
-                      ${!aeroPet.adopted ? `<h3>Vamos conhecer seu novo amiguinho? ♡</h3><p>Escolha gato ou cachorro. A espécie fica fixa depois da adoção.</p><div class="pet-species"><button data-act="pet-species" data-value="cat" class="${aeroPet.species==='cat'?'selected':''}">🐱 Gatinho</button><button data-act="pet-species" data-value="dog" class="${aeroPet.species==='dog'?'selected':''}">🐶 Cachorrinho</button></div>` : `<h3>${esc(aeroPet.name)} ♡</h3><p>A espécie escolhida na adoção é permanente.</p>`}
-                      <label>Nome do pet<input id="pet-name" maxlength="24" value="${esc(aeroPet.name)}" placeholder="Ex.: Mocca"></label>
-                      ${!aeroPet.adopted ? `<label>Gênero<select id="pet-gender"><option value="unspecified">Não especificado</option><option value="female" ${aeroPet.gender==='female'?'selected':''}>Feminino</option><option value="male" ${aeroPet.gender==='male'?'selected':''}>Masculino</option><option value="nonbinary" ${aeroPet.gender==='nonbinary'?'selected':''}>Não binário</option></select></label>` : ''}
-                      <div class="pet-custom-grid">
-                        <label>Orelhas<select id="pet-ears"><option value="upright" ${aeroPet.ears==='upright'?'selected':''}>Em pé</option><option value="floppy" ${aeroPet.ears==='floppy'?'selected':''}>Caídas</option></select></label>
-                        <label>Pelagem<select id="pet-coat"><option value="short" ${aeroPet.coat==='short'?'selected':''}>Pelo curto</option><option value="long" ${aeroPet.coat==='long'?'selected':''}>Pelo longo / fofinho</option></select></label>
-                        <label>Cor<select id="pet-color">${Object.keys(PET_COLORS).map(v=>`<option value="${v}" ${aeroPet.color===v?'selected':''}>${({snow:'Branquinho',cream:'Creme',caramel:'Caramelo',cocoa:'Chocolate',gray:'Cinza',black:'Pretinho',pink:'Rosinha',lilac:'Lilás'})[v]}</option>`).join('')}</select></label>
-                        <label>Acessório<select id="pet-accessory"><option value="bow" ${aeroPet.accessory==='bow'?'selected':''}>Lacinho</option><option value="none" ${aeroPet.accessory==='none'?'selected':''}>Nenhum</option></select></label>
-                      </div>
-                      <label>Personalidade (até 3)<div class="pet-chip-list">${Object.entries(PET_PERSONALITIES).map(([v,l])=>`<button type="button" data-act="pet-personality" data-value="${v}" class="${aeroPet.personality.includes(v)?'selected':''}">${l}</button>`).join('')}</div></label>
-                      <label>Características extras<div class="pet-chip-list">${Object.entries(PET_TRAITS).map(([v,l])=>`<button type="button" data-act="pet-trait" data-value="${v}" class="${aeroPet.traits.includes(v)?'selected':''}">${l}</button>`).join('')}</div></label>
-                      <button data-act="pet-save" class="pill-btn primary w-full mt-3">${aeroPet.adopted?'Salvar aparência ♡':'Adotar meu pet ♡'}</button>
-                    </section>
                 ` : w.type === 'weather' ? `
                     <span class="modal-label mt-4">Fundo do widget</span>
                     ${seg('wd-weather-bg',{transparent:'Transparente',solid:'Com fundo'},w.background||'transparent')}
@@ -6860,16 +6818,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             setStatus(t, e.target.checked ? 'done' : reopenStatus(t));
             saveTasks(); renderTasks(); renderSheet(); playClick();
         });
-        sheetBody.addEventListener('change', (e) => {
-            const fields = { 'pet-ears':'ears', 'pet-coat':'coat', 'pet-color':'color', 'pet-accessory':'accessory' };
-            const field = fields[e.target && e.target.id];
-            if (!field || currentView !== 'widget') return;
-            aeroPet[field] = e.target.value;
-            savePet();
-            const art = sheetBody.querySelector('.aeropet-art');
-            if (art) art.innerHTML = petArt();
-        });
-
         sheetBody.addEventListener('click', (e) => {
             const btn = e.target.closest('[data-act]');
             if (!btn) { // tocar numa linha de missão (Agenda / Calendário) abre o Task Hub
@@ -7819,53 +7767,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
         const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', clock: 'Relógio', financeOverview:'Overview financeiro', balance:'Saldo disponível', budget:'Orçamento mensal', bills:'Próximas contas', categories:'Gastos por categoria', daily:'Daily Overview', focus:'Focus Session', wishlist:'Wishlist', countdown:'Countdown', youtube:'YouTube' };
-        const PET_DEFAULT={adopted:false,species:'cat',name:'',gender:'unspecified',ears:'upright',coat:'short',color:'snow',accessory:'bow',personality:['affectionate'],traits:[],happiness:100,bond:0,stars:0,level:1,xp:0};
-        let aeroPet={...PET_DEFAULT,...(store.get(STORAGE_KEYS.pet,{})||{})};
-        const PET_COLORS={snow:'#fff8f8',cream:'#f4dfc4',caramel:'#c88f68',cocoa:'#8c6c68',gray:'#b9b7c4',black:'#57525c',pink:'#f4c6d6',lilac:'#d9c9e8'};
-        const PET_PERSONALITIES={affectionate:'Carinhoso',playful:'Brincalhão',shy:'Tímido',curious:'Curioso',sleepy:'Dorminhoco',mischievous:'Travesso'};
-        const PET_TRAITS={foodie:'Guloso',explorer:'Aventureiro',cuddly:'Dengoso',independent:'Independente',dreamy:'Sonhador'};
-        function savePet(){return store.set(STORAGE_KEYS.pet,aeroPet);}
-        function petArt(p=aeroPet){
-            const dog=p.species==='dog',long=p.coat==='long',floppy=p.ears==='floppy',c=PET_COLORS[p.color]||PET_COLORS.snow;
-            const outline='#514b55',pink='#f2b8d0',inner='#f8dce8';
-            const ears=dog&&floppy
-                ? '<path class="pet-ear pet-ear-left" d="M47 78Q10 63 18 111Q24 137 57 119Q68 99 47 78Z"/><path class="pet-ear pet-ear-right" d="M153 78Q190 63 182 111Q176 137 143 119Q132 99 153 78Z"/>'
-                : dog
-                    ? '<path class="pet-ear pet-ear-left" d="M39 86Q24 20 48 12Q75 18 83 79Z"/><path class="pet-ear pet-ear-right" d="M161 86Q176 20 152 12Q125 18 117 79Z"/>'
-                    : '<path class="pet-ear pet-ear-left" d="M38 88Q23 18 49 13Q75 24 82 81Z"/><path class="pet-ear pet-ear-right" d="M162 88Q177 18 151 13Q125 24 118 81Z"/>';
-            const head=long
-                ? 'M19 111Q13 69 43 57Q53 35 82 43Q100 32 118 43Q147 35 157 57Q187 69 181 111Q185 157 148 168Q125 180 100 170Q75 180 52 168Q15 157 19 111Z'
-                : 'M20 111Q15 70 44 58Q55 38 82 45Q100 34 118 45Q145 38 156 58Q185 70 180 111Q184 155 148 166Q125 177 100 168Q75 177 52 166Q16 155 20 111Z';
-            const body=dog
-                ? '<path d="M70 157Q72 148 85 151L115 151Q128 148 130 157L134 179Q130 188 119 184L108 174L92 174L81 184Q70 188 66 179Z" fill="'+c+'" stroke="'+outline+'" stroke-width="3.4" stroke-linejoin="round"/><path d="M72 157Q53 151 49 166Q47 177 62 177" fill="none" stroke="'+outline+'" stroke-width="5" stroke-linecap="round"/><path d="M128 157Q147 151 151 166Q153 177 138 177" fill="none" stroke="'+outline+'" stroke-width="5" stroke-linecap="round"/>'
-                : '<path d="M73 157Q100 147 127 157L131 181Q126 190 115 183L106 174L94 174L85 183Q74 190 69 181Z" fill="'+c+'" stroke="'+outline+'" stroke-width="3.4" stroke-linejoin="round"/>';
-            const tail=dog
-                ? '<path class="pet-tail" d="M145 160Q180 163 178 139Q177 128 167 132" fill="none" stroke="'+outline+'" stroke-width="8" stroke-linecap="round"/>'
-                : '<path class="pet-tail" d="M53 161Q22 177 35 188" fill="none" stroke="'+outline+'" stroke-width="6" stroke-linecap="round"/>';
-            const muzzle=dog
-                ? '<ellipse cx="100" cy="137" rx="15" ry="10" fill="#fff9fb" stroke="'+outline+'" stroke-width="2.6"/><ellipse cx="100" cy="133" rx="4.2" ry="3" fill="'+outline+'"/>'
-                : '<path d="M94 137Q100 133 106 137Q103 143 100 143Q97 143 94 137Z" fill="'+pink+'" stroke="'+outline+'" stroke-width="1.8"/>';
-            const fur=long?'<path d="M48 59Q39 49 47 40M69 47Q64 37 73 33M130 47Q136 37 127 33M151 59Q161 49 153 40" fill="none" stroke="#fff8fb" stroke-width="5" stroke-linecap="round"/>':'';
-            const bow=p.accessory==='bow'?'<g class="pet-bow" fill="'+pink+'" stroke="'+outline+'" stroke-width="2.4" stroke-linejoin="round"><path d="M132 67Q112 48 117 41Q130 36 140 57Q151 36 165 43Q173 54 146 69Z"/><circle cx="141" cy="57" r="4.5" fill="#fff4f8"/></g>':'';
-            return `<svg class="pet-mascot" viewBox="0 0 200 200" role="img" aria-label="Mascotinho do seu pet">
-                <g class="pet-idle">
-                    ${tail}
-                    ${body}
-                    <g fill="${c}" stroke="${outline}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">${ears}<path d="${head}"/></g>
-                    ${fur}
-                    <g class="pet-face">
-                        <g class="pet-eyes" fill="${outline}">
-                            <circle cx="69" cy="119" r="8.2"/><circle cx="131" cy="119" r="8.2"/>
-                        </g>
-                        <g fill="#fff"><circle cx="71.5" cy="116.5" r="2.2"/><circle cx="133.5" cy="116.5" r="2.2"/></g>
-                        <g fill="${pink}" opacity=".8"><ellipse cx="48" cy="139" rx="12" ry="6.5"/><ellipse cx="152" cy="139" rx="12" ry="6.5"/></g>
-                        ${muzzle}
-                        <path d="M100 142Q94 150 87 144M100 142Q106 150 113 144" fill="none" stroke="${outline}" stroke-width="2.8" stroke-linecap="round"/>
-                    </g>
-                    ${bow}
-                </g>
-            </svg>`;
-        }
         const QUOTE_STYLES = { paper: 'Papel', accent: 'Destaque', minimal: 'Simples' };
         // Frases curtinhas para o botão "Inspiração" (escritas para o app; troque à vontade)
         const QUOTE_IDEAS = [
@@ -8105,7 +8006,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if (widgets.length >= 30) { toast('Limite de 30 widgets'); return; }
             const w = normWidgets([{ type, id: uid('w_') }])[0];
             if (type === 'quote') { const q = QUOTE_IDEAS[Math.floor(Math.random() * QUOTE_IDEAS.length)]; w.text = q[0]; w.author = q[1]; }
-            if (type === 'pet' && widgets.some(x=>x.type==='pet')) { toast('Você já tem seu AeroPet!'); return; }
             widgets.push(w);
             layout.order.unshift(w.id); // entra no topo da tela inicial
             layout.sizes[w.id] = defaultSizeOf(w.id);
