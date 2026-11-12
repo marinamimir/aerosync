@@ -8136,7 +8136,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if(!isEditing())return;
             if(e.target.closest('[data-st="resize"],[data-st]'))return;
             const sec=e.target.closest('.home-section');
-            if(sec&&!FIXED_FULL.includes(sec.dataset.section)){setResizeSelection(sec);e.stopPropagation();}
+            if(sec&&!FIXED_FULL.includes(sec.dataset.section)){setResizeSelection(sec);}
             else setResizeSelection(null);
         },true);
         homeEl.addEventListener('pointerdown',e=>{
