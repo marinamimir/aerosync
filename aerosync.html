@@ -92,6 +92,9 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .custom-theme-delete { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; color:#dc4b65 !important; background:rgba(220,75,101,.10) !important; }
 
 
+        .deadline-toggle{display:flex;align-items:center;gap:8px;margin:0 0 9px;font-size:12px;font-weight:800;color:var(--accent);cursor:pointer}.deadline-toggle input{accent-color:var(--accent);width:16px;height:16px}
+        .task-item.overdue-outline{outline:2px solid color-mix(in srgb,var(--theme-accent,var(--accent)) 72%,transparent);outline-offset:1px}.task-item.overdue-stripe{box-shadow:inset 4px 0 0 var(--theme-accent,var(--accent))}.overdue-indicator{display:inline-flex;align-items:center;gap:4px;margin-left:5px;padding:1px 6px;border-radius:99px;font-size:9px;font-weight:900;color:var(--theme-accent,var(--accent));background:color-mix(in srgb,var(--theme-accent,var(--accent)) 13%,transparent);border:1px solid color-mix(in srgb,var(--theme-accent,var(--accent)) 28%,transparent)}.overdue-icon{color:var(--theme-accent,var(--accent));font-size:11px;margin-right:3px}
+        .agenda-row.overdue-stripe{border-left:3px solid var(--theme-accent,var(--accent))}.agenda-row.overdue-outline{outline:1px solid color-mix(in srgb,var(--theme-accent,var(--accent)) 65%,transparent)}
         /* AeroSync Colorful Glass: preserva as paletas existentes e adiciona apenas profundidade opcional. */
         html[data-glass="soft"] .widget-section,html[data-glass="full"] .widget-section{border-radius:24px;overflow:hidden;clip-path:inset(0 round 24px);border:1px solid color-mix(in srgb,var(--theme-accent) 20%,rgba(255,255,255,.72));background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(13px) saturate(135%);backdrop-filter:blur(13px) saturate(135%);box-shadow:0 8px 24px rgba(40,45,65,.07),inset 0 1px 0 rgba(255,255,255,.42)}
         html[data-glass="full"] .widget-section{background:color-mix(in srgb,var(--surface) 58%,transparent);border-color:color-mix(in srgb,var(--theme-accent) 27%,rgba(255,255,255,.8));-webkit-backdrop-filter:blur(20px) saturate(155%);backdrop-filter:blur(20px) saturate(155%);box-shadow:0 12px 30px rgba(40,45,65,.10),inset 0 1px 0 rgba(255,255,255,.58)}
@@ -994,8 +997,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .filter-chip {
             display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px;
             font-size: 12px; font-weight: 800; color: #fff; background: var(--accent);
-            box-shadow: 0 3px 8px var(--accent-glow); white-space: nowrap;
-        }
+            box-shadow: 0 3px 8px var(--accent-glow); white-space: nowrap;        }
         .filter-chip.hidden { display: none; }
         .carousel-item.is-filter { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--accent), 0 20px 40px -10px rgba(0,0,0,0.15); }
         html.dark .carousel-item.is-filter { box-shadow: 0 0 0 3px #14161f, 0 0 0 6px var(--accent); }
@@ -1994,8 +1996,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .life-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 4px 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; background: var(--accent); }
         .life-chip button { width: 18px; height: 18px; border-radius: 50%; font-size: 9px; color: #fff; background: rgba(255,255,255,0.2); }
         html.dark .life-tab { background: #262a3b; color: #d9dce6; }
-        html.dark .life-tab b { background: rgba(255,255,255,0.08); color: #a3a9bb; }
-        html.dark .life-tab.selected { background: var(--accent); color: #fff; }
+        html.dark .life-tab b { background: rgba(255,255,255,0.08); color: #a3a9bb; }        html.dark .life-tab.selected { background: var(--accent); color: #fff; }
         html.dark .life-tab.selected b { background: #fff; color: #1e2130; }
         html.dark .life-card { background: #1e2130; border-color: #2b2f42; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         html.dark .life-info b { color: #eef0f6; }
@@ -2627,7 +2628,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 </div>
 
                 <span class="modal-label mt-5">Prazo</span>
-                <div class="flex gap-2 items-center flex-wrap">
+                <label class="deadline-toggle"><input id="task-no-deadline" type="checkbox" checked> <span>Sem data limite</span></label>
+                <div id="task-deadline-fields" class="flex gap-2 items-center flex-wrap hidden">
                     <button class="date-chip" data-offset="0">Hoje</button>
                     <button class="date-chip" data-offset="1">Amanhã</button>
                     <input id="task-date" type="date" class="date-input" aria-label="Escolher outra data">
@@ -2982,7 +2984,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             finance: 'aerosync.finance', // Finanças (gastos e categorias) — separado das tarefas
             fundo: 'aerosync.fundo', // fundo suave do app
             pet: 'aerosync.pet', // AeroPets: um único pet
-            categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors' // categorias personalizadas e paleta de ícones
+            categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors', overdueIndicators: 'aerosync.overdueIndicators', googleCalendar: 'aerosync.googleCalendar' // categorias personalizadas e paleta de ícones
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
         const store = {
@@ -2994,7 +2996,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } },
             remove(key) { try { localStorage.removeItem(key); } catch {} }
         };
-
         // ================================================
         //  DATAS (horário local, formato AAAA-MM-DD)
         // ================================================
@@ -3169,7 +3170,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 pausedOnExit: !!t.pausedOnExit,
                 log: Array.isArray(t.log) ? t.log.filter(l => l && isISO(l.d) && Number.isFinite(l.ms) && l.ms > 0).slice(-200).map(l => (l.focus ? { d: l.d, ms: l.ms, focus: true } : { d: l.d, ms: l.ms })) : [],
                 // versões antigas usavam due: 'Hoje' | 'Amanhã'
-                date: isISO(t.date) ? t.date : (t.due === 'Amanhã' ? addDaysISO(todayISO(), 1) : todayISO())
+                date: isISO(t.date) ? t.date : (t.due === 'Amanhã' ? addDaysISO(todayISO(), 1) : todayISO()), hasDeadline: typeof t.hasDeadline === 'boolean' ? t.hasDeadline : true, googleEventId: typeof t.googleEventId === 'string' ? t.googleEventId.slice(0,300) : '', importedFromGoogle: !!t.importedFromGoogle
             }));
         // start = 1º dia planejado (vazio = missão de um dia só) | doneAt = dia em que foi concluída
         tasks.forEach(fixSpan);
@@ -3993,8 +3994,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             }
         }
         diffDots.forEach(f => f.addEventListener('click', () => {
-            const n = +f.dataset.value;
-            setDifficulty(n === difficulty ? 0 : n, true);
+            const n = +f.dataset.value;            setDifficulty(n === difficulty ? 0 : n, true);
         }));
 
         // Tempo estimado (minutos): atalhos 15/30/60/120 + campo livre
@@ -4105,6 +4105,11 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const dateInput = document.getElementById('task-date');
         const dateChips = document.querySelectorAll('.date-chip[data-offset]');
         let selectedDate = todayISO();
+        const noDeadlineInput = document.getElementById('task-no-deadline');
+        const deadlineFields = document.getElementById('task-deadline-fields');
+        let hasDeadline = false;
+        function setHasDeadline(on) { hasDeadline=!!on; noDeadlineInput.checked=!hasDeadline; deadlineFields.classList.toggle('hidden',!hasDeadline); dateInput.disabled=!hasDeadline; dateChips.forEach(c=>{c.disabled=!hasDeadline;}); if(!hasDeadline){dateInput.value='';dateChips.forEach(c=>c.classList.remove('selected'));} else setTaskDate(selectedDate); }
+        noDeadlineInput.addEventListener('change',()=>{setHasDeadline(!noDeadlineInput.checked);playClick();});
         // "Vários dias": primeiro dia da missão (precisa ser antes do prazo)
         const multiBtn = document.getElementById('multi-toggle');
         const startWrap = document.getElementById('start-wrap');
@@ -4194,6 +4199,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 setEstimate(t.estimate || 0);
                 setTaskIcon(t.icon);
                 setTaskDate(t.date);
+                setHasDeadline(t.hasDeadline !== false);
                 setMulti(!!t.start, t.start);
                 setTimes(t.timeStart, t.timeEnd);
             } else {
@@ -4206,6 +4212,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 setEstimate(0);
                 setTaskIcon(null);
                 setTaskDate(presetDate || todayISO());
+                setHasDeadline(false);
                 setMulti(false);
                 setTimes('', '');
                 showModalTime(null);
@@ -4260,15 +4267,16 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         // Linha de metadados (fonte menor): prazo, tempo estimado, dificuldade e sub-steps
         function metaHTML(t) {
-            const overdue = !t.done && t.date < todayISO();
+            const overdue = !t.done && t.hasDeadline !== false && t.date < todayISO();
             let h = t.done
                 ? `<span><i class="fas fa-circle-check"></i>Concluído${totalMs(t) >= 1000 ? ' • ' + fmtDur(totalMs(t)) : ''}</span>`
-                : `<span title="Prazo"><i class="fas fa-calendar-day"></i>${overdue ? 'Atrasada • ' : ''}${relLabel(t.date)} • ${TAG_NAME[t.tag]}</span>`;
+                : `<span title="Prazo"><i class="fas fa-calendar-day"></i>${t.hasDeadline === false ? 'Sem data limite' : relLabel(t.date)} • ${TAG_NAME[t.tag]}</span>`;
             if (t.timeStart) h += `<span title="Horário"><i class="fas fa-clock"></i>${timeLabel(t)}</span>`;
             if (t.start) h += `<span title="${esc(spanText(t))}"><i class="fas fa-arrows-left-right"></i>${plural(spanInfo(t).planned, 'dia', 'dias')}</span>`;
             if (t.estimate) h += `<span title="Tempo estimado"><i class="fas fa-hourglass-half"></i>${fmtEst(t.estimate)}</span>`;
             if (t.difficulty) h += `<span class="diff-mini" style="--dc:${DIFF_COLOR[t.difficulty]}" title="Dificuldade ${t.difficulty}/5: ${DIFF_NAME[t.difficulty]}" aria-label="Dificuldade ${t.difficulty} de 5: ${DIFF_NAME[t.difficulty]}">${diffMiniHTML(t.difficulty)}</span>`;
             if (t.steps.length) h += `<span title="Sub-steps"><i class="fas fa-list-check"></i>${t.steps.filter(s => s.done).length}/${t.steps.length}</span>`;
+            const prefs=store.get(STORAGE_KEYS.overdueIndicators,[]); if(overdue&&prefs.includes("icon"))h+='<i class="fas fa-triangle-exclamation overdue-icon" title="Tarefa atrasada"></i>'; if(overdue&&prefs.includes("label"))h+='<span class="overdue-indicator">Atrasada</span>';
             return h;
         }
 
@@ -4283,7 +4291,10 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         let lastMovedId = null;
         function buildCard(t, view) {
             const el = document.createElement('div');
+            const isOverdue = !t.done && t.hasDeadline !== false && t.date < todayISO();
+            const overduePrefs = store.get(STORAGE_KEYS.overdueIndicators, []);
             el.className = 'task-item bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer'
+                + (isOverdue ? ' is-overdue' + (overduePrefs.includes("outline") ? ' overdue-outline' : '') + (overduePrefs.includes("stripe") ? ' overdue-stripe' : '') : '')
                 + (t.done ? ' is-done' : '') + (t.id === lastAddedId ? ' task-new' : '') + (t.id === lastMovedId ? ' task-moved' : '');
             el.dataset.id = t.id;
             el.dataset.tag = t.tag;
@@ -4308,7 +4319,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             h4.classList.add(...(t.done ? ['text-gray-400', 'line-through'] : ['text-gray-800']));
             const p = el.querySelector('p');
             p.innerHTML = metaHTML(t);
-            p.classList.add(t.done ? 'text-gray-400' : (t.date < todayISO() ? 'text-red-500' : 'text-gray-500'));
+            p.classList.add(t.done ? 'text-gray-400' : 'text-gray-500');
             // Cronômetro: play/pausa e, se já tem tempo na sessão, o botão parar
             const tm = el.querySelector('.task-timer');
             if (t.done) tm.remove();
@@ -4543,7 +4554,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             if (editingEl) {
                 const t = findTask(editingEl.dataset.id);
                 if (t) {
-                    t.name = name; t.priority = priority; t.tag = selectedTag; t.date = selectedDate;
+                    t.name = name; t.priority = priority; t.tag = selectedTag; t.date = selectedDate; t.hasDeadline = hasDeadline;
                     t.difficulty = difficulty; t.estimate = estimate; t.start = startISO; t.icon = taskIcon; t.timeStart = tS; t.timeEnd = tE; id = t.id;
                     // Preset carregado na edição só completa o que estiver vazio
                     if (p && !t.steps.length) t.steps = presetSteps();
@@ -4552,7 +4563,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             } else {
                 id = uid('t');
                 tasks.unshift({
-                    id, name, tag: selectedTag, priority, done: false, status: 'todo', date: selectedDate,
+                    id, name, tag: selectedTag, priority, done: false, status: 'todo', date: selectedDate, hasDeadline,
                     difficulty, dscale: 5, estimate, icon: taskIcon, start: startISO, timeStart: tS, timeEnd: tE, doneAt: '', spent: 0, cur: 0, since: null, log: [],
                     description: p && p.description ? textToRich(p.description) : '', links: [], steps: presetSteps(), thumb: ''
                 });
@@ -4971,19 +4982,18 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         function agendaRow(t, showDate = true) {
             const today = todayISO();
             const future = t.date > today;
-            const overdue = !t.done && t.date < today;
+            const overdue = !t.done && t.hasDeadline !== false && t.date < today;
             const moveLabel = future ? 'Trazer para hoje' : 'Adiar 1 dia';
             const sp = spanText(t);
             const si = spanInfo(t);
             return `
-                <div class="agenda-row" data-id="${esc(t.id)}" data-name="${esc(t.name.toLowerCase())}">
+                <div class="agenda-row${overdue && store.get(STORAGE_KEYS.overdueIndicators,[]).includes("stripe") ? " overdue-stripe" : ""}${overdue && store.get(STORAGE_KEYS.overdueIndicators,[]).includes("outline") ? " overdue-outline" : ""}" data-id="${esc(t.id)}" data-name="${esc(t.name.toLowerCase())}">
                     <input type="checkbox" class="cute-checkbox" data-act="toggle" ${t.done ? 'checked' : ''} aria-label="Concluir ${esc(t.name)}">
                     <div class="flex-1 min-w-0">
                         <p class="font-bold text-sm truncate ${t.done ? 'text-gray-400 line-through' : 'text-gray-800'}">${iconHTML(t.icon)}${esc(t.name)}</p>
-                        <p class="text-xs font-semibold ${overdue ? 'text-red-500' : 'text-gray-400'}">${showDate ? relLabel(t.date) + ' • ' : ''}${TAG_NAME[t.tag]} • ${PRIO[t.priority].label}</p>
+                        <p class="text-xs font-semibold text-gray-400">${showDate ? (t.hasDeadline === false ? 'Sem data limite' : relLabel(t.date)) + ' • ' : ''}${TAG_NAME[t.tag]} • ${PRIO[t.priority].label}${overdue && store.get(STORAGE_KEYS.overdueIndicators,[]).includes("label") ? ' • Atrasada' : ''}${overdue && store.get(STORAGE_KEYS.overdueIndicators,[]).includes("icon") ? ' <i class="fas fa-triangle-exclamation overdue-icon" aria-label="Atrasada"></i>' : ''}</p>
                         ${sp ? `<p class="span-note${si.saved ? ' is-saved' : si.late ? ' is-late' : ''}"><i class="fas ${si.saved ? 'fa-leaf' : 'fa-arrows-left-right'}"></i>${esc(sp)}</p>` : ''}
-                    </div>
-                    ${t.done ? '' : `
+                    </div>                    ${t.done ? '' : `
                     <button class="row-btn" data-act="move" aria-label="${moveLabel}" title="${moveLabel}"><i class="fas ${future ? 'fa-backward' : 'fa-forward'}"></i></button>
                     <button class="row-btn" data-act="focus" aria-label="Iniciar foco" title="Iniciar foco"><i class="fas fa-play"></i></button>`}
                 </div>`;
@@ -5982,8 +5992,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             } else if (w.type === 'countdown') {
                 const ti=document.getElementById('wd-countdown-title'),dt=document.getElementById('wd-countdown-date');
                 ti.addEventListener('input',()=>{w.title=ti.value.slice(0,60);saveWidgets();refresh();});
-                dt.addEventListener('change',()=>{w.date=isISO(dt.value)?dt.value:'';saveWidgets();refresh();});
-            } else if (w.type === 'quote') {
+                dt.addEventListener('change',()=>{w.date=isISO(dt.value)?dt.value:'';saveWidgets();refresh();});            } else if (w.type === 'quote') {
                 const tx = document.getElementById('wd-text'), au = document.getElementById('wd-author');
                 tx.addEventListener('input', () => { w.text = tx.value.slice(0, 240); refresh(); });
                 au.addEventListener('input', () => { w.author = au.value.slice(0, 60); refresh(); });
@@ -6162,6 +6171,60 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         }
 
         // --- Ajustes: aplicam na hora (sem botão Salvar, nada se perde ao fechar) ---
+        // Google Calendar: OAuth no navegador + importação somente leitura.
+        let googleAccessToken = '';
+        function googleConfig() { return store.get(STORAGE_KEYS.googleCalendar, {}) || {}; }
+        function loadGoogleIdentity() {
+            if (window.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
+            if (window.__aeroGoogleLoading) return window.__aeroGoogleLoading;
+            window.__aeroGoogleLoading = new Promise((resolve,reject)=>{
+                const sc=document.createElement('script'); sc.src='https://accounts.google.com/gsi/client'; sc.async=true; sc.defer=true;
+                sc.onload=resolve; sc.onerror=()=>reject(new Error('Não foi possível carregar o login do Google')); document.head.appendChild(sc);
+            });
+            return window.__aeroGoogleLoading;
+        }
+        async function googleAuthorize() {
+            const input=document.getElementById('google-client-id'), clientId=(input?.value||googleConfig().clientId||'').trim();
+            if(!clientId || !clientId.endsWith('.apps.googleusercontent.com')) { toast('Informe um OAuth Client ID válido'); input?.focus(); return false; }
+            store.set(STORAGE_KEYS.googleCalendar,{clientId,connected:false});
+            try {
+                await loadGoogleIdentity();
+                return await new Promise(resolve=>{
+                    const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.events.readonly',callback:response=>{
+                        if(response.error||!response.access_token){toast('Não foi possível conectar ao Google Calendar');resolve(false);return;}
+                        googleAccessToken=response.access_token;store.set(STORAGE_KEYS.googleCalendar,{clientId,connected:true});toast('Google Calendar conectado!');resolve(true);
+                    }});
+                    client.requestAccessToken({prompt:'consent'});
+                });
+            } catch(err) { toast(err.message||'Falha ao conectar ao Google'); return false; }
+        }
+        async function importGoogleEvents() {
+            if(!googleAccessToken && !(await googleAuthorize())) return;
+            try {
+                const now=new Date(), params=new URLSearchParams({timeMin:now.toISOString(),singleEvents:'true',orderBy:'startTime',maxResults:'2500'});
+                let nextPage='', imported=0, skipped=0;
+                do {
+                    if(nextPage) params.set('pageToken',nextPage); else params.delete('pageToken');
+                    const response=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?'+params.toString(),{headers:{Authorization:'Bearer '+googleAccessToken}});
+                    if(!response.ok) { if(response.status===401) googleAccessToken=''; throw new Error(response.status===401?'A autorização expirou. Conecte novamente.':'Falha ao consultar eventos do Google Calendar.'); }
+                    const data=await response.json();
+                    for(const ev of (data.items||[])) {
+                        if(ev.status==='cancelled'||!ev.summary||tasks.some(t=>t.googleEventId===ev.id)) { skipped++; continue; }
+                        const st=ev.start||{}, en=ev.end||{}, raw=st.dateTime||st.date;
+                        if(!raw) continue;
+                        const startDate=st.dateTime?new Date(st.dateTime):new Date(st.date+'T12:00:00');
+                        const date=[startDate.getFullYear(),String(startDate.getMonth()+1).padStart(2,'0'),String(startDate.getDate()).padStart(2,'0')].join('-');
+                        const endDate=en.dateTime?new Date(en.dateTime):null;
+                        const timeStart=st.dateTime?[String(startDate.getHours()).padStart(2,'0'),String(startDate.getMinutes()).padStart(2,'0')].join(':'):'';
+                        const timeEnd=endDate?[String(endDate.getHours()).padStart(2,'0'),String(endDate.getMinutes()).padStart(2,'0')].join(':'):'';
+                        tasks.unshift({id:uid('t'),name:String(ev.summary).slice(0,60),tag:'work',priority:1,done:false,status:'todo',date,hasDeadline:true,difficulty:0,dscale:5,estimate:0,icon:null,start:'',timeStart,timeEnd:timeStart&&timeEnd&&timeEnd>timeStart?timeEnd:'',doneAt:'',spent:0,cur:0,since:null,log:[],description:ev.description?textToRich(String(ev.description).slice(0,5000)):'',links:[],steps:[],thumb:'',googleEventId:ev.id,importedFromGoogle:true});
+                        imported++;
+                    }
+                    nextPage=data.nextPageToken||'';
+                } while(nextPage);
+                saveTasks();renderTasks();toast(imported+' evento(s) importado(s)'+(skipped?' • '+skipped+' ignorado(s)':''));
+            } catch(err) { toast(err.message||'Erro ao importar eventos'); }
+        }
         function renderProfile() {
             const seg = (key, opts, cur) => `<div class="seg" role="radiogroup">${opts.map(([v, label]) =>
                 `<button data-act="setting" data-key="${key}" data-value="${v}" class="${cur === v ? 'selected' : ''}" role="radio" aria-checked="${cur === v}">${label}</button>`).join('')}</div>`;
@@ -6219,6 +6282,19 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 <span class="modal-label mt-4">Sons</span>
                 ${seg('sound', [['on', '<i class="fas fa-volume-high mr-1"></i>Ligados'], ['off', '<i class="fas fa-volume-xmark mr-1"></i>Desligados']], soundOn ? 'on' : 'off')}
 
+                <span class="modal-label mt-6">Google Calendar</span>
+                <p class="text-xs text-gray-400 font-semibold mb-2">Importação unidirecional: eventos do Google viram tarefas no AeroSync. Nenhuma alteração será enviada de volta ao calendário.</p>
+                <label class="modal-label" for="google-client-id">Google OAuth Client ID</label>
+                <input id="google-client-id" class="task-input" autocomplete="off" spellcheck="false" placeholder="000000000000-xxxx.apps.googleusercontent.com" value="${esc((store.get(STORAGE_KEYS.googleCalendar,{})||{}).clientId||'')}">
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <button data-google="connect" class="pill-btn primary"><i class="fab fa-google mr-1"></i>Conectar</button>
+                    <button data-google="import" class="pill-btn ghost"><i class="fas fa-cloud-arrow-down mr-1"></i>Importar eventos</button>
+                </div>
+                <button data-google="disconnect" class="pill-btn ghost w-full mt-2">Desconectar Google Calendar</button>
+                <p class="text-xs text-gray-400 font-semibold mt-2">É necessário configurar um OAuth Client ID do tipo Web no Google Cloud e autorizar o domínio onde o AeroSync está publicado. O acesso solicitado é somente leitura.</p>
+                <span class="modal-label mt-6">Tarefas atrasadas</span>
+                <p class="text-xs text-gray-400 font-semibold mb-2">Indicadores com a cor do tema, compatíveis com os modos claro e escuro. Todos começam desligados.</p>
+                ${[['label','Etiqueta “Atrasada”'],['icon','Ícone de alerta'],['outline','Contorno da tarefa'],['stripe','Faixa lateral']].map(([v,l])=>`<label class="deadline-toggle"><input type="checkbox" data-overdue-pref="${v}" ${store.get(STORAGE_KEYS.overdueIndicators,[]).includes(v)?'checked':''}> <span>${l}</span></label>`).join('')}
                 <span class="modal-label mt-6">Backup</span>
                 <div class="grid grid-cols-2 gap-2">
                     <button data-act="export" class="pill-btn ghost"><i class="fas fa-download mr-1"></i>Exportar</button>
@@ -6261,6 +6337,20 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             });
         }
 
+        sheetBody.addEventListener('change', e => {
+            const pref=e.target.closest('[data-overdue-pref]');
+            if(!pref || currentView!=='profile') return;
+            const selected=store.get(STORAGE_KEYS.overdueIndicators,[]);
+            const next=pref.checked?[...new Set([...selected,pref.dataset.overduePref])]:selected.filter(x=>x!==pref.dataset.overduePref);
+            store.set(STORAGE_KEYS.overdueIndicators,next); renderTasks();
+        });
+        sheetBody.addEventListener('click', async e=>{
+            const b=e.target.closest('[data-google]'); if(!b||currentView!=='profile') return;
+            const action=b.dataset.google;
+            if(action==='connect') await googleAuthorize();
+            else if(action==='import') await importGoogleEvents();
+            else if(action==='disconnect') { googleAccessToken='';store.set(STORAGE_KEYS.googleCalendar,{clientId:googleConfig().clientId||'',connected:false});toast('Google Calendar desconectado');renderSheet(); }
+        });
         function handleProfileAction(act, data = {}) {
             if (act === 'setting') {
                 if (data.key === 'sound') {
@@ -6901,8 +6991,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             if (now) { hubSaveTimer = null; saveTasks(); }
             else hubSaveTimer = setTimeout(() => { hubSaveTimer = null; saveTasks(); }, 250);
             renderTasks();
-            if (rerenderHub) renderHub();
-        }
+            if (rerenderHub) renderHub();        }
 
         function hubStepsHTML(t) {
             if (!t.steps.length) return emptyMsg('Quebre a missão em passos pequenos.');
@@ -6957,6 +7046,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     <button data-hub="icon" class="icon-pick-btn lg${t.icon ? ' has-icon' : ''}" aria-label="${t.icon ? 'Trocar ícone' : 'Escolher ícone'}" title="Ícone">${iconBtnHTML(t.icon)}</button>
                     <input id="hub-title" class="hub-title" maxlength="60" autocomplete="off" value="${esc(t.name)}" aria-label="Título da missão">
                 </div>
+                ${t.importedFromGoogle ? '<p class="text-xs font-bold mt-2" style="color:var(--accent)"><i class="fab fa-google mr-1"></i>Importada do Google Calendar</p>' : ''}
                 <div class="hub-tags" role="radiogroup" aria-label="Tag">
                     ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${t.tag === tag ? ' selected' : ''}" data-hub="tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${t.tag === tag}">${categoryIconHTML(tag,'mr-1')}${TAG_NAME[tag]}</button>`).join('')}
                 </div>
@@ -6973,7 +7063,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     </div>
                     <div>
                         <label class="modal-label" for="hub-date">Prazo</label>
-                        <input id="hub-date" type="date" class="date-input" value="${esc(t.date)}">
+                        <label class="deadline-toggle"><input id="hub-no-deadline" type="checkbox" ${t.hasDeadline===false?'checked':''}> <span>Sem data limite</span></label>
+                        <input id="hub-date" type="date" class="date-input" value="${esc(t.date)}" ${t.hasDeadline===false?'disabled':''}>
                     </div>
                     <div>
                         <label class="modal-label" for="hub-tstart">Horário de início</label>
@@ -7052,8 +7143,10 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 if (!ti.value.trim()) { ti.value = t.name; ti.classList.remove('shake'); void ti.offsetWidth; ti.classList.add('shake'); }
             });
             const di = document.getElementById('hub-date');
+            const hnd = document.getElementById('hub-no-deadline');
+            hnd.addEventListener('change',()=>{t.hasDeadline=!hnd.checked;di.disabled=!t.hasDeadline;hubChanged(true);playClick();});
             di.addEventListener('change', () => {
-                if (isISO(di.value)) { t.date = di.value; fixSpan(t); hubChanged(true); playClick(); } else di.value = t.date;
+                if (isISO(di.value)) { t.date = di.value; t.hasDeadline=true; hnd.checked=false; fixSpan(t); hubChanged(true); playClick(); } else di.value = t.date;
             });
             const hts = document.getElementById('hub-tstart'), hte = document.getElementById('hub-tend');
             hts.addEventListener('change', () => {
@@ -7897,8 +7990,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         const widgetMoney=v=>(Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
         function widgetBodyHTML(w) {
             if(['balance','budget','bills','categories'].includes(w.type)){const d=financeWidgetSnapshot(),pct=d.income>0?Math.min(100,Math.max(0,d.spent/d.income*100)):0;
-                if(w.type==='balance')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-wallet"></i> SALDO QUE PODE SER GASTO</div><strong class="wf-value">${widgetMoney(d.available)}</strong><div class="wf-foot">Saldo e entradas menos gastos e contas reservadas</div></div>`;
-                if(w.type==='budget')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-chart-pie"></i> ORÇAMENTO DO MÊS</div><strong class="wf-value">${widgetMoney(d.spent)}</strong><div class="wf-foot">de ${widgetMoney(d.income)} considerados</div><div class="wf-track"><i style="width:${pct}%"></i></div><div class="wf-mini"><span>${Math.round(pct)}% utilizado</span><b>${widgetMoney(d.income-d.spent)} restantes</b></div></div>`;
+                if(w.type==='balance')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-wallet"></i> SALDO QUE PODE SER GASTO</div><strong class="wf-value">${widgetMoney(d.available)}</strong><div class="wf-foot">Saldo e entradas menos gastos e contas reservadas</div></div>`;                if(w.type==='budget')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-chart-pie"></i> ORÇAMENTO DO MÊS</div><strong class="wf-value">${widgetMoney(d.spent)}</strong><div class="wf-foot">de ${widgetMoney(d.income)} considerados</div><div class="wf-track"><i style="width:${pct}%"></i></div><div class="wf-mini"><span>${Math.round(pct)}% utilizado</span><b>${widgetMoney(d.income-d.spent)} restantes</b></div></div>`;
                 if(w.type==='bills')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-calendar-check"></i> PRÓXIMAS CONTAS</div>${d.bills.length?d.bills.map(b=>`<div class="wf-row"><span><b>${esc(b.name)}</b><small>${b.diff===0?'Vence hoje':'Em '+b.diff+' dias'}</small></span><strong>${widgetMoney(b.amount)}</strong></div>`).join(''):'<div class="wf-empty">Nenhuma conta recorrente pendente.</div>'}</div>`;
                 return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-chart-column"></i> GASTOS POR CATEGORIA</div>${d.categories.length?d.categories.map(c=>`<div class="wf-cat"><span><i style="background:${esc(c.color)}"></i>${esc(c.name)}</span><b>${widgetMoney(c.total)}</b></div>`).join(''):'<div class="wf-empty">Seus gastos aparecerão aqui.</div>'}</div>`;
             }
@@ -8897,8 +8989,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                     if (newDate !== '') {
                         exp.purchaseDate = newDate;
                         exp.date = newDate;
-                    }
-                }
+                    }                }
             });
 
             selectedExpenseGroupIds.clear();
@@ -9897,8 +9988,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             renderFin();
         } else if (act === 'toggle-card-active') {
             const cid = btn.closest('[data-cid]').dataset.cid;
-            const c = fin.cards.find(x => x.id === cid);
-            if (c) { c.active = !c.active; saveFin(); renderFin(); }
+            const c = fin.cards.find(x => x.id === cid);            if (c) { c.active = !c.active; saveFin(); renderFin(); }
         } else if (act === 'cards-all-on') {
             fin.cards.forEach(c => c.active = true);
             saveFin(); renderFin();
