@@ -2,7 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#FFF8FB">
+    <meta name="aero-build" content="2026111201">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
     <script>try{var a=JSON.parse(localStorage.getItem('aerosync.appearance')||'{}')||{};var dk=a.mode==='dark'||(a.mode!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(dk)document.documentElement.classList.add('dark');if(a.style==='simple')document.documentElement.setAttribute('data-style','simple');if(a.glass==='soft'||a.glass==='full')document.documentElement.setAttribute('data-glass',a.glass);
     /* tema salvo: aplica as cores antes de desenhar */var th=JSON.parse(localStorage.getItem('aerosync.theme')||'null');if(th&&th.id){var st=document.documentElement.style,ok=function(c){return typeof c==='string'&&/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c)};[['--theme-accent','accent'],['--theme-accent-2','accent2'],['--theme-soft','soft'],['--theme-glow','glow'],['--on-accent','on'],['--surface','surface'],['--page','page'],['--user-icon-color','iconColor']].forEach(function(k){if(ok(th[k[1]]))st.setProperty(k[0],th[k[1]])});}}catch(e){}</script>
@@ -250,8 +254,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         /* Base e Tipografia */
         html, body {
-            height: 100%;
-            max-height: 100vh;
+            width: 100%; height: 100%;
+            max-height: 100vh; max-height: 100dvh;
             overflow: hidden;
             overscroll-behavior: none;
             -webkit-overflow-scrolling: touch;
@@ -261,8 +265,8 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             font-family: 'Nunito', sans-serif;
             background-color: var(--page);
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: stretch;
+            align-items: stretch;
             margin: 0;
             /* Um padrão de fundo sutil de pontilhados para dar cara de console */
             background-image: radial-gradient(#d1d5db 1px, transparent 1px);
@@ -271,17 +275,12 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
         /* O "Aparelho" Mobile */
         .mobile-frame {
-            width: 100%;
-            max-width: 414px;
-            height: 896px;
-            max-height: 100vh;
+            width: 100%; max-width: none;
+            height: 100vh; height: 100dvh; max-height: none; min-height: 0;
             background-color: var(--surface);
-            border-radius: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 0 0 8px #e2e8f0;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
+            border-radius: 0; box-shadow: none;
+            overflow: hidden; position: relative;
+            display: flex; flex-direction: column;
         }
 
         /* Ocultar barra de rolagem */
@@ -2394,6 +2393,36 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .fin-meta input, .fin-mk input { width: 100%; }
         @media (prefers-reduced-motion: reduce) { .fin-ring .prog, .fin-bars i, #fin-modal, #fin-modal .acrylic-card { transition: none; } }
     </style>
+
+<style id="aerosync-responsive-pwa">
+/* AeroSync: viewport responsiva em celular, tablet e desktop */
+html, body { width:100%; min-width:0; height:100%; min-height:100%; }
+body { align-items:stretch !important; justify-content:stretch !important; background:var(--surface) !important; }
+.mobile-frame { width:100vw !important; max-width:none !important; height:100vh !important; height:100dvh !important; max-height:none !important; min-height:0 !important; border-radius:0 !important; box-shadow:none !important; }
+@supports (padding: max(0px)) {
+  .mobile-frame { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+}
+@media (min-width:700px) {
+  .mobile-frame { width:100vw !important; max-width:none !important; }
+}
+@media (max-width:500px) {
+  .mobile-frame { border-radius:0 !important; }
+}
+#aero-update-overlay { position:fixed; inset:0; z-index:2147483000; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(20,18,28,.38); backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px); }
+#aero-update-overlay.visible { display:flex; }
+#aero-update-card { width:min(100%,420px); padding:22px; border-radius:26px; background:var(--surface,#fff); color:var(--text,#29212a); border:1px solid color-mix(in srgb,var(--accent,#e879a9) 18%,transparent); box-shadow:0 24px 70px rgba(0,0,0,.22); }
+#aero-update-card h2 { margin:0 34px 8px 0; font-size:19px; font-weight:900; }
+#aero-update-card p { margin:0 0 18px; font-size:13px; line-height:1.5; opacity:.76; }
+#aero-update-actions { display:flex; gap:9px; }
+#aero-update-actions button { flex:1; min-height:44px; border-radius:15px; font-weight:850; font-size:13px; }
+#aero-update-now { background:var(--accent,#e879a9); color:var(--on-accent,#fff); }
+#aero-update-later { background:color-mix(in srgb,var(--accent,#e879a9) 10%,var(--surface,#fff)); color:inherit; }
+#aero-update-close { position:absolute; top:15px; right:15px; border:0; background:transparent; color:inherit; font-size:20px; padding:6px 10px; }
+#aero-update-pill { position:fixed; right: max(14px,env(safe-area-inset-right)); bottom: max(16px,env(safe-area-inset-bottom)); z-index:2147482999; display:none; align-items:center; gap:8px; padding:10px 14px; border-radius:999px; border:1px solid color-mix(in srgb,var(--accent,#e879a9) 25%,transparent); background:var(--surface,#fff); color:var(--text,#29212a); box-shadow:0 8px 28px rgba(0,0,0,.16); font-size:12px; font-weight:900; }
+#aero-update-pill.visible { display:flex; }
+#aero-update-pill .aero-update-dot { width:8px; height:8px; border-radius:50%; background:var(--accent,#e879a9); }
+@media (prefers-reduced-motion:reduce) { #aero-update-overlay,#aero-update-pill { transition:none !important; } }
+</style>
 </head>
 <body>
 
@@ -2984,7 +3013,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             finance: 'aerosync.finance', // Finanças (gastos e categorias) — separado das tarefas
             fundo: 'aerosync.fundo', // fundo suave do app
             pet: 'aerosync.pet', // AeroPets: um único pet
-            categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors', overdueIndicators: 'aerosync.overdueIndicators', googleCalendar: 'aerosync.googleCalendar' // categorias personalizadas e paleta de ícones
+            categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors', overdueIndicators: 'aerosync.overdueIndicators' // categorias personalizadas e paleta de ícones
         };
         // try/catch: em aba anônima ou com storage bloqueado o app continua funcionando
         const store = {
@@ -6171,60 +6200,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         }
 
         // --- Ajustes: aplicam na hora (sem botão Salvar, nada se perde ao fechar) ---
-        // Google Calendar: OAuth no navegador + importação somente leitura.
-        let googleAccessToken = '';
-        function googleConfig() { return store.get(STORAGE_KEYS.googleCalendar, {}) || {}; }
-        function loadGoogleIdentity() {
-            if (window.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
-            if (window.__aeroGoogleLoading) return window.__aeroGoogleLoading;
-            window.__aeroGoogleLoading = new Promise((resolve,reject)=>{
-                const sc=document.createElement('script'); sc.src='https://accounts.google.com/gsi/client'; sc.async=true; sc.defer=true;
-                sc.onload=resolve; sc.onerror=()=>reject(new Error('Não foi possível carregar o login do Google')); document.head.appendChild(sc);
-            });
-            return window.__aeroGoogleLoading;
-        }
-        async function googleAuthorize() {
-            const input=document.getElementById('google-client-id'), clientId=(input?.value||googleConfig().clientId||'').trim();
-            if(!clientId || !clientId.endsWith('.apps.googleusercontent.com')) { toast('Informe um OAuth Client ID válido'); input?.focus(); return false; }
-            store.set(STORAGE_KEYS.googleCalendar,{clientId,connected:false});
-            try {
-                await loadGoogleIdentity();
-                return await new Promise(resolve=>{
-                    const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.events.readonly',callback:response=>{
-                        if(response.error||!response.access_token){toast('Não foi possível conectar ao Google Calendar');resolve(false);return;}
-                        googleAccessToken=response.access_token;store.set(STORAGE_KEYS.googleCalendar,{clientId,connected:true});toast('Google Calendar conectado!');resolve(true);
-                    }});
-                    client.requestAccessToken({prompt:'consent'});
-                });
-            } catch(err) { toast(err.message||'Falha ao conectar ao Google'); return false; }
-        }
-        async function importGoogleEvents() {
-            if(!googleAccessToken && !(await googleAuthorize())) return;
-            try {
-                const now=new Date(), params=new URLSearchParams({timeMin:now.toISOString(),singleEvents:'true',orderBy:'startTime',maxResults:'2500'});
-                let nextPage='', imported=0, skipped=0;
-                do {
-                    if(nextPage) params.set('pageToken',nextPage); else params.delete('pageToken');
-                    const response=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?'+params.toString(),{headers:{Authorization:'Bearer '+googleAccessToken}});
-                    if(!response.ok) { if(response.status===401) googleAccessToken=''; throw new Error(response.status===401?'A autorização expirou. Conecte novamente.':'Falha ao consultar eventos do Google Calendar.'); }
-                    const data=await response.json();
-                    for(const ev of (data.items||[])) {
-                        if(ev.status==='cancelled'||!ev.summary||tasks.some(t=>t.googleEventId===ev.id)) { skipped++; continue; }
-                        const st=ev.start||{}, en=ev.end||{}, raw=st.dateTime||st.date;
-                        if(!raw) continue;
-                        const startDate=st.dateTime?new Date(st.dateTime):new Date(st.date+'T12:00:00');
-                        const date=[startDate.getFullYear(),String(startDate.getMonth()+1).padStart(2,'0'),String(startDate.getDate()).padStart(2,'0')].join('-');
-                        const endDate=en.dateTime?new Date(en.dateTime):null;
-                        const timeStart=st.dateTime?[String(startDate.getHours()).padStart(2,'0'),String(startDate.getMinutes()).padStart(2,'0')].join(':'):'';
-                        const timeEnd=endDate?[String(endDate.getHours()).padStart(2,'0'),String(endDate.getMinutes()).padStart(2,'0')].join(':'):'';
-                        tasks.unshift({id:uid('t'),name:String(ev.summary).slice(0,60),tag:'work',priority:1,done:false,status:'todo',date,hasDeadline:true,difficulty:0,dscale:5,estimate:0,icon:null,start:'',timeStart,timeEnd:timeStart&&timeEnd&&timeEnd>timeStart?timeEnd:'',doneAt:'',spent:0,cur:0,since:null,log:[],description:ev.description?textToRich(String(ev.description).slice(0,5000)):'',links:[],steps:[],thumb:'',googleEventId:ev.id,importedFromGoogle:true});
-                        imported++;
-                    }
-                    nextPage=data.nextPageToken||'';
-                } while(nextPage);
-                saveTasks();renderTasks();toast(imported+' evento(s) importado(s)'+(skipped?' • '+skipped+' ignorado(s)':''));
-            } catch(err) { toast(err.message||'Erro ao importar eventos'); }
-        }
+        // Integração Google Calendar pausada temporariamente.
         function renderProfile() {
             const seg = (key, opts, cur) => `<div class="seg" role="radiogroup">${opts.map(([v, label]) =>
                 `<button data-act="setting" data-key="${key}" data-value="${v}" class="${cur === v ? 'selected' : ''}" role="radio" aria-checked="${cur === v}">${label}</button>`).join('')}</div>`;
@@ -6282,16 +6258,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 <span class="modal-label mt-4">Sons</span>
                 ${seg('sound', [['on', '<i class="fas fa-volume-high mr-1"></i>Ligados'], ['off', '<i class="fas fa-volume-xmark mr-1"></i>Desligados']], soundOn ? 'on' : 'off')}
 
-                <span class="modal-label mt-6">Google Calendar</span>
-                <p class="text-xs text-gray-400 font-semibold mb-2">Importação unidirecional: eventos do Google viram tarefas no AeroSync. Nenhuma alteração será enviada de volta ao calendário.</p>
-                <label class="modal-label" for="google-client-id">Google OAuth Client ID</label>
-                <input id="google-client-id" class="task-input" autocomplete="off" spellcheck="false" placeholder="000000000000-xxxx.apps.googleusercontent.com" value="${esc((store.get(STORAGE_KEYS.googleCalendar,{})||{}).clientId||'')}">
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <button data-google="connect" class="pill-btn primary"><i class="fab fa-google mr-1"></i>Conectar</button>
-                    <button data-google="import" class="pill-btn ghost"><i class="fas fa-cloud-arrow-down mr-1"></i>Importar eventos</button>
-                </div>
-                <button data-google="disconnect" class="pill-btn ghost w-full mt-2">Desconectar Google Calendar</button>
-                <p class="text-xs text-gray-400 font-semibold mt-2">É necessário configurar um OAuth Client ID do tipo Web no Google Cloud e autorizar o domínio onde o AeroSync está publicado. O acesso solicitado é somente leitura.</p>
                 <span class="modal-label mt-6">Tarefas atrasadas</span>
                 <p class="text-xs text-gray-400 font-semibold mb-2">Indicadores com a cor do tema, compatíveis com os modos claro e escuro. Todos começam desligados.</p>
                 ${[['label','Etiqueta “Atrasada”'],['icon','Ícone de alerta'],['outline','Contorno da tarefa'],['stripe','Faixa lateral']].map(([v,l])=>`<label class="deadline-toggle"><input type="checkbox" data-overdue-pref="${v}" ${store.get(STORAGE_KEYS.overdueIndicators,[]).includes(v)?'checked':''}> <span>${l}</span></label>`).join('')}
@@ -6343,13 +6309,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             const selected=store.get(STORAGE_KEYS.overdueIndicators,[]);
             const next=pref.checked?[...new Set([...selected,pref.dataset.overduePref])]:selected.filter(x=>x!==pref.dataset.overduePref);
             store.set(STORAGE_KEYS.overdueIndicators,next); renderTasks();
-        });
-        sheetBody.addEventListener('click', async e=>{
-            const b=e.target.closest('[data-google]'); if(!b||currentView!=='profile') return;
-            const action=b.dataset.google;
-            if(action==='connect') await googleAuthorize();
-            else if(action==='import') await importGoogleEvents();
-            else if(action==='disconnect') { googleAccessToken='';store.set(STORAGE_KEYS.googleCalendar,{clientId:googleConfig().clientId||'',connected:false});toast('Google Calendar desconectado');renderSheet(); }
         });
         function handleProfileAction(act, data = {}) {
             if (act === 'setting') {
@@ -6783,15 +6742,13 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                         </div>
                     </div>
 
-                    <!-- Botão de Atualização do App (GitHub Pages) -->
+                    <!-- Instalação e atualização do AeroSync -->
                     <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
                         <h3 class="modal-label mb-2">Versão & Sistema</h3>
-                        <button type="button" id="btn-force-update" class="btn-update-app">
-                            <i class="fas fa-rotate"></i>Buscar Atualizações do GitHub
-                        </button>
-                        <p class="text-[10px] font-semibold text-gray-400 mt-1.5 text-center">
-                            Recarrega o app limpando o cache para refletir novidades do repositório.
-                        </p>
+                        <button type="button" id="btn-install-app" class="btn-update-app"><i class="fas fa-download"></i>Instalar AeroSync</button>
+                        <button type="button" id="btn-check-updates" class="btn-update-app mt-2"><i class="fas fa-rotate"></i>Verificar atualizações</button>
+                        <p id="app-version-label" class="text-[10px] font-semibold text-gray-400 mt-1.5 text-center">Atualizações automáticas pelo GitHub.</p>
+                        <p class="text-[10px] font-semibold text-gray-400 mt-1 text-center">No Chrome, também é possível instalar pelo menu ⋮ → Instalar aplicativo.</p>
                     </div>
                 </div>
             `);
@@ -6848,38 +6805,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
                 const l = document.getElementById('lbl-bg-vignette'); if (l) l.textContent = bgVignette + '%';
                 applyFundo();
             }
-        });
-
-        // Ação do Botão de Atualização do GitHub
-        document.addEventListener('click', async (e) => {
-            const btn = e.target.closest('#btn-force-update');
-            if (!btn) return;
-
-            const icon = btn.querySelector('i');
-            if (icon) icon.classList.add('fa-spin');
-            btn.style.opacity = '0.7';
-            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Buscando atualizações...';
-
-            if ('caches' in window) {
-                try {
-                    const keys = await caches.keys();
-                    await Promise.all(keys.map(k => caches.delete(k)));
-                } catch (err) {}
-            }
-
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    for (const reg of registrations) {
-                        await reg.update();
-                    }
-                } catch (err) {}
-            }
-
-            setTimeout(() => {
-                const cleanUrl = window.location.origin + window.location.pathname;
-                window.location.href = cleanUrl + '?v=' + Date.now();
-            }, 600);
         });
 
         // Eventos dentro do painel (delegação)
@@ -10141,5 +10066,80 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 <!-- ==================== FIM DO MÓDULO DE FINANÇAS V6 ==================== -->
     </div> <!-- fecha .mobile-frame contendo todas as telas, modais e folhas -->
 
+
+<script id="aerosync-pwa-runtime">
+(function(){
+  'use strict';
+  const BUILD = Number(document.querySelector('meta[name="aero-build"]')?.content || 0);
+  const VERSION_URL = './version.json';
+  const DISMISSED_KEY = 'aerosync.update.dismissedBuild';
+  let latestBuild = 0, installPrompt = null, updateDialogShown = false;
+  function ensureUpdateUI(){
+    if(document.getElementById('aero-update-overlay')) return;
+    const overlay=document.createElement('div'); overlay.id='aero-update-overlay'; overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true'); overlay.setAttribute('aria-labelledby','aero-update-title');
+    overlay.innerHTML='<section id="aero-update-card" style="position:relative"><button id="aero-update-close" type="button" aria-label="Fechar">×</button><h2 id="aero-update-title">Uma atualização chegou! ✨</h2><p id="aero-update-copy">Há uma versão nova do AeroSync disponível. Atualize quando for conveniente.</p><div id="aero-update-actions"><button id="aero-update-later" type="button">Mais tarde</button><button id="aero-update-now" type="button">Atualizar agora</button></div></section>';
+    const pill=document.createElement('button'); pill.id='aero-update-pill'; pill.type='button'; pill.innerHTML='<span class="aero-update-dot"></span> Atualização disponível';
+    document.body.append(overlay,pill);
+    const dismiss=()=>{overlay.classList.remove('visible');pill.classList.add('visible');updateDialogShown=false;try{localStorage.setItem(DISMISSED_KEY,String(latestBuild));}catch(e){}};
+    overlay.querySelector('#aero-update-later').addEventListener('click',dismiss);
+    overlay.querySelector('#aero-update-close').addEventListener('click',dismiss);
+    pill.addEventListener('click',()=>{overlay.classList.add('visible');pill.classList.remove('visible');updateDialogShown=true;});
+    overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss();});
+    overlay.querySelector('#aero-update-now').addEventListener('click',async()=>{
+      const b=overlay.querySelector('#aero-update-now'); b.disabled=true; b.textContent='Atualizando…';
+      try { if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration('./');if(reg)await reg.update();} } catch(e){}
+      const url=new URL(location.href);url.searchParams.set('v',String(Date.now()));location.replace(url.toString());
+    });
+  }
+  function showUpdate(build){
+    latestBuild=build;ensureUpdateUI();
+    const pill=document.getElementById('aero-update-pill'),overlay=document.getElementById('aero-update-overlay');
+    const dismissed=(()=>{try{return localStorage.getItem(DISMISSED_KEY)===String(build);}catch(e){return false;}})();
+    if(dismissed){pill.classList.add('visible');return;}
+    pill.classList.remove('visible');
+    if(!updateDialogShown){overlay.classList.add('visible');updateDialogShown=true;}
+  }
+  async function checkForUpdate(manual){
+    try{
+      const url=VERSION_URL+'?t='+Date.now();
+      const response=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+      if(!response.ok)throw new Error('Não foi possível consultar a versão publicada.');
+      const data=await response.json(), remote=Number(data.build||0);
+      if(remote>BUILD){showUpdate(remote);return true;}
+      if(manual && typeof window.toast==='function')window.toast('Você já está usando a versão mais recente ♡');
+      return false;
+    }catch(err){if(manual&&typeof window.toast==='function')window.toast('Não foi possível verificar atualizações agora.');return false;}
+  }
+  window.addEventListener('beforeinstallprompt',event=>{
+    event.preventDefault();installPrompt=event;
+    const btn=document.getElementById('btn-install-app');if(btn){btn.style.display='flex';btn.innerHTML='<i class="fas fa-download"></i>Instalar AeroSync';}
+  });
+  window.addEventListener('appinstalled',()=>{
+    installPrompt=null;const btn=document.getElementById('btn-install-app');if(btn){btn.style.display='none';}
+    if(typeof window.toast==='function')window.toast('AeroSync instalado com sucesso! ♡');
+  });
+  document.addEventListener('click',async event=>{
+    const install=event.target.closest('#btn-install-app');
+    if(install){
+      if(installPrompt){installPrompt.prompt();const choice=await installPrompt.userChoice;installPrompt=null;if(choice?.outcome==='accepted')install.style.display='none';}
+      else if(typeof window.toast==='function')window.toast('No Chrome: abra o menu ⋮ e escolha “Instalar aplicativo”.');
+      return;
+    }
+    const check=event.target.closest('#btn-check-updates');
+    if(check){check.disabled=true;const old=check.innerHTML;check.innerHTML='<i class="fas fa-rotate fa-spin"></i>Verificando…';await checkForUpdate(true);check.disabled=false;check.innerHTML=old;}
+  });
+  function registerSW(){
+    if(!('serviceWorker' in navigator))return;
+    navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{});
+  }
+  ensureUpdateUI();
+  registerSW();
+  checkForUpdate(false);
+  setInterval(()=>{if(document.visibilityState==='visible')checkForUpdate(false);},10*60*1000);
+  window.addEventListener('focus',()=>checkForUpdate(false));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForUpdate(false);});
+  window.addEventListener('online',()=>checkForUpdate(false));
+})();
+</script>
 </body>
 </html>
