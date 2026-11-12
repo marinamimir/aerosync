@@ -3500,11 +3500,22 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         applyProfile();
 
         // 0. BOOT SCREEN + SONS (Web Audio API, sem arquivos externos)
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        const audio = AudioCtx ? new AudioCtx() : null;
-        // Volume geral: todos os sons passam por aqui (permite desligar os sons nos Ajustes)
-        const master = audio ? audio.createGain() : null;
-        if (master) master.connect(audio.destination);
+        // Áudio é opcional: falhas de suporte/inicialização nunca podem interromper o boot.
+        let audio = null;
+        let master = null;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                audio = new AudioCtx();
+                master = audio.createGain();
+                master.connect(audio.destination);
+            }
+        } catch (err) {
+            console.warn('[AeroSync] Áudio indisponível; iniciando sem efeitos sonoros.', err);
+            try { if (audio && audio.state !== 'closed') audio.close(); } catch (_) {}
+            audio = null;
+            master = null;
+        }
         function applySound() { if (master) master.gain.value = soundOn ? 1 : 0; }
         applySound();
 
