@@ -1,6 +1,6 @@
 {
-  "version": "2026.11.12.10",
-  "build": 2026111210,
+  "version": "2026.11.12.11",
+  "build": 2026111211,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
     "Proteção adicional para preferências locais ausentes ou inválidas na inicialização da dashboard.",
@@ -12,6 +12,7 @@
     "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
     "Novo Overview financeiro com indicadores e gráficos configuráveis e atalho discreto para registrar compras.",
     "Galeria de widgets organizada por áreas: Vida pessoal, Finanças, Produtividade e Decoração.",
-    "Cadernos para organizar publicações e notas em formato de blog, com editor rico, títulos, listas, citações e cores."
+    "Cadernos para organizar publicações e notas em formato de blog, com editor rico, títulos, listas, citações e cores.",
+    "Atualização da versão publicada para detectar corretamente alterações recentes do app instalado, incluindo os ajustes de redimensionamento dos widgets."
   ]
 }
