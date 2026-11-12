@@ -135,15 +135,15 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         /* ===== Variáveis de Tema (alteradas pelo Onboarding) ===== */
         :root {
             /* Cores do TEMA (o JS troca pela paleta escolhida; padrão = Rosa) */
-            --theme-accent: #F06AAE;    /* cor principal: botões, destaques */
-            --theme-accent-2: #FFC2E0;  /* segunda cor (gradientes) */
-            --theme-soft: #FFEAF4;      /* fundo suave das pílulas */
-            --theme-glow: rgba(240, 106, 174, 0.35);
+            --theme-accent: #7484A0;    /* base neutra até a pessoa escolher */
+            --theme-accent-2: #C3CCDA;
+            --theme-soft: #EDF0F5;
+            --theme-glow: rgba(116, 132, 160, 0.30);
             --on-accent: #ffffff;       /* texto em cima da cor principal (escuro nas cores bem claras) */
             --theme-icon: color-mix(in srgb, var(--theme-accent) 88%, #1f2937); /* ícones */
             --theme-icon-2: var(--theme-accent-2);
-            --surface: #FFF8FB;         /* fundo do app */
-            --page: #FDEAF3;            /* fundo atrás do "aparelho" */
+            --surface: #FAFBFD;         /* superfície neutra */
+            --page: #E7EBF1;            /* fundo neutro */
             --accent: var(--theme-accent);
             --accent-2: var(--theme-accent-2);
             --accent-glow: var(--theme-glow);
@@ -193,7 +193,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .boot-logo {
             width: 96px; height: 96px;
             border-radius: 30px;
-            background: linear-gradient(135deg, #f9a8d4, #c4b5fd 50%, #67e8f9);
+            background: linear-gradient(135deg, #aeb8c8, #7484a0 52%, #d2d8e2);
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-size: 2.6rem;
             position: relative; overflow: hidden;
@@ -2442,11 +2442,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
             <!-- Etapa 2: onboarding de cor -->
             <div class="boot-stage stage-wait" id="boot-theme-stage">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bem-vinda!</p>
-                <h2 class="text-2xl font-extrabold text-gray-800 mb-1">Escolha seu tema</h2>
-                <p class="text-sm text-gray-500 font-semibold mb-10">Ele vai colorir todo o seu console</p>
-                <!-- Botões criados pelo JS a partir do THEME_PALETTES -->
-                <div id="theme-choices" class="theme-choices"></div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bem-vinda ao seu espaço</p>
+                <h2 class="text-2xl font-extrabold text-gray-800 mb-1">Seu AeroSync, suas escolhas.</h2>
+                <p class="text-sm text-gray-500 font-semibold mb-7">Comece com uma tela neutra. Você escolhe as cores, widgets e detalhes quando quiser.</p>
+                <button id="boot-start-btn" class="pill-btn primary px-6 py-3">Começar a organizar <i class="fas fa-arrow-right ml-1"></i></button>
             </div>
         </div>
 
@@ -3811,45 +3810,27 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         const logoStage = document.getElementById('boot-logo-stage');
         const themeStage = document.getElementById('boot-theme-stage');
 
-        // Botões da Boot Screen montados a partir das paletas
+        // Primeiro acesso: começa neutro e não salva um tema por conta da pessoa.
         const themeChoices = document.getElementById('theme-choices');
-        themeChoices.innerHTML = THEMES.map(p => `
-            <div class="theme-choice">
-                <button class="theme-btn" data-id="${p.id}" aria-label="Tema ${p.name.replace(/"/g, '')}" style="${paletteDot(p)}"></button>
-                <span>${p.name.replace(/[<>&"]/g, '')}</span>
-            </div>`).join('');
-
-        // Após 2s: logo sai, onboarding entra
-        setTimeout(() => {
-            logoStage.classList.add('stage-out');
-            themeStage.classList.remove('stage-wait');
-        }, 2000);
-
-        let themePicked = false;
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (themePicked) return;
-                themePicked = true;
-                if (audio) audio.resume().then(playClick).catch(() => {});
-                applyTheme(THEMES.find(p => p.id === btn.dataset.id) || THEMES[0]);
-                saveTheme(); // próxima visita pula a Boot Screen
-                btn.classList.add('picked');
-                // Pequena pausa para ver o feedback, depois fade-out revelando o dashboard
-                setTimeout(() => bootScreen.classList.add('boot-hide'), 350);
-                setTimeout(() => bootScreen.remove(), 1100);
-            });
-        });
-
-        // Já escolheu a cor antes? Aplica e pula direto para o dashboard
         const restoredTheme = themeFrom(savedTheme);
+        let themePicked = !!restoredTheme;
         if (restoredTheme) {
             applyTheme(restoredTheme);
-            if (savedTheme.id !== restoredTheme.id || savedTheme.accent !== restoredTheme.accent || !savedTheme.on) saveTheme(); // tema de versão antiga: grava no formato novo
-            themePicked = true;
+            if (savedTheme.id !== restoredTheme.id || savedTheme.accent !== restoredTheme.accent || !savedTheme.on) saveTheme();
             bootScreen.remove();
         } else {
-            applyTheme(THEMES[0]); // a Boot Screen já aparece com a 1ª paleta
-            currentTheme = null;   // ...mas ainda não foi escolhida
+            const neutralTheme = THEMES.find(p => p.id === 'grafite') || {
+                id:'grafite',name:'Grafite',accent:'#7484A0',accent2:'#C3CCDA',
+                soft:'#EDF0F5',surface:'#FAFBFD',page:'#E7EBF1',glow:'rgba(116,132,160,0.30)',on:'#FFFFFF'
+            };
+            applyTheme(neutralTheme);
+            currentTheme = null;
+            setTimeout(() => { logoStage.classList.add('stage-out'); themeStage.classList.remove('stage-wait'); }, 1500);
+            document.getElementById('boot-start-btn')?.addEventListener('click', () => {
+                if (audio) audio.resume().then(playClick).catch(() => {});
+                bootScreen.classList.add('boot-hide');
+                setTimeout(() => bootScreen.remove(), 700);
+            });
         }
 
         // 1. Relógio do Sistema
@@ -7845,11 +7826,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         const rawWidgets = store.get(STORAGE_KEYS.widgets, []);
         let widgets = normWidgets(rawWidgets);
         const saveWidgets = () => store.set(STORAGE_KEYS.widgets, widgets);
-        // Migração única: remove AeroPet e instala os widgets iniciais sem tocar nos demais dados.
-        if (!store.get('aerosync.widgetMigration.glassV1', false)) {
-            widgets = widgets.filter(w => w.type !== 'pet');
-            ['balance','budget','bills','categories','daily','focus','wishlist','countdown'].forEach(type => { if (!widgets.some(w => w.type===type)) widgets.push(normWidgets([{type,id:uid('w_')}])[0]); });
-            store.set('aerosync.widgetMigration.glassV1', true); saveWidgets();
+        // Migração de compatibilidade sem criação automática de widgets.
+        // A dashboard começa limpa; widgets já escolhidos pela pessoa são preservados.
+        if (!store.get('aerosync.widgetMigration.glassV2', false)) {
+            store.set('aerosync.widgetMigration.glassV2', true);
         }
         if (Array.isArray(rawWidgets) && rawWidgets.length && JSON.stringify(rawWidgets) !== JSON.stringify(widgets)) saveWidgets(); // grava a versão limpa
         const widgetById = (id) => widgets.find(w => w.id === id);
