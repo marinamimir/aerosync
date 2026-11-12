@@ -2423,6 +2423,31 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #aero-update-pill .aero-update-dot { width:8px; height:8px; border-radius:50%; background:var(--accent,#e879a9); }
 @media (prefers-reduced-motion:reduce) { #aero-update-overlay,#aero-update-pill { transition:none !important; } }
 </style>
+<style id="aerosync-dashboard-polish">
+:root{--aero-ui-scale:1}
+#home-sections{grid-auto-flow:row dense;gap:clamp(8px,1vw,16px);grid-auto-rows:minmax(68px,auto)}
+.home-section{min-width:0;overflow:visible}
+.home-section.widget-section{min-width:0;min-height:0}
+#home-sections>.widget-section .w-body{min-width:0;height:100%;min-height:0;overflow:hidden}
+.section-tools .st-btn{min-width:30px;min-height:30px}
+.section-tools .st-resize{touch-action:none;cursor:nwse-resize}
+.w-quote p{font-size:calc(16px * var(--aero-ui-scale))}
+.w-quote cite,.w-weather-desc,.wf-foot,.wf-row,.wf-cat{font-size:calc(12px * var(--aero-ui-scale))}
+.wf-kicker{font-size:calc(10px * var(--aero-ui-scale))}
+.wd-size-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.wd-size-control{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:800;color:var(--icon)}
+.wd-size-control b{font-size:12px;color:var(--accent)}
+.wd-size-control input{width:100%;accent-color:var(--accent)}
+@media(min-width:800px){
+ #home-sections{grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:minmax(74px,auto);gap:14px}
+ #home-sections>.home-section:not([data-widget]):not([data-section="tasks"]){grid-column:span 6}
+ #home-sections>.carousel-section,#home-sections>.home-section.is-full{grid-column:span 12}
+ #home-sections>[data-section="tasks"]{grid-column:span 12}
+ .wd-add-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .wd-preview:not(.is-full){width:min(75%,640px)}
+}
+@media(min-width:1200px){#home-sections{grid-auto-rows:minmax(78px,auto);gap:16px}.wd-add-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 
@@ -7834,12 +7859,12 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         if (Array.isArray(rawWidgets) && rawWidgets.length && JSON.stringify(rawWidgets) !== JSON.stringify(widgets)) saveWidgets(); // grava a versão limpa
         const widgetById = (id) => widgets.find(w => w.id === id);
         const allSectionIds = () => [...SECTION_IDS, ...widgets.map(w => w.id)];
-        const defaultSizeOf = (id) => DEFAULT_SIZES[id] || ((widgetById(id) || {}).type === 'quote' ? '4x2' : '2x2');
+        const defaultSizeOf = (id) => {const w=widgetById(id);if(w?.type==='youtube')return '9x4';if(w?.type==='quote')return '12x2';return DEFAULT_SIZES[id]?(DEFAULT_SIZES[id]==='full'?'12x2':DEFAULT_SIZES[id]==='half'?'6x2':DEFAULT_SIZES[id]):'6x2';};
         const defaultLayout = () => ({ order: [...widgets.map(w => w.id), ...SECTION_IDS], hidden: [], sizes: Object.fromEntries(allSectionIds().map(id => [id, defaultSizeOf(id)])) });
         // A versão anterior juntava Progresso+Hoje ("summary") e Foco+Tempo ("focus")
         const OLD_IDS = { summary: ['progress', 'date'], focus: ['focus', 'time'] };
         const savedLayout = store.get(STORAGE_KEYS.layout, {}) || {};
-        const expandIds = (ids) => (Array.isArray(ids) ? ids : []).flatMap(id => (savedLayout.v === 2 ? [id] : (OLD_IDS[id] || [id])));
+        const expandIds = (ids) => (Array.isArray(ids) ? ids : []).flatMap(id => (savedLayout.v >= 2 ? [id] : (OLD_IDS[id] || [id])));
         const knownIds = allSectionIds();
         let layout = {
             order: [...new Set([...expandIds(savedLayout.order), ...SECTION_IDS])].filter(id => knownIds.includes(id)),
@@ -7850,14 +7875,14 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         layout.order = [...widgets.map(w => w.id).filter(id => !layout.order.includes(id)), ...layout.order];
         if (savedLayout.sizes && typeof savedLayout.sizes === 'object') {
             knownIds.forEach(id => {
-                if (!FIXED_FULL.includes(id)) {
-                    const oldSize = savedLayout.sizes[id];
-                    if (['half', 'full'].includes(oldSize)) layout.sizes[id] = oldSize === 'full' ? '4x2' : '2x2';
-                    else if (/^[1-4]x[1-4]$/.test(oldSize || '')) layout.sizes[id] = oldSize;
-                }
+                if (FIXED_FULL.includes(id)) return;
+                const oldSize = savedLayout.sizes[id];
+                if (['half','full'].includes(oldSize)) layout.sizes[id] = oldSize === 'full' ? '12x2' : '6x2';
+                else if (/^[1-4]x[1-4]$/.test(oldSize || '')) { const [c,r]=oldSize.split('x').map(Number); layout.sizes[id] = Math.max(1,c*3)+'x'+Math.min(8,r); }
+                else if (/^(?:[1-9]|1[0-2])x[1-8]$/.test(oldSize || '')) layout.sizes[id]=oldSize;
             });
         }
-        const saveLayout = () => store.set(STORAGE_KEYS.layout, { v: 2, ...layout });
+        const saveLayout = () => store.set(STORAGE_KEYS.layout, { v: 3, ...layout });
         const sectionEl = (id) => homeEl.querySelector(`[data-section="${id}"]`);
 
         // Cada bloco ganha uma barrinha (só aparece no modo Organizar); widgets também têm Editar e Remover
@@ -7959,27 +7984,31 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             layout.order.forEach((id, i) => {
                 const sec = sectionEl(id), label = sec.dataset.label;
                 const hidden = layout.hidden.includes(id), size = layout.sizes[id] || defaultSizeOf(id), fixed = FIXED_FULL.includes(id);
-                const full = size === 'full' || size.startsWith('4x');
+                const full = size === 'full' || size.startsWith('12x');
                 sec.classList.toggle('is-hidden', hidden);
                 sec.classList.toggle('is-full', full);
-                if (sec.dataset.widget) {
-                    const [cols, rows] = /^([1-4])x([1-4])$/.test(size) ? size.split('x').map(Number) : [2, 2];
-                    sec.style.gridColumn = `span ${cols}`;
-                    sec.style.gridRow = `span ${rows}`;
-                    sec.dataset.size = `${cols}x${rows}`;
-                } else if (id === 'tasks') {
-                    const [cols, rows] = /^([1-4])x([1-4])$/.test(size) ? size.split('x').map(Number) : [4, 2];
-                    sec.style.gridColumn = `span ${cols}`;
-                    sec.style.gridRow = rows > 1 ? `span ${rows}` : 'auto';
-                    sec.dataset.size = `${cols}x${rows}`;
-                } else {
-                    sec.style.gridColumn = '';
-                    sec.style.gridRow = '';
+                const wideGrid=window.matchMedia('(min-width:800px)').matches,totalCols=wideGrid?12:4;
+                if(sec.dataset.widget){
+                    let [cols,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[6,2];
+                    if(sec.dataset.widget==='youtube')cols=Math.max(cols,wideGrid?3:9);
+                    const visibleCols=wideGrid?cols:Math.max(1,Math.ceil(cols/3));
+                    sec.style.gridColumn=`span ${Math.min(totalCols,visibleCols)}`;
+                    sec.style.gridRow=`span ${rows}`;
+                    sec.dataset.size=`${cols}x${rows}`;
+                }else if(id==='tasks'){
+                    const [,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[12,2];
+                    sec.style.gridColumn=`span ${totalCols}`;
+                    sec.style.gridRow=rows>1?`span ${rows}`:'auto';
+                    sec.dataset.size=`12x${rows}`;
+                }else{
+                    const fullWidth=id==='carousel'||size.startsWith('12x');
+                    sec.style.gridColumn=`span ${fullWidth?totalCols:(wideGrid?6:2)}`;
+                    sec.style.gridRow='';
                 }
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
                 sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;
                 const sb = sec.querySelector('[data-st="size"]');
-                const sizeLabel = fixed ? 'Este bloco sempre usa a largura toda' : `Tamanho ${size}; use o botão de expandir para arrastar ou toque para alternar`;
+                const sizeLabel = fixed ? 'Este bloco sempre usa a largura toda' : `Tamanho ${size}; ajuste no editor ou arraste o puxador`;
                 sb.disabled = fixed;
                 sb.title = sizeLabel;
                 sb.setAttribute('aria-label', `${label}: ${sizeLabel}`);
@@ -7993,6 +8022,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             });
         }
         applyLayout();
+        window.addEventListener('resize',()=>applyLayout(),{passive:true});
 
         // Adicionar / remover widgets
         function addWidget(type) {
@@ -8048,9 +8078,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if (b.dataset.st === 'prev' && i > 0) [o[i - 1], o[i]] = [o[i], o[i - 1]];
             if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
             if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) {
-                const choices = ['1x1','1x2','2x1','2x2','2x3','3x2','3x3','4x2','4x4'];
-                const current = layout.sizes[id] || (sec.dataset.widget ? '2x2' : '2x2');
-                layout.sizes[id] = choices[(choices.indexOf(current)+1) % choices.length];
+                const choices=sec.dataset.widget==='youtube'?['9x4','12x4','12x6','12x8']:['3x2','6x2','9x2','12x2','6x4','12x4'];
+                const current=layout.sizes[id]||defaultSizeOf(id);layout.sizes[id]=choices[(choices.indexOf(current)+1)%choices.length];
             }
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
             if (b.dataset.st === 'wedit') { openWidgetEditor(id); return; }
@@ -8075,8 +8104,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         homeEl.addEventListener('pointermove',e=>{if(!pointerDragState||!isEditing())return;if(!pointerDragState.active&&Math.hypot(e.clientX-pointerDragState.startX,e.clientY-pointerDragState.startY)>8)pointerDragState.active=true;if(!pointerDragState.active)return;const under=document.elementFromPoint(e.clientX,e.clientY),target=under?.closest?.('.home-section');if(!target||target.dataset.section===pointerDragState.id)return;const from=layout.order.indexOf(pointerDragState.id),to=layout.order.indexOf(target.dataset.section);if(from<0||to<0)return;layout.order.splice(from,1);layout.order.splice(to,0,pointerDragState.id);applyLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));target.classList.add('drop-target');});
         homeEl.addEventListener('pointerup',()=>{if(pointerDragState?.active){saveLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));}pointerDragState=null;});homeEl.addEventListener('pointercancel',()=>{pointerDragState=null;});
         let resizeState=null;
-        homeEl.addEventListener('pointerdown',e=>{const grip=e.target.closest('[data-st="resize"]');if(!grip||!isEditing())return;const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;e.preventDefault();e.stopPropagation();const r=sec.getBoundingClientRect(),id=sec.dataset.section;resizeState={id,startX:e.clientX,startY:e.clientY,baseW:r.width,baseH:r.height,cols:(layout.sizes[id]||'2x2').split('x').map(Number)[0]||2,rows:(layout.sizes[id]||'2x2').split('x').map(Number)[1]||2};grip.setPointerCapture?.(e.pointerId);});
-        homeEl.addEventListener('pointermove',e=>{if(!resizeState)return;const col=Math.max(1,Math.min(4,Math.round(resizeState.cols+(e.clientX-resizeState.startX)/Math.max(60,resizeState.baseW/resizeState.cols))));const row=Math.max(1,Math.min(4,Math.round(resizeState.rows+(e.clientY-resizeState.startY)/Math.max(60,resizeState.baseH/resizeState.rows))));layout.sizes[resizeState.id]=`${col}x${row}`;applyLayout();});
+        homeEl.addEventListener('pointerdown',e=>{const grip=e.target.closest('[data-st="resize"]');if(!grip||!isEditing())return;const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;e.preventDefault();e.stopPropagation();const r=sec.getBoundingClientRect(),id=sec.dataset.section,wide=window.matchMedia('(min-width:800px)').matches;const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);const visibleCols=wide?storedCols:Math.max(1,Math.ceil(storedCols/3));resizeState={id,startX:e.clientX,startY:e.clientY,baseW:r.width,baseH:r.height,storedCols:storedCols||6,visibleCols,rows:rows||2,wide,minCols:sec.dataset.widget==='youtube'?(wide?3:9):1};grip.setPointerCapture?.(e.pointerId);});
+        homeEl.addEventListener('pointermove',e=>{if(!resizeState)return;const colStep=Math.max(50,resizeState.baseW/resizeState.visibleCols),rowStep=Math.max(42,resizeState.baseH/Math.max(1,resizeState.rows));const deltaCols=Math.round((e.clientX-resizeState.startX)/colStep)*(resizeState.wide?1:3),deltaRows=Math.round((e.clientY-resizeState.startY)/rowStep);const col=Math.max(resizeState.minCols,Math.min(12,resizeState.storedCols+deltaCols)),row=Math.max(1,Math.min(8,resizeState.rows+deltaRows));layout.sizes[resizeState.id]=`${col}x${row}`;applyLayout();});
         homeEl.addEventListener('pointerup',()=>{if(resizeState){saveLayout();resizeState=null;}});homeEl.addEventListener('pointercancel',()=>{if(resizeState){saveLayout();resizeState=null;}});
         const setDragEnabled = enabled => homeEl.querySelectorAll('.home-section').forEach(sec=>{ sec.draggable=!!enabled; sec.style.touchAction=enabled?'pan-y':'auto'; });
         const isEditing = () => homeEl.classList.contains('editing');
