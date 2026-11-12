@@ -2026,7 +2026,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         html.dark .edit-add { background: #1e2130; color: #d9dce6; }
         /* painel e editor */
         .wd-add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .wd-group-label{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:10px 4px 2px;color:var(--icon);font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.wfo-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.wfo-add{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:12px}.wfo-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.wfo-stats>div{min-width:0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}.wfo-stats small{display:block;font-size:10px;color:var(--icon);opacity:.7}.wfo-stats b{display:block;font-size:14px;color:var(--icon);overflow-wrap:anywhere}.wfo-bars{height:86px;display:flex;align-items:end;gap:10px;padding:4px 4px 0}.wfo-bars>div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:4px}.wfo-bars i{display:block;width:70%;min-height:3px;border-radius:6px 6px 2px 2px}.wfo-bars small{font-size:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--icon)}.wfo-pie{width:92px;height:92px;border-radius:50%;margin:10px auto;background:#ddd}.wfo-line{width:100%;height:90px;overflow:visible}.wd-add { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px; border-radius: 20px; text-align: left; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.15s; }
+        .wd-group-label{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:10px 4px 2px;color:var(--icon);font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.wfo-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.wfo-add{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:12px}.wfo-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.wfo-stats>div{min-width:0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}.wfo-stats small{display:block;font-size:10px;color:var(--icon);opacity:.7} .wfo-stats b{display:block;min-width:0;font-size:clamp(11px,3.5vw,14px);line-height:1.3;color:var(--icon);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.wfo-bars{height:86px;display:flex;align-items:end;gap:10px;padding:4px 4px 0}.wfo-bars>div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:4px}.wfo-bars i{display:block;width:70%;min-height:3px;border-radius:6px 6px 2px 2px}.wfo-bars small{font-size:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--icon)}.wfo-pie{width:92px;height:92px;border-radius:50%;margin:10px auto;background:#ddd}.wfo-line{width:100%;height:90px;overflow:visible}.wd-add { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px; border-radius: 20px; text-align: left; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.15s; }
         .wd-add:active { transform: scale(0.96); }
         .wd-add > i { font-size: 20px; margin-bottom: 4px; }
         html:root .wd-add > i, html:root .wd-thumb > i { color: var(--icon) !important; }
@@ -2038,8 +2038,14 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .wd-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .wd-text b { font-size: 13px; font-weight: 800; color: #1f2937; }
         .wd-text small { font-size: 11px; font-weight: 600; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .wd-preview { max-width: 100%; }
-        .wd-preview:not(.is-full) { width: calc(50% - 6px); }
+        .wd-preview { max-width: 100%; min-width:0; overflow:hidden; }
+        .wd-preview:not(.is-full) { width: min(100%, 360px); }
+        .wd-preview .w-body,.wd-preview .w-finance,.wd-preview .w-finance-overview{min-width:0;max-width:100%;}
+        .wd-preview .wfo-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+        .wd-preview .wfo-stats>div{min-width:0;padding:7px 8px;}
+        .wd-preview .wfo-stats small{line-height:1.25;overflow-wrap:anywhere;}
+        .wd-preview .wfo-stats b{font-size:clamp(11px,3.2vw,14px);letter-spacing:-.02em;}
+        .wd-preview.is-full{width:100%;}
         html.dark .wd-add, html.dark .wd-row { background: #1e2130; border-color: #2b2f42; }
         html.dark .wd-add b, html.dark .wd-text b { color: #eef0f6; }
 
@@ -4874,7 +4880,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         let currentView = 'home', draft = null;
         let calMonth = null, calSelected = todayISO(), editingNoteId = null;
 
-        const esc = (s) => String(s).replace(/[&<>"']/g, c =>
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
             ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         refreshCategoryUI();
         const emptyMsg = (msg) => `<p class="text-sm text-gray-400 font-semibold py-2">${msg}</p>`;
@@ -5946,7 +5952,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             sheetBody.innerHTML = `
                 <button data-act="wd-back" class="note-tool mb-4"><i class="fas fa-chevron-left"></i>Widgets</button>
                 <span class="modal-label">Prévia</span>
-                <div class="wd-preview widget-section ${String(layout.sizes[w.id] || defaultSizeOf(w.id)).startsWith('4x') ? 'is-full' : ''}"><div class="w-body">${widgetBodyHTML(w)}</div></div>
+                <div class="wd-preview widget-section ${String(layout.sizes[w.id] || defaultSizeOf(w.id)).startsWith('12x') || String(layout.sizes[w.id] || defaultSizeOf(w.id)).startsWith('4x') ? 'is-full' : ''}"><div class="w-body">${widgetBodyHTML(w)}</div></div>
                 ${w.type === 'clock' ? `<label class="modal-label mt-4" for="wd-clock-style">Estilo do relógio</label><select id="wd-clock-style" class="task-input"><option value="soft" ${w.style==='soft'?'selected':''}>Suave</option><option value="digital" ${w.style==='digital'?'selected':''}>Digital</option><option value="retro" ${w.style==='retro'?'selected':''}>Retrô</option><option value="kawaii" ${w.style==='kawaii'?'selected':''}>Kawaii ♡</option></select>` : w.type === 'countdown' ? `
                     <label class="modal-label mt-4" for="wd-countdown-title">Nome do evento</label><input id="wd-countdown-title" class="task-input" maxlength="60" placeholder="Ex.: Próxima viagem" value="${esc(w.title||'')}">
                     <label class="modal-label mt-4" for="wd-countdown-date">Data</label><input id="wd-countdown-date" class="task-input" type="date" value="${esc(w.date||'')}">
@@ -5985,7 +5991,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 `}
                 <span class="modal-label mt-4">Tamanho na tela inicial</span>
                 <p class="text-xs text-gray-400 font-semibold mb-2">Largura × altura. A grade encaixa os widgets menores nos espaços livres.</p>
-                ${seg('wd-size', { '1x1': '1×1', '1x2': '1×2', '1x4': '1×4', '2x1': '2×1', '2x2': '2×2', '2x4': '2×4', '4x1': '4×1', '4x2': '4×2', '4x4': '4×4' }, layout.sizes[w.id] || defaultSizeOf(w.id))}
+                ${seg('wd-size', { '1x1': '1×1', '1x2': '1×2', '1x4': '1×4', '2x1': '2×1', '2x2': '2×2', '2x4': '2×4', '4x1': '4×1', '4x2': '4×2', '4x4': '4×4' }, (()=>{const m=String(layout.sizes[w.id]||defaultSizeOf(w.id)).match(/^(\d+)x(\d+)$/);return m?`${Math.max(1,Math.min(4,Math.round(Number(m[1])/3)))}x${m[2]}`:'2x2';})())}
                 <button data-act="wd-del" class="pill-btn danger w-full mt-6"><i class="fas fa-trash mr-1"></i>Remover widget</button>
                 <p class="text-xs text-gray-400 font-semibold mt-3"><i class="fas fa-check mr-1"></i>Salvo automaticamente</p>`;
             const refresh = () => {
@@ -6044,7 +6050,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             else if (act === 'wd-style') { w.style = QUOTE_STYLES[btn.dataset.value] ? btn.dataset.value : 'paper'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-weather-bg') { w.background=btn.dataset.value==='solid'?'solid':'transparent'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-weather-refresh') { refreshWeatherWidget(w); }
-            else if (act === 'wd-size') { layout.sizes[w.id] = /^[1-4]x[1-4]$/.test(btn.dataset.value) ? btn.dataset.value : defaultSizeOf(w.id); saveLayout(); applyLayout(); playClick(); renderSheet(); }
+            else if (act === 'wd-size') { const m=String(btn.dataset.value||'').match(/^([1-4])x([1-4])$/); layout.sizes[w.id] = m ? `${Number(m[1])*3}x${m[2]}` : defaultSizeOf(w.id); saveLayout(); applyLayout(); playClick(); renderSheet(); }
             else if (act === 'wd-img-del') { w.image = ''; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-idea') {
                 const pool = QUOTE_IDEAS.filter(q => q[0] !== w.text);
