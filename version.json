@@ -1,8 +1,10 @@
 {
-  "version": "2026.11.12.7",
-  "build": 2026111207,
+  "version": "2026.11.12.8",
+  "build": 2026111208,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
+    "Rebranding para ALife, preservando identidade visual e identificadores locais.",
+    "Dashboard inicial de novas instalações com data, relógio e lista de tarefas; demais seções opcionais.",
     "Correção do ciclo de atualização do aplicativo instalado.",
     "A versão interna do HTML agora corresponde à versão publicada.",
     "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
