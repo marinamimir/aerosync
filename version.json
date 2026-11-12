@@ -1,8 +1,9 @@
 {
-  "version": "2026.11.12.8",
-  "build": 2026111208,
+  "version": "2026.11.12.9",
+  "build": 2026111209,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
+    "Removido o recurso AeroPets e seu editor da interface; os demais dados locais e módulos foram preservados.",
     "Rebranding para ALife, preservando identidade visual e identificadores locais.",
     "Dashboard inicial de novas instalações com data, relógio e lista de tarefas; demais seções opcionais.",
     "Correção do ciclo de atualização do aplicativo instalado.",
