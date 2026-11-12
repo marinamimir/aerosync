@@ -5929,7 +5929,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             sheetBody.innerHTML = `
                 <p class="lib-intro"><i class="fas fa-circle-info" aria-hidden="true"></i><span>Adicione quantos quiser. Para mudar a ordem ou o tamanho, use <b>Organizar seções</b> (ou segure numa área vazia da tela inicial).</span></p>
                 <div class="wd-add-grid">
-                    <button data-act="wd-add" data-type="image" class="wd-add"><i class="fas fa-image" aria-hidden="true"></i><b>Imagem</b><small>Uma foto decorativa</small></button>
+                    <div class="wd-group-label"><i class="fas fa-heart"></i> Vida pessoal e decoração</div><button data-act="wd-add" data-type="image" class="wd-add"><i class="fas fa-image" aria-hidden="true"></i><b>Imagem</b><small>Uma foto decorativa</small></button>
                     <button data-act="wd-add" data-type="quote" class="wd-add"><i class="fas fa-quote-left" aria-hidden="true"></i><b>Citação</b><small>Uma frase para lembrar</small></button>
                     <button data-act="wd-add" data-type="weather" class="wd-add"><i class="fas fa-cloud-sun" aria-hidden="true"></i><b>Clima</b><small>Temperatura e condição local</small></button>
                     <button data-act="wd-add" data-type="luck" class="wd-add"><i class="fas fa-clover" aria-hidden="true"></i><b>Sorte do dia</b><small>Uma mensagem nova por dia</small></button>
@@ -6027,8 +6027,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 saveWidgets(); syncWidgetSections();
                 const pv = sheetBody.querySelector('.wd-preview .w-body'); if (pv) pv.innerHTML = widgetBodyHTML(w);
             };
-            if (w.type === 'image') {
-                const cap = document.getElementById('wd-caption');
+            if (w.type === 'financeOverview') {\n                const choices=[['spent','Gasto no mês'],['limit','Limite mensal'],['count','Compras'],['average','Média por compra'],['topCategory','Maior categoria'],['available','Limite restante']];\n                sheetBody.insertAdjacentHTML('beforeend','<div class="sheet-section"><span class="modal-label">Informações exibidas</span><div class="wfo-options">'+choices.map(([k,l])=>'<label><input type="checkbox" data-wfo-item="'+k+'" '+((w.config?.items||['spent','limit','count','average']).includes(k)?'checked':'')+'> '+l+'</label>').join('')+'</div><label class="modal-label mt-4" for="wfo-chart">Tipo de gráfico</label><select id="wfo-chart" class="task-input"><option value="bars">Barras</option><option value="line">Linha</option><option value="pie">Pizza</option><option value="none">Sem gráfico</option></select></div>');\n                const ch=document.getElementById('wfo-chart');ch.value=w.config?.chart||'bars';\n                sheetBody.querySelectorAll('[data-wfo-item]').forEach(el=>el.addEventListener('change',()=>{w.config={...(w.config||{}),items:[...sheetBody.querySelectorAll('[data-wfo-item]:checked')].map(x=>x.dataset.wfoItem).slice(0,6)};saveWidgets();refresh();}));\n                ch.addEventListener('change',()=>{w.config={...(w.config||{}),chart:ch.value};saveWidgets();refresh();});\n            } else if (w.type === 'image') {\n                const cap = document.getElementById('wd-caption');
                 cap.addEventListener('input', () => { w.caption = cap.value.slice(0, 80); refresh(); });
                 const wf = document.getElementById('wd-file');
                 sheetBody.querySelector('[data-wd-pick]').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); wf.click(); } });
