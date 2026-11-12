@@ -6,11 +6,12 @@
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v24';
+const CACHE_VERSION = 'v25';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
   './manifest.json',
+  './version.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
@@ -69,6 +70,12 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // não mexe em nada de outros sites (ex.: links úteis)
+
+  // A versão deve sempre vir da rede para detectar releases mesmo com o app instalado.
+  if (url.pathname.endsWith('/version.json')) {
+    event.respondWith(networkFirst(req));
+    return;
+  }
 
   // App: sempre tenta obter o HTML publicado mais recente; cache apenas offline.
   const shell = new URL('./aerosync.html', self.registration.scope).href;
