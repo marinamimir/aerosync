@@ -6884,7 +6884,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 return;
             }
             if (act.startsWith('cal-')) return handleCalendarAction(act, btn.dataset);
-            if (act.startsWith('note-')) return handleNoteAction(act, btn.dataset);
+            if (act.startsWith('note-') || act.startsWith('notebook-')) return handleNoteAction(act, btn.dataset);
             if (act.startsWith('lib-')) return handleLibAction(act, btn);
             if (act.startsWith('life-')) return handleLifeAction(act, btn);
             if (act.startsWith('wd-') || act.startsWith('pet-')) return handleWidgetAction(act, btn);
