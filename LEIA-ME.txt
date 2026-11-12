@@ -1,11 +1,11 @@
-AeroSync — pasta pronta para publicar
-=====================================
+ALife — pasta pronta para publicar
+=================================
 
 Esta pasta já é o site inteiro. Não precisa mudar nada.
 
 OPÇÃO A — NETLIFY (mais rápido)
 1. No computador, abra: netlify.com/drop
-2. Arraste esta pasta (AeroSync_site) para a página.
+2. Arraste esta pasta (ALife_site) para a página.
 3. Crie a conta grátis quando pedir, para o site não ser apagado.
 4. Copie o link que aparecer (ex.: https://nome.netlify.app).
 
@@ -27,7 +27,7 @@ PASSAR PARA OS COLEGAS
 ATUALIZAR O APP DEPOIS
 1. Troque o aerosync.html por um novo — mas lembre de manter o trecho
    "PWA: app instalável e offline" que está no <head>.
-2. Abra o sw.js e troque CACHE_VERSION = 'v1' por 'v2' (depois 'v3', ...).
+2. Abra o sw.js e incremente CACHE_VERSION (v1, v2, v3, ...).
 3. Publique de novo (arraste no Netlify ou faça upload no GitHub).
 
 LEVAR SUAS MISSÕES PARA O CELULAR
