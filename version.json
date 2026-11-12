@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.12.3",
-  "build": 2026111203,
+  "version": "2026.11.12.4",
+  "build": 2026111204,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
-    "Dashboard responsiva para tablets e telas grandes, com grade ampliada e widgets redimensionáveis.",
-    "Novo widget YouTube para vídeos e playlists com player recolhível.",
-    "Primeiro acesso neutro e sem widgets financeiros adicionados automaticamente."
+    "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
+    "Novo Overview financeiro com indicadores e gráficos configuráveis e atalho discreto para registrar compras.",
+    "Galeria de widgets organizada por áreas: Vida pessoal, Finanças, Produtividade e Decoração."
   ]
 }
