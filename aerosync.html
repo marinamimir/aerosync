@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111201">
+    <meta name="aero-build" content="2026111207">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -10167,7 +10167,23 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
     overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss();});
     overlay.querySelector('#aero-update-now').addEventListener('click',async()=>{
       const b=overlay.querySelector('#aero-update-now'); b.disabled=true; b.textContent='Atualizando…';
-      try { if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration('./');if(reg)await reg.update();} } catch(e){}
+      try {
+        if('serviceWorker' in navigator){
+          const reg=await navigator.serviceWorker.getRegistration('./');
+          if(reg){
+            await reg.update();
+            const worker=reg.installing;
+            if(worker){
+              await new Promise(resolve=>{
+                if(worker.state==='activated'){resolve();return;}
+                const finish=()=>{if(worker.state==='activated'||worker.state==='redundant'){worker.removeEventListener('statechange',finish);resolve();}};
+                worker.addEventListener('statechange',finish);
+                setTimeout(()=>{worker.removeEventListener('statechange',finish);resolve();},12000);
+              });
+            }
+          }
+        }
+      } catch(e){}
       const url=new URL(location.href);url.searchParams.set('v',String(Date.now()));location.replace(url.toString());
     });
   }
