@@ -6238,7 +6238,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         }
 
         // --- Ajustes: aplicam na hora (sem botão Salvar, nada se perde ao fechar) ---
-        // Integração Google Calendar pausada temporariamente.
         function renderProfile() {
             const seg = (key, opts, cur) => `<div class="seg" role="radiogroup">${opts.map(([v, label]) =>
                 `<button data-act="setting" data-key="${key}" data-value="${v}" class="${cur === v ? 'selected' : ''}" role="radio" aria-checked="${cur === v}">${label}</button>`).join('')}</div>`;
@@ -6999,7 +6998,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button data-hub="icon" class="icon-pick-btn lg${t.icon ? ' has-icon' : ''}" aria-label="${t.icon ? 'Trocar ícone' : 'Escolher ícone'}" title="Ícone">${iconBtnHTML(t.icon)}</button>
                     <input id="hub-title" class="hub-title" maxlength="60" autocomplete="off" value="${esc(t.name)}" aria-label="Título da missão">
                 </div>
-                ${t.importedFromGoogle ? '<p class="text-xs font-bold mt-2" style="color:var(--accent)"><i class="fab fa-google mr-1"></i>Importada do Google Calendar</p>' : ''}
                 <div class="hub-tags" role="radiogroup" aria-label="Tag">
                     ${Object.keys(TAG_NAME).map(tag => `<button class="tag-pill${t.tag === tag ? ' selected' : ''}" data-hub="tag" data-value="${tag}" style="--pill:${TAG_COLOR[tag]}" role="radio" aria-checked="${t.tag === tag}">${categoryIconHTML(tag,'mr-1')}${TAG_NAME[tag]}</button>`).join('')}
                 </div>
