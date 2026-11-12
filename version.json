@@ -1,8 +1,9 @@
 {
-  "version": "2026.11.12.9",
-  "build": 2026111209,
+  "version": "2026.11.12.10",
+  "build": 2026111210,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
+    "Proteção adicional para preferências locais ausentes ou inválidas na inicialização da dashboard.",
     "Removido o recurso AeroPets e seu editor da interface; os demais dados locais e módulos foram preservados.",
     "Rebranding para ALife, preservando identidade visual e identificadores locais.",
     "Dashboard inicial de novas instalações com data, relógio e lista de tarefas; demais seções opcionais.",
