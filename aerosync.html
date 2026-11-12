@@ -6532,7 +6532,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             document.getElementById('fin-dt').value = todayISO(); document.getElementById('fin-mk').hidden = true; finGrid();
             finEl.classList.add('open'); finEl.setAttribute('aria-hidden', 'false'); setTimeout(() => finAmt.focus(), 60);
         }
-        homeEl.addEventListener('click',e=>{const b=e.target.closest('[data-fin-quick]');if(b){e.preventDefault();e.stopPropagation();finOpen();playClick();}});
         function finClose() {
             finEl.classList.remove('open'); finEl.setAttribute('aria-hidden', 'true');
             if (finReturn && finReturn.focus && document.contains(finReturn)) finReturn.focus({ preventScroll: true });
@@ -7804,6 +7803,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // 9. ORGANIZAR A TELA INICIAL (modo edição: evita trocar a ordem sem querer)
         //    Cada bloco muda de lugar (← →), de tamanho (metade / largura toda) e pode ser ocultado
         const homeEl = document.getElementById('home-sections');
+        homeEl.addEventListener('click',e=>{const b=e.target.closest('[data-fin-quick]');if(b){e.preventDefault();e.stopImmediatePropagation();finOpen();playClick();}});
         const mainScroll = document.getElementById('main-scroll');
         const SECTION_IDS = ['progress', 'date', 'carousel', 'focus', 'time', 'note', 'tasks'];
         const FIXED_FULL = ['carousel']; // tarefas agora podem ser redimensionadas
