@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.12.1",
-  "build": 2026111201,
+  "version": "2026.11.12.3",
+  "build": 2026111203,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
-    "Integração Google Calendar pausada temporariamente.",
-    "Avisos de atualização pelo GitHub com opção Mais tarde.",
-    "AeroSync responsivo em tablets e celulares e instalável como PWA."
+    "Dashboard responsiva para tablets e telas grandes, com grade ampliada e widgets redimensionáveis.",
+    "Novo widget YouTube para vídeos e playlists com player recolhível.",
+    "Primeiro acesso neutro e sem widgets financeiros adicionados automaticamente."
   ]
 }
