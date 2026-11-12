@@ -2051,7 +2051,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         html.dark .edit-add { background: #1e2130; color: #d9dce6; }
         /* painel e editor */
         .wd-add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .wd-add { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px; border-radius: 20px; text-align: left; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.15s; }
+        .wd-group-label{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:10px 4px 2px;color:var(--icon);font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.wfo-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.wfo-add{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:12px}.wfo-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.wfo-stats>div{min-width:0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}.wfo-stats small{display:block;font-size:10px;color:var(--icon);opacity:.7}.wfo-stats b{display:block;font-size:14px;color:var(--icon);overflow-wrap:anywhere}.wfo-bars{height:86px;display:flex;align-items:end;gap:10px;padding:4px 4px 0}.wfo-bars>div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:4px}.wfo-bars i{display:block;width:70%;min-height:3px;border-radius:6px 6px 2px 2px}.wfo-bars small{font-size:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--icon)}.wfo-pie{width:92px;height:92px;border-radius:50%;margin:10px auto;background:#ddd}.wfo-line{width:100%;height:90px;overflow:visible}.wd-add { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px; border-radius: 20px; text-align: left; background: #fff; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.15s; }
         .wd-add:active { transform: scale(0.96); }
         .wd-add > i { font-size: 20px; margin-bottom: 4px; }
         html:root .wd-add > i, html:root .wd-thumb > i { color: var(--icon) !important; }
@@ -5933,14 +5933,18 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button data-act="wd-add" data-type="quote" class="wd-add"><i class="fas fa-quote-left" aria-hidden="true"></i><b>Citação</b><small>Uma frase para lembrar</small></button>
                     <button data-act="wd-add" data-type="weather" class="wd-add"><i class="fas fa-cloud-sun" aria-hidden="true"></i><b>Clima</b><small>Temperatura e condição local</small></button>
                     <button data-act="wd-add" data-type="luck" class="wd-add"><i class="fas fa-clover" aria-hidden="true"></i><b>Sorte do dia</b><small>Uma mensagem nova por dia</small></button>
-                    <button data-act="wd-add" data-type="balance" class="wd-add"><i class="fas fa-wallet"></i><b>Saldo disponível</b><small>Quanto pode gastar com segurança</small></button>
+                    <div class="wd-group-label"><i class="fas fa-wallet"></i> Finanças</div>
+                    <button data-act="wd-add" data-type="financeOverview" class="wd-add"><i class="fas fa-chart-pie"></i><b>Overview financeiro</b><small>Resumo configurável e compra rápida</small></button>
+                    
                     <button data-act="wd-add" data-type="budget" class="wd-add"><i class="fas fa-chart-pie"></i><b>Orçamento mensal</b><small>Gastos e limite disponível</small></button>
                     <button data-act="wd-add" data-type="bills" class="wd-add"><i class="fas fa-calendar-check"></i><b>Próximas contas</b><small>Contas recorrentes a vencer</small></button>
                     <button data-act="wd-add" data-type="categories" class="wd-add"><i class="fas fa-chart-column"></i><b>Gastos por categoria</b><small>Onde o dinheiro está indo</small></button>
+                    <div class="wd-group-label"><i class="fas fa-list-check"></i> Produtividade</div>
                     <button data-act="wd-add" data-type="daily" class="wd-add"><i class="fas fa-list-check"></i><b>Daily Overview</b><small>Resumo das tarefas</small></button>
                     <button data-act="wd-add" data-type="focus" class="wd-add"><i class="fas fa-hourglass-half"></i><b>Focus Session</b><small>Comece uma sessão de foco</small></button>
                     <button data-act="wd-add" data-type="wishlist" class="wd-add"><i class="fas fa-bookmark"></i><b>Wishlist</b><small>Itens salvos no Mundo Pessoal</small></button>
                     <button data-act="wd-add" data-type="countdown" class="wd-add"><i class="fas fa-hourglass-start"></i><b>Countdown</b><small>Contagem para uma data especial</small></button>
+                    <div class="wd-group-label"><i class="fas fa-wand-magic-sparkles"></i> Decoração e utilidades</div>
                     <button data-act="wd-add" data-type="clock" class="wd-add"><i class="fas fa-clock" aria-hidden="true"></i><b>Relógio</b><small>Um relógio decorativo na tela inicial</small></button>
                     <button data-act="wd-add" data-type="youtube" class="wd-add"><i class="fab fa-youtube" aria-hidden="true"></i><b>YouTube</b><small>Vídeo ou playlist com player recolhível</small></button>
                 </div>
@@ -6522,6 +6526,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             document.getElementById('fin-dt').value = todayISO(); document.getElementById('fin-mk').hidden = true; finGrid();
             finEl.classList.add('open'); finEl.setAttribute('aria-hidden', 'false'); setTimeout(() => finAmt.focus(), 60);
         }
+        homeEl.addEventListener('click',e=>{const b=e.target.closest('[data-fin-quick]');if(b){e.preventDefault();e.stopPropagation();finOpen();playClick();}});
         function finClose() {
             finEl.classList.remove('open'); finEl.setAttribute('aria-hidden', 'true');
             if (finReturn && finReturn.focus && document.contains(finReturn)) finReturn.focus({ preventScroll: true });
@@ -6536,7 +6541,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const v = finNum(finAmt.value); if (!(v > 0 && finSel)) return;
             const dv = document.getElementById('fin-dt').value, d = isISO(dv) ? dv : todayISO();
             fin.exp.push({ id: finId(), v, c: finSel, d, n: document.getElementById('fin-nt').value.trim().slice(0, 40) });
-            finSave(); finClose(); if (currentView === 'finance') renderFinance(); playDone();
+            finSave(); finClose(); if (currentView === 'finance') renderFinance(); syncWidgetSections(); playDone();
             toast(d.slice(0, 7) === todayISO().slice(0, 7) ? 'Gasto adicionado' : 'Gasto adicionado (em outro mês)');
         }
         finAmt.addEventListener('input', () => { finAmt.value = finAmt.value.replace(/[^\d.,]/g, ''); finCheck(); });
@@ -7800,7 +7805,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
-        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', clock: 'Relógio', balance:'Saldo disponível', budget:'Orçamento mensal', bills:'Próximas contas', categories:'Gastos por categoria', daily:'Daily Overview', focus:'Focus Session', wishlist:'Wishlist', countdown:'Countdown', youtube:'YouTube' };
+        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', clock: 'Relógio', financeOverview:'Overview financeiro', balance:'Saldo disponível', budget:'Orçamento mensal', bills:'Próximas contas', categories:'Gastos por categoria', daily:'Daily Overview', focus:'Focus Session', wishlist:'Wishlist', countdown:'Countdown', youtube:'YouTube' };
         const PET_DEFAULT={adopted:false,species:'cat',name:'',gender:'unspecified',ears:'upright',coat:'short',color:'snow',accessory:'bow',personality:['affectionate'],traits:[],happiness:100,bond:0,stars:0,level:1,xp:0};
         let aeroPet={...PET_DEFAULT,...(store.get(STORAGE_KEYS.pet,{})||{})};
         const PET_COLORS={snow:'#fff8f8',cream:'#f4dfc4',caramel:'#c88f68',cocoa:'#8c6c68',gray:'#b9b7c4',black:'#57525c',pink:'#f4c6d6',lilac:'#d9c9e8'};
@@ -7884,6 +7889,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 if (w.type === 'weather') return { id, type:'weather', background:w.background==='solid'?'solid':'transparent', weather: w.weather&&typeof w.weather==='object'?w.weather:null };
                 if (w.type === 'luck') return { id, type:'luck', style: QUOTE_STYLES[w.style] ? w.style : 'accent' };
                 if (['balance','budget','bills','categories','daily','focus','wishlist'].includes(w.type)) return { id, type:w.type };
+                if (w.type === 'financeOverview') return {id,type:'financeOverview',config:{items:Array.isArray(w.config?.items)?w.config.items.filter(x=>['spent','limit','count','average','topCategory','available'].includes(x)).slice(0,6):['spent','limit','count','average'],chart:['bars','line','pie','none'].includes(w.config?.chart)?w.config.chart:'bars'}};
                 if (w.type === 'countdown') return { id, type:'countdown', title:libText(w.title,60), date:isISO(w.date)?w.date:'' };
                 if (w.type === 'clock') return { id, type:'clock', style: ['digital','soft','retro','kawaii'].includes(w.style) ? w.style : 'soft' };
                 if (w.type === 'youtube') { const p=parseYouTubeInput(w.url); return {id,type:'youtube',url:p?p.url:'',title:libText(w.title,60),collapsed:!!w.collapsed}; }
@@ -7897,6 +7903,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // A dashboard começa limpa; widgets já escolhidos pela pessoa são preservados.
         if (!store.get('aerosync.widgetMigration.glassV2', false)) {
             store.set('aerosync.widgetMigration.glassV2', true);
+        }
+        if (!store.get('aerosync.widgetMigration.financeOptInV1', false)) {
+            const before = widgets.length; widgets = widgets.filter(w => !['balance','budget','bills','categories'].includes(w.type));
+            if (widgets.length !== before) saveWidgets();
+            store.set('aerosync.widgetMigration.financeOptInV1', true);
         }
         if (Array.isArray(rawWidgets) && rawWidgets.length && JSON.stringify(rawWidgets) !== JSON.stringify(widgets)) saveWidgets(); // grava a versão limpa
         const widgetById = (id) => widgets.find(w => w.id === id);
@@ -7960,7 +7971,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             }catch(e){return{income:0,spent:0,reserve:0,available:0,bills:[],categories:[]};}
         }
         const widgetMoney=v=>(Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-        function widgetBodyHTML(w) {
+        function widgetBodyHTML(w) {\n            if(w.type==='financeOverview'){const f=finLoad(),month=f.exp.filter(e=>e.d.slice(0,7)===todayISO().slice(0,7)),total=month.reduce((a,e)=>a+e.v,0),items=w.config?.items||['spent','limit','count','average'],chart=w.config?.chart||'bars',stats={spent:['Gasto no mês',finFmt(total)],limit:['Limite mensal',finFmt(f.limit)],count:['Compras',String(month.length)],average:['Média por compra',finFmt(month.length?total/month.length:0)],topCategory:['Maior categoria',(()=>{const by={};month.forEach(e=>by[e.c]=(by[e.c]||0)+e.v);const id=Object.keys(by).sort((a,b)=>by[b]-by[a])[0];return f.cats.find(c=>c.id===id)?.name||'—';})()],available:['Limite restante',finFmt(f.limit-total)]};const cats={};month.forEach(e=>{const c=f.cats.find(x=>x.id===e.c)||{name:'Outros',color:'#aaa'};cats[c.name]??={name:c.name,color:c.color,v:0};cats[c.name].v+=e.v;});const vals=Object.values(cats).sort((a,b)=>b.v-a.v).slice(0,5),mx=Math.max(1,...vals.map(x=>x.v));const graph=chart==='none'?'':chart==='pie'?'<div class="wfo-pie" style="background:conic-gradient('+vals.map((x,i)=>{const start=vals.slice(0,i).reduce((a,y)=>a+y.v,0)/Math.max(1,total)*100,end=(start+x.v/Math.max(1,total)*100);return x.color+' '+start+'% '+end+'%';}).join(',')+' )"></div>':chart==='line'?'<svg class="wfo-line" viewBox="0 0 300 90"><polyline points="'+vals.map((x,i)=>(i*70+10)+','+(78-x.v/mx*65)).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="3"/></svg>':'<div class="wfo-bars">'+vals.map(x=>'<div><i style="height:'+Math.max(5,x.v/mx*100)+'%;background:'+esc(x.color)+'"></i><small>'+esc(x.name)+'</small></div>').join('')+'</div>';return '<div class="w-finance w-finance-overview"><div class="wfo-head"><span class="wf-kicker"><i class="fas fa-chart-pie"></i> OVERVIEW FINANCEIRO</span><button type="button" class="wfo-add" data-fin-quick aria-label="Adicionar compra"><i class="fas fa-plus"></i></button></div><div class="wfo-stats">'+items.map(k=>stats[k]?'<div><small>'+stats[k][0]+'</small><b>'+esc(stats[k][1])+'</b></div>':'').join('')+'</div>'+graph+'</div>';}
             if(['balance','budget','bills','categories'].includes(w.type)){const d=financeWidgetSnapshot(),pct=d.income>0?Math.min(100,Math.max(0,d.spent/d.income*100)):0;
                 if(w.type==='balance')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-wallet"></i> SALDO QUE PODE SER GASTO</div><strong class="wf-value">${widgetMoney(d.available)}</strong><div class="wf-foot">Saldo e entradas menos gastos e contas reservadas</div></div>`;                if(w.type==='budget')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-chart-pie"></i> ORÇAMENTO DO MÊS</div><strong class="wf-value">${widgetMoney(d.spent)}</strong><div class="wf-foot">de ${widgetMoney(d.income)} considerados</div><div class="wf-track"><i style="width:${pct}%"></i></div><div class="wf-mini"><span>${Math.round(pct)}% utilizado</span><b>${widgetMoney(d.income-d.spent)} restantes</b></div></div>`;
                 if(w.type==='bills')return `<div class="w-finance"><div class="wf-kicker"><i class="fas fa-calendar-check"></i> PRÓXIMAS CONTAS</div>${d.bills.length?d.bills.map(b=>`<div class="wf-row"><span><b>${esc(b.name)}</b><small>${b.diff===0?'Vence hoje':'Em '+b.diff+' dias'}</small></span><strong>${widgetMoney(b.amount)}</strong></div>`).join(''):'<div class="wf-empty">Nenhuma conta recorrente pendente.</div>'}</div>`;
