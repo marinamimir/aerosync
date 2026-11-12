@@ -1,8 +1,10 @@
 {
-  "version": "2026.11.12.6",
-  "build": 2026111206,
+  "version": "2026.11.12.7",
+  "build": 2026111207,
   "releasedAt": "2026-11-12",
   "releaseNotes": [
+    "Correção do ciclo de atualização do aplicativo instalado.",
+    "A versão interna do HTML agora corresponde à versão publicada.",
     "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
     "Novo Overview financeiro com indicadores e gráficos configuráveis e atalho discreto para registrar compras.",
     "Galeria de widgets organizada por áreas: Vida pessoal, Finanças, Produtividade e Decoração.",
