@@ -3056,6 +3056,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             widgets: 'aerosync.widgets', // widgets da tela inicial (imagem e citação)
             breaks: 'aerosync.breaks', // Pausas pro Café (aparecem no calendário)
             finance: 'aerosync.finance', // Finanças (gastos e categorias) — separado das tarefas
+            financeV2: 'aerosync.finances.v2', // Finanças atualizadas (módulo V2)
             fundo: 'aerosync.fundo', // fundo suave do app
             categories: 'aerosync.categories', iconColors: 'aerosync.customIconColors', overdueIndicators: 'aerosync.overdueIndicators' // categorias personalizadas e paleta de ícones
         };
@@ -6441,7 +6442,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 if (!j || !['ALife','AeroSync'].includes(j.app) || !j.data || typeof j.data !== 'object') { toast('Arquivo de backup inválido'); return; }
                 if (!confirm('Importar este backup? Os dados atuais serão substituídos.')) return;
                 const keys = Object.values(STORAGE_KEYS);
-                keys.forEach(k => store.remove(k));
+                keys.forEach(k => {
+                    // Backups antigos não conheciam o módulo financeiro V2: preserve esses dados ao importá-los.
+                    if (k === STORAGE_KEYS.financeV2 && !Object.prototype.hasOwnProperty.call(j.data, k)) return;
+                    store.remove(k);
+                });
                 Object.entries(j.data).forEach(([k, v]) => { if (keys.includes(k)) store.set(k, v); });
                 location.reload();
             };
