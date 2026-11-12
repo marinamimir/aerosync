@@ -2448,6 +2448,17 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 @media(min-width:1200px){#home-sections{grid-auto-rows:minmax(78px,auto);gap:16px}.wd-add-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
+<style id="aerosync-youtube-widget">
+.w-youtube{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);overflow:hidden}
+.wy-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;font-size:12px;font-weight:900;color:var(--icon);min-width:0}
+.wy-head>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wy-head>span i{color:#f00;margin-right:5px}
+.wy-toggle{flex:0 0 30px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--icon)}
+.wy-stage{position:relative;width:100%;min-width:200px;min-height:200px;aspect-ratio:16/9;max-height:440px;border-radius:14px;background:#101114;overflow:hidden;transition:max-height .24s ease}
+.wy-stage iframe{position:absolute;inset:0;width:100%;height:100%;min-width:200px;min-height:200px;border:0;background:#101114}
+.w-youtube.is-collapsed .wy-stage{height:0!important;min-height:0!important;max-height:0!important;aspect-ratio:auto;border:0;margin:0}
+.wy-placeholder{flex:1;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--icon);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border:1px dashed color-mix(in srgb,var(--accent) 26%,transparent);border-radius:14px}
+.wy-placeholder>i{font-size:27px;color:#ef4444}.wy-placeholder b{font-size:12px}.wy-placeholder small{font-size:10px;opacity:.65}
+</style>
 </head>
 <body>
 
@@ -5931,11 +5942,12 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button data-act="wd-add" data-type="wishlist" class="wd-add"><i class="fas fa-bookmark"></i><b>Wishlist</b><small>Itens salvos no Mundo Pessoal</small></button>
                     <button data-act="wd-add" data-type="countdown" class="wd-add"><i class="fas fa-hourglass-start"></i><b>Countdown</b><small>Contagem para uma data especial</small></button>
                     <button data-act="wd-add" data-type="clock" class="wd-add"><i class="fas fa-clock" aria-hidden="true"></i><b>Relógio</b><small>Um relógio decorativo na tela inicial</small></button>
+                    <button data-act="wd-add" data-type="youtube" class="wd-add"><i class="fab fa-youtube" aria-hidden="true"></i><b>YouTube</b><small>Vídeo ou playlist com player recolhível</small></button>
                 </div>
                 <span class="modal-label mt-5">Na tela inicial (${widgets.length})</span>
                 ${widgets.length ? widgets.map(w => `
                     <div class="wd-row" data-wid="${w.id}">
-                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : w.type==='weather' ? '<i class="fas fa-cloud-sun"></i>' : w.type==='luck' ? '<i class="fas fa-clover"></i>' : w.type==='clock' ? '<i class="fas fa-clock"></i>' : w.type==='balance' ? '<i class="fas fa-wallet"></i>' : w.type==='budget' ? '<i class="fas fa-chart-pie"></i>' : w.type==='bills' ? '<i class="fas fa-calendar-check"></i>' : w.type==='categories' ? '<i class="fas fa-chart-column"></i>' : w.type==='daily' ? '<i class="fas fa-list-check"></i>' : w.type==='focus' ? '<i class="fas fa-hourglass-half"></i>' : w.type==='wishlist' ? '<i class="fas fa-bookmark"></i>' : w.type==='countdown' ? '<i class="fas fa-hourglass-start"></i>' : '<i class="fas fa-quote-left"></i>'}</span>
+                        <span class="wd-thumb">${w.type === 'image' ? (w.image ? `<img src="${w.image}" alt="">` : '<i class="fas fa-image"></i>') : w.type==='weather' ? '<i class="fas fa-cloud-sun"></i>' : w.type==='luck' ? '<i class="fas fa-clover"></i>' : w.type==='clock' ? '<i class="fas fa-clock"></i>' : w.type==='balance' ? '<i class="fas fa-wallet"></i>' : w.type==='budget' ? '<i class="fas fa-chart-pie"></i>' : w.type==='bills' ? '<i class="fas fa-calendar-check"></i>' : w.type==='categories' ? '<i class="fas fa-chart-column"></i>' : w.type==='daily' ? '<i class="fas fa-list-check"></i>' : w.type==='focus' ? '<i class="fas fa-hourglass-half"></i>' : w.type==='wishlist' ? '<i class="fas fa-bookmark"></i>' : w.type==='countdown' ? '<i class="fas fa-hourglass-start"></i>' : w.type==='youtube' ? '<i class="fab fa-youtube"></i>' : '<i class="fas fa-quote-left"></i>'}</span>
                         <span class="wd-text"><b>${esc(sectionEl(w.id) ? sectionEl(w.id).dataset.label : WIDGET_LABEL[w.type])}</b><small>${esc(w.type === 'image' ? (w.caption || (w.image ? 'Foto' : 'Sem foto ainda')) : w.type==='weather' ? 'Previsão local' : w.type==='luck' ? 'Mensagem diária' : (w.text || 'Sem texto'))}</small></span>
                         <button data-act="wd-edit" class="row-btn" aria-label="Editar widget" title="Editar"><i class="fas fa-pen"></i></button>
                         <button data-act="wd-del" class="row-btn row-danger" aria-label="Remover widget" title="Remover"><i class="fas fa-trash"></i></button>
@@ -5963,6 +5975,13 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <input id="wd-caption" class="task-input" maxlength="80" autocomplete="off" placeholder="Ex.: Meu cantinho" value="${esc(w.caption)}">
                     <span class="modal-label mt-4">Ajuste da foto</span>
                     ${seg('wd-fit', { cover: 'Preencher', contain: 'Foto inteira' }, w.fit)}
+                ` : w.type === 'youtube' ? `
+                    <label class="modal-label mt-4" for="wd-youtube-title">Título do widget</label>
+                    <input id="wd-youtube-title" class="task-input" maxlength="60" autocomplete="off" placeholder="Ex.: Música para trabalhar" value="${esc(w.title||'')}" />
+                    <label class="modal-label mt-4" for="wd-youtube-url">Link de vídeo ou playlist</label>
+                    <input id="wd-youtube-url" class="task-input" type="url" autocomplete="url" spellcheck="false" placeholder="https://www.youtube.com/watch?v=... ou /playlist?list=..." value="${esc(w.url||'')}" />
+                    <p class="text-xs text-gray-400 font-semibold mt-2">O player é recolhido sem remover o iframe; a reprodução pode continuar enquanto o navegador mantiver o player ativo.</p>
+                    <button data-act="wd-youtube-save" class="pill-btn primary w-full mt-3"><i class="fas fa-check mr-1"></i>Salvar vídeo / playlist</button>
                 ` : w.type === 'pet' ? `
                     <section class="aeropet-editor">
                       <div class="aeropet-art">${petArt()}</div>
@@ -6021,6 +6040,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                         renderSheet();
                     }).catch(() => toast('Não foi possível usar essa imagem'));
                 });
+            } else if (w.type === 'youtube') {
+                const ti=document.getElementById('wd-youtube-title'); if(ti)ti.addEventListener('input',()=>{w.title=ti.value.slice(0,60);saveWidgets();});
             } else if (w.type === 'clock') {
                 const sel=document.getElementById('wd-clock-style');
                 if(sel) sel.addEventListener('change',()=>{w.style=sel.value;saveWidgets();refresh();});
@@ -6043,6 +6064,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if (!w) return;
             if (act === 'wd-edit') { openWidgetEditor(w.id); }
             else if (act === 'wd-del') { removeWidget(w.id); }
+            else if (act === 'wd-youtube-save') { const p=parseYouTubeInput(document.getElementById('wd-youtube-url')?.value||''); if(!p){toast('Cole um link válido de vídeo ou playlist do YouTube');return;} w.url=p.url;w.title=libText(document.getElementById('wd-youtube-title')?.value,60);w.collapsed=false;saveWidgets();syncWidgetSections();applyLayout();playClick();renderSheet(); }
             else if (act === 'wd-fit') { w.fit = btn.dataset.value === 'contain' ? 'contain' : 'cover'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-style') { w.style = QUOTE_STYLES[btn.dataset.value] ? btn.dataset.value : 'paper'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
             else if (act === 'wd-weather-bg') { w.background=btn.dataset.value==='solid'?'solid':'transparent'; saveWidgets(); syncWidgetSections(); playClick(); renderSheet(); }
@@ -7778,7 +7800,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
         // ---------- WIDGETS da tela inicial (quantos quiser): Imagem e Citação ----------
         //  widgets = [ { id: 'w_...', type: 'image', image, caption, fit } | { id, type: 'quote', text, author, style } ]
-        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', clock: 'Relógio', balance:'Saldo disponível', budget:'Orçamento mensal', bills:'Próximas contas', categories:'Gastos por categoria', daily:'Daily Overview', focus:'Focus Session', wishlist:'Wishlist', countdown:'Countdown' };
+        const WIDGET_LABEL = { image: 'Imagem', quote: 'Citação', weather: 'Clima', luck: 'Sorte do dia', clock: 'Relógio', balance:'Saldo disponível', budget:'Orçamento mensal', bills:'Próximas contas', categories:'Gastos por categoria', daily:'Daily Overview', focus:'Focus Session', wishlist:'Wishlist', countdown:'Countdown', youtube:'YouTube' };
         const PET_DEFAULT={adopted:false,species:'cat',name:'',gender:'unspecified',ears:'upright',coat:'short',color:'snow',accessory:'bow',personality:['affectionate'],traits:[],happiness:100,bond:0,stars:0,level:1,xp:0};
         let aeroPet={...PET_DEFAULT,...(store.get(STORAGE_KEYS.pet,{})||{})};
         const PET_COLORS={snow:'#fff8f8',cream:'#f4dfc4',caramel:'#c88f68',cocoa:'#8c6c68',gray:'#b9b7c4',black:'#57525c',pink:'#f4c6d6',lilac:'#d9c9e8'};
@@ -7835,6 +7857,25 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             ['Devagar também se chega longe.', 'Ditado popular'], ['Celebre as pequenas vitórias.', ''],
             ['Água, alongamento e um sorriso.', ''], ['Você não precisa dar conta de tudo hoje.', '']
         ];
+        function parseYouTubeInput(value) {
+            const raw=String(value||'').trim();let u;try{u=new URL(raw);}catch{return null;}
+            const host=u.hostname.toLowerCase().replace(/^www\\./,'');
+            if(!['youtube.com','m.youtube.com','music.youtube.com','youtu.be','youtube-nocookie.com'].includes(host))return null;
+            const playlist=u.searchParams.get('list')||'';let video='';
+            if(host==='youtu.be')video=u.pathname.split('/').filter(Boolean)[0]||'';
+            else{video=u.searchParams.get('v')||'';if(!video){const p=u.pathname.split('/').filter(Boolean);if(['embed','shorts','live','v'].includes(p[0]))video=p[1]||'';}}
+            if(video&&!/^[A-Za-z0-9_-]{11}$/.test(video))return null;
+            if(playlist&&!/^[A-Za-z0-9_-]{10,120}$/.test(playlist))return null;
+            if(!video&&!playlist)return null;
+            return {video,playlist,url:video?'https://www.youtube.com/watch?v='+video+(playlist?'&list='+playlist:''):'https://www.youtube.com/playlist?list='+playlist};
+        }
+        function youtubeEmbedUrl(value){
+            const p=parseYouTubeInput(value);if(!p)return '';
+            const q=new URLSearchParams({playsinline:'1',rel:'0'});
+            if(p.playlist)q.set('list',p.playlist);
+            if(p.video)return 'https://www.youtube.com/embed/'+p.video+'?'+q.toString();
+            q.set('listType','playlist');return 'https://www.youtube.com/embed?'+q.toString();
+        }
         function normWidgets(raw) {
             return (Array.isArray(raw) ? raw : []).map(w => {
                 if (!w || !WIDGET_LABEL[w.type]) return null;
@@ -7845,6 +7886,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 if (['balance','budget','bills','categories','daily','focus','wishlist'].includes(w.type)) return { id, type:w.type };
                 if (w.type === 'countdown') return { id, type:'countdown', title:libText(w.title,60), date:isISO(w.date)?w.date:'' };
                 if (w.type === 'clock') return { id, type:'clock', style: ['digital','soft','retro','kawaii'].includes(w.style) ? w.style : 'soft' };
+                if (w.type === 'youtube') { const p=parseYouTubeInput(w.url); return {id,type:'youtube',url:p?p.url:'',title:libText(w.title,60),collapsed:!!w.collapsed}; }
                 return { id, type: 'quote', text: typeof w.text === 'string' ? w.text.slice(0, 240) : '', author: libText(w.author, 60), style: QUOTE_STYLES[w.style] ? w.style : 'paper' };
             }).filter(Boolean).filter((w, i, a) => a.findIndex(x => x.id === w.id) === i).slice(0, 30);
         }
@@ -7928,6 +7970,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if(w.type==='focus'){const f=store.get(STORAGE_KEYS.focus,null),mins=f&&Number.isFinite(f.remaining)?Math.ceil(f.remaining/60000):25;return `<div class="w-focus"><div class="wf-kicker"><i class="fas fa-hourglass-half"></i> FOCUS SESSION</div><strong class="wf-value">${String(mins).padStart(2,'0')}:00</strong><div class="wf-foot">Bloco de concentração</div><button class="wf-action" data-act="wd-focus-start"><i class="fas fa-play"></i> Começar foco</button></div>`;}
             if(w.type==='wishlist'){const items=(life.items||[]).filter(x=>x.status==='want').slice(0,3);return `<div class="w-wishlist"><div class="wf-kicker"><i class="fas fa-bookmark"></i> WISHLIST</div>${items.length?items.map(x=>`<div class="wf-row"><span><b>${esc(x.title)}</b><small>${esc(x.place||'Mundo Pessoal')}</small></span></div>`).join(''):'<div class="wf-empty">Marque itens como “Quero fazer” no Mundo Pessoal.</div>'}</div>`;}
             if(w.type==='countdown'){if(!w.date)return `<div class="w-countdown"><div class="wf-kicker"><i class="fas fa-hourglass-start"></i> COUNTDOWN</div><strong class="wf-value">—</strong><div class="wf-foot">Toque para configurar uma data</div></div>`;const target=new Date(w.date+'T00:00:00'),today=new Date();today.setHours(0,0,0,0);const days=Math.ceil((target-today)/86400000);return `<div class="w-countdown"><div class="wf-kicker"><i class="fas fa-hourglass-start"></i> COUNTDOWN</div><strong class="wf-value">${Math.abs(days)}</strong><div class="wf-foot">${esc(w.title||'Evento especial')} · ${days>0?'dias restantes':days===0?'é hoje':'dias desde a data'}</div></div>`;}
+            if(w.type==='youtube'){const src=youtubeEmbedUrl(w.url);if(!src)return `<div class="w-youtube is-empty"><div class="wy-head"><span><i class="fab fa-youtube"></i> ${esc(w.title||'YouTube')}</span></div><div class="wy-placeholder"><i class="fab fa-youtube"></i><b>Adicione um vídeo ou playlist</b><small>Abra o widget para colar o link</small></div></div>`;return `<div class="w-youtube${w.collapsed?' is-collapsed':''}"><div class="wy-head"><span><i class="fab fa-youtube"></i> ${esc(w.title||'YouTube')}</span><button type="button" class="wy-toggle" data-yt-toggle="${esc(w.id)}" aria-label="Minimizar player"><i class="fas fa-chevron-up"></i></button></div><div class="wy-stage"><iframe src="${src}" title="${esc(w.title||'YouTube player')}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>`;}
         // Conteúdo visual dos demais tipos de widget
             if (w.type === 'image') {
                 if (!w.image) return '<div class="w-image is-empty"><i class="fas fa-image" aria-hidden="true"></i><span>Toque para escolher uma foto</span></div>';
@@ -7968,7 +8011,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 }
                 const body = sec.querySelector('.w-body');
                 body.setAttribute('aria-label', `Editar widget ${label}`);
+                if(w.type==='youtube' && body.querySelector('iframe') && body.dataset.youtubeUrl===w.url) return;
                 body.innerHTML = widgetBodyHTML(w);
+                if(w.type==='youtube') body.dataset.youtubeUrl=w.url||'';
             });
         }
         syncWidgetSections();
@@ -8056,6 +8101,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // Tocar no widget (fora do modo Organizar) abre o editor dele
         homeEl.addEventListener('click', (e) => {
             const petCare=e.target.closest('[data-act="pet-care"]');if(petCare){e.preventDefault();e.stopPropagation();handleWidgetAction('pet-care',petCare);return;}
+            const yt=e.target.closest('[data-yt-toggle]');if(yt){e.preventDefault();e.stopPropagation();const w=widgetById(yt.dataset.ytToggle);if(w){w.collapsed=!w.collapsed;saveWidgets();yt.closest('.w-youtube')?.classList.toggle('is-collapsed',w.collapsed);yt.setAttribute('aria-expanded',String(!w.collapsed));yt.setAttribute('aria-label',w.collapsed?'Mostrar player':'Minimizar player');yt.innerHTML='<i class="fas fa-chevron-'+(w.collapsed?'down':'up')+'"></i>';}return;}
             const refreshBtn=e.target.closest('[data-act="wd-weather-refresh"]');if(refreshBtn){e.preventDefault();e.stopPropagation();const sec=refreshBtn.closest('.home-section');refreshWeatherWidget(widgetById(sec?.dataset.section));return;}
             const focusBtn=e.target.closest('[data-act="wd-focus-start"]');if(focusBtn){e.preventDefault();e.stopPropagation();handleWidgetAction('wd-focus-start',focusBtn);return;}
             const wb = e.target.closest('.w-body');
