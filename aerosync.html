@@ -2760,6 +2760,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
  min-width:0!important;min-height:0!important;max-width:100%!important;
  height:100%!important;max-height:100%;box-sizing:border-box;overflow:hidden;
 }
+#home-sections.editing{padding-bottom:calc(var(--aero-grid-row-size,68px)*5)}
 #home-sections.editing>.home-section{
  outline:1.5px dashed color-mix(in srgb,var(--icon,var(--accent)) 42%,transparent);
  outline-offset:2px;
@@ -8426,7 +8427,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             layout.positions=layout.positions&&typeof layout.positions==='object'?layout.positions:{};
             const totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
             homeEl.style.setProperty('--aero-grid-columns',String(totalCols));
-            homeEl.style.setProperty('--aero-grid-row-size',`calc(68px * ${uiScale})`);
+            const baseRow=window.matchMedia('(min-width:1200px)').matches?78:window.matchMedia('(min-width:800px)').matches?74:68;
+            homeEl.style.setProperty('--aero-grid-row-size',`calc(${baseRow}px * ${uiScale})`);
             // Posicionamento explícito: cada card ocupa células próprias; células não ocupadas permanecem vazias.
             const occupied=[];
             layout.order.forEach(id=>{
@@ -8674,6 +8676,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             setDragEnabled(false);
             frame.classList.remove('is-editing');
             document.getElementById('edit-bar').classList.add('hidden');
+            saveLayout();
             playClick();
             toast('Tela inicial organizada');
         }
