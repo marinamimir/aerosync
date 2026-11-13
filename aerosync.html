@@ -8477,6 +8477,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             homeEl.style.setProperty('--aero-grid-columns',String(totalCols));
             const baseRow=window.matchMedia('(min-width:1200px)').matches?78:window.matchMedia('(min-width:800px)').matches?74:68;
             homeEl.style.setProperty('--aero-grid-row-size',`calc(${baseRow}px * ${uiScale})`);
+            const baseGap=window.matchMedia('(min-width:1200px)').matches?16:window.matchMedia('(min-width:800px)').matches?14:Math.max(8,Math.min(16,window.innerWidth*.01));
+            homeEl.style.setProperty('--aero-grid-gap',String(baseGap*uiScale)+'px');
             // Posicionamento explícito: cada card ocupa células próprias; células não ocupadas permanecem vazias.
             const occupied=[];
             layout.order.forEach(id=>{
