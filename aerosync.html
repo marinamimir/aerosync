@@ -102,7 +102,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
 
         /* Carrossel de categorias: altura intrínseca e sem sobreposição no modo Organizar. */
-        #home-sections > .carousel-section { grid-column: span 4 !important; grid-row: auto !important; min-height: 238px; height:auto; overflow:visible !important; z-index:1; }
+        #home-sections > .carousel-section { min-width:0; max-width:100%; min-height:238px; height:auto; overflow:visible !important; z-index:1; }
         .carousel-section > .relative { min-height:238px; height:auto; overflow:visible; }
         .carousel-section .carousel-container { min-height:218px; height:auto; padding:30px 4px 48px; overflow-x:auto; overflow-y:visible; align-items:center; }
         .carousel-section .carousel-item { flex-shrink:0; }
@@ -2830,6 +2830,99 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 </style>
 
+
+<style id="alife-grid-foundation-v1">
+/* ALife Grid Foundation v1 — shared dimensional tokens; no transforms or data migration. */
+:root{
+  --alife-ui-scale:var(--ui-scale,1);
+  --alife-space-1:calc(4px * var(--alife-ui-scale));
+  --alife-space-2:calc(8px * var(--alife-ui-scale));
+  --alife-space-3:calc(12px * var(--alife-ui-scale));
+  --alife-space-4:calc(16px * var(--alife-ui-scale));
+  --alife-space-5:calc(20px * var(--alife-ui-scale));
+  --alife-space-6:calc(24px * var(--alife-ui-scale));
+  --alife-radius-sm:calc(10px * var(--alife-ui-scale));
+  --alife-radius-md:calc(16px * var(--alife-ui-scale));
+  --alife-radius-lg:calc(22px * var(--alife-ui-scale));
+  --alife-control-size:calc(42px * var(--alife-ui-scale));
+  --alife-grid-gap:calc(12px * var(--alife-ui-scale));
+  --alife-grid-row:calc(68px * var(--alife-ui-scale));
+}
+/* The dashboard grid and its resize math now share the same CSS dimensions. */
+#home-sections{
+  --alife-grid-columns:var(--aero-grid-columns,12);
+  --alife-grid-row:var(--aero-grid-row-size,calc(68px * var(--alife-ui-scale)));
+  --alife-grid-gap:var(--aero-grid-gap,calc(8px * var(--alife-ui-scale)));
+  grid-template-columns:repeat(var(--alife-grid-columns),minmax(0,1fr));
+  grid-auto-rows:minmax(var(--alife-grid-row),auto);
+  column-gap:var(--alife-grid-gap);
+  row-gap:var(--alife-grid-gap);
+}
+/* Editing mode exposes the actual cell rhythm, including intentionally empty cells. */
+#home-sections.editing{
+  background-image:
+    linear-gradient(to right,color-mix(in srgb,var(--accent) 12%,transparent) 1px,transparent 1px),
+    linear-gradient(to bottom,color-mix(in srgb,var(--accent) 12%,transparent) 1px,transparent 1px);
+  background-size:
+    calc((100% + var(--alife-grid-gap)) / var(--alife-grid-columns))
+    calc(var(--alife-grid-row) + var(--alife-grid-gap));
+  background-position:0 0;
+  background-repeat:repeat;
+}
+#home-sections.editing>.home-section{position:relative}
+#home-sections.editing>.home-section.is-resize-selected{
+  outline:1px solid color-mix(in srgb,var(--accent) 52%,transparent);
+  outline-offset:2px;
+}
+@media(prefers-reduced-motion:reduce){
+  #home-sections,.home-section{scroll-behavior:auto}
+}
+</style>
+
+<style id="alife-carousel-grid-fix-v1">
+/* Grid placement owns carousel geometry on every viewport; never hard-code a 4-column mobile span. */
+#home-sections>.carousel-section{min-width:0;max-width:100%;box-sizing:border-box}
+#home-sections>.carousel-section>.relative{min-width:0;max-width:100%;box-sizing:border-box}
+#home-sections>.carousel-section .carousel-container{min-width:0;max-width:100%;box-sizing:border-box}
+</style>
+
+<style id="alife-widget-renderer-v1">
+/* Widget renderer: the card's content may grow with its data; the grid owns placement, not clipping. */
+#home-sections>.widget-section{min-width:0;max-width:100%;box-sizing:border-box;container-type:inline-size}
+#home-sections>.widget-section>.w-body{display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;width:100%;height:auto;min-width:0;min-height:100%;max-width:100%;overflow:visible;box-sizing:border-box}
+#home-sections>.widget-section>.w-body>.w-finance,
+#home-sections>.widget-section>.w-body>.w-daily,
+#home-sections>.widget-section>.w-body>.w-focus,
+#home-sections>.widget-section>.w-body>.w-wishlist,
+#home-sections>.widget-section>.w-body>.w-countdown,
+#home-sections>.widget-section>.w-body>.w-weather,
+#home-sections>.widget-section>.w-body>.w-quote{
+  width:100%;height:auto;min-width:0;min-height:100%;max-width:100%;box-sizing:border-box;
+}
+#home-sections>.widget-section>.w-body>.w-quote{overflow-wrap:anywhere}
+#home-sections>.widget-section>.w-body>.w-quote p{max-width:100%;overflow-wrap:anywhere}
+#home-sections>.widget-section>.w-body>.w-weather{overflow:hidden}
+#home-sections>.widget-section>.w-body>.w-youtube{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#home-sections>.widget-section>.w-body>.w-image{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+@container (max-width:280px){
+  #home-sections>.widget-section>.w-body>.w-finance,
+  #home-sections>.widget-section>.w-body>.w-daily,
+  #home-sections>.widget-section>.w-body>.w-focus,
+  #home-sections>.widget-section>.w-body>.w-wishlist,
+  #home-sections>.widget-section>.w-body>.w-countdown,
+  #home-sections>.widget-section>.w-body>.w-weather,
+  #home-sections>.widget-section>.w-body>.w-quote{padding:clamp(8px,3cqi,12px);border-radius:16px}
+  #home-sections>.widget-section .wf-kicker{font-size:9px;letter-spacing:.035em}
+  #home-sections>.widget-section .wf-value{font-size:clamp(18px,8cqi,26px);overflow-wrap:anywhere}
+  #home-sections>.widget-section .w-weather-main{flex-wrap:wrap}
+  #home-sections>.widget-section .w-quote p{font-size:clamp(12px,5cqi,16px);line-height:1.35}
+}
+@container (min-width:281px) and (max-width:420px){
+  #home-sections>.widget-section .w-quote p{font-size:clamp(14px,4.5cqi,18px)}
+  #home-sections>.widget-section .wf-value{font-size:clamp(20px,7cqi,30px)}
+}
+/* YouTube and image media keep their own viewport clipping; text and data cards do not. */
+</style>
 </head>
 <body>
 
@@ -8429,6 +8522,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             homeEl.style.setProperty('--aero-grid-columns',String(totalCols));
             const baseRow=window.matchMedia('(min-width:1200px)').matches?78:window.matchMedia('(min-width:800px)').matches?74:68;
             homeEl.style.setProperty('--aero-grid-row-size',`calc(${baseRow}px * ${uiScale})`);
+            const baseGap=window.matchMedia('(min-width:1200px)').matches?16:window.matchMedia('(min-width:800px)').matches?14:Math.max(8,Math.min(16,window.innerWidth*.01));
+            homeEl.style.setProperty('--aero-grid-gap',String(baseGap*uiScale)+'px');
             // Posicionamento explícito: cada card ocupa células próprias; células não ocupadas permanecem vazias.
             const occupied=[];
             layout.order.forEach(id=>{
