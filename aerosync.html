@@ -6300,7 +6300,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <label class="theme-color-field">Cor suave <input type="color" id="custom-soft" value="${currentTheme?.soft || '#FFEAF4'}"></label>
                     <label class="theme-color-field">Ícones <input type="color" id="custom-icons" value="${currentTheme?.iconColor || currentTheme?.accent || '#D94F98'}"></label>
                 </div>
-                <div class="theme-live-preview" id="theme-live-preview" aria-live="polite"><span class="theme-preview-caption">Prévia da sua paleta</span><div class="theme-preview-card" id="theme-preview-card"><div class="theme-preview-top"><i class="fas fa-sparkles"></i><b>ALife</b><span>Hoje</span></div><div class="theme-preview-task"><i class="fas fa-circle-check"></i><span>Uma tarefa de exemplo</span><b>•••</b></div><div class="theme-preview-action">+ Nova tarefa</div></div></div>
+                <div class="theme-live-preview" id="theme-live-preview" aria-live="polite"><span class="theme-preview-caption">Prévia da sua paleta</span><div class="theme-preview-card" id="theme-preview-card" style="--preview-accent:${currentTheme?.accent || '#F06AAE'};--preview-surface:${currentTheme?.surface || '#FFF8FB'};--preview-soft:${currentTheme?.soft || '#FFEAF4'};--preview-icon:${currentTheme?.iconColor || currentTheme?.accent || '#D94F98'};--preview-ink:${document.documentElement.classList.contains('dark') ? '#f1f3f8' : '#374151'};--preview-on:${currentTheme?.on || '#fff'}"><div class="theme-preview-top"><i class="fas fa-sparkles"></i><b>ALife</b><span>Hoje</span></div><div class="theme-preview-task"><i class="fas fa-circle-check"></i><span>Uma tarefa de exemplo</span><b>•••</b></div><div class="theme-preview-action">+ Nova tarefa</div></div></div>
                 <button data-act="save-custom-theme" class="pill-btn primary w-full mt-2"><i class="fas fa-palette mr-1"></i>Salvar minha paleta</button>
                 ${customThemes.length ? `<div class="custom-theme-list mt-3"><span class="text-xs font-extrabold text-gray-500">Minhas paletas</span>${customThemes.map(t=>`<div class="custom-theme-row"><span class="custom-theme-swatch" style="background:linear-gradient(135deg,${t.accent2},${t.accent})"></span><span class="custom-theme-title">${esc(t.name)}</span><button class="custom-theme-delete" data-act="delete-custom-theme" data-id="${esc(t.id)}" aria-label="Excluir tema ${esc(t.name)}" title="Excluir tema"><i class="fas fa-trash"></i></button></div>`).join('')}</div>` : ''}
                 <span class="modal-label mt-4">Sons</span>
@@ -7804,7 +7804,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // 9. ORGANIZAR A TELA INICIAL (modo edição: evita trocar a ordem sem querer)
         //    Cada bloco muda de lugar (← →), de tamanho (metade / largura toda) e pode ser ocultado
         const homeEl = document.getElementById('home-sections');
-        homeEl.addEventListener('click',e=>{const b=e.target.closest('[data-fin-quick]');if(b){e.preventDefault();e.stopImmediatePropagation();playClick();openSheet('finance');openExpenseModal();}});
+        homeEl.addEventListener('click',e=>{const btn=e.target.closest('[data-fin-quick]');if(btn){e.preventDefault();e.stopImmediatePropagation();playClick();document.dispatchEvent(new CustomEvent('alife:quick-add-expense'));}});
         const mainScroll = document.getElementById('main-scroll');
         const SECTION_IDS = ['progress', 'date', 'carousel', 'focus', 'time', 'note', 'tasks'];
         const FIXED_FULL = ['carousel']; // tarefas agora podem ser redimensionadas
@@ -8773,6 +8773,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
     // =========================================================================
     //  POP-UP MODAL: INTERFACE DETALHADA PARA COMPRA (NOVA OU EDITAR)
     // =========================================================================
+    document.addEventListener('alife:quick-add-expense', () => { renderFin(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); openExpenseModal(); });
+
     function openExpenseModal(groupId = null) {
         let isEdit = !!groupId;
         let desc = '';
