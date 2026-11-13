@@ -2884,6 +2884,44 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections>.carousel-section>.relative{min-width:0;max-width:100%;box-sizing:border-box}
 #home-sections>.carousel-section .carousel-container{min-width:0;max-width:100%;box-sizing:border-box}
 </style>
+
+<style id="alife-widget-renderer-v1">
+/* Widget renderer: the card's content may grow with its data; the grid owns placement, not clipping. */
+#home-sections>.widget-section{min-width:0;max-width:100%;box-sizing:border-box;container-type:inline-size}
+#home-sections>.widget-section>.w-body{display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;width:100%;height:auto;min-width:0;min-height:100%;max-width:100%;overflow:visible;box-sizing:border-box}
+#home-sections>.widget-section>.w-body>.w-finance,
+#home-sections>.widget-section>.w-body>.w-daily,
+#home-sections>.widget-section>.w-body>.w-focus,
+#home-sections>.widget-section>.w-body>.w-wishlist,
+#home-sections>.widget-section>.w-body>.w-countdown,
+#home-sections>.widget-section>.w-body>.w-weather,
+#home-sections>.widget-section>.w-body>.w-quote{
+  width:100%;height:auto;min-width:0;min-height:100%;max-width:100%;box-sizing:border-box;
+}
+#home-sections>.widget-section>.w-body>.w-quote{overflow-wrap:anywhere}
+#home-sections>.widget-section>.w-body>.w-quote p{max-width:100%;overflow-wrap:anywhere}
+#home-sections>.widget-section>.w-body>.w-weather{overflow:hidden}
+#home-sections>.widget-section>.w-body>.w-youtube{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#home-sections>.widget-section>.w-body>.w-image{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+@container (max-width:280px){
+  #home-sections>.widget-section>.w-body>.w-finance,
+  #home-sections>.widget-section>.w-body>.w-daily,
+  #home-sections>.widget-section>.w-body>.w-focus,
+  #home-sections>.widget-section>.w-body>.w-wishlist,
+  #home-sections>.widget-section>.w-body>.w-countdown,
+  #home-sections>.widget-section>.w-body>.w-weather,
+  #home-sections>.widget-section>.w-body>.w-quote{padding:clamp(8px,3cqi,12px);border-radius:16px}
+  #home-sections>.widget-section .wf-kicker{font-size:9px;letter-spacing:.035em}
+  #home-sections>.widget-section .wf-value{font-size:clamp(18px,8cqi,26px);overflow-wrap:anywhere}
+  #home-sections>.widget-section .w-weather-main{flex-wrap:wrap}
+  #home-sections>.widget-section .w-quote p{font-size:clamp(12px,5cqi,16px);line-height:1.35}
+}
+@container (min-width:281px) and (max-width:420px){
+  #home-sections>.widget-section .w-quote p{font-size:clamp(14px,4.5cqi,18px)}
+  #home-sections>.widget-section .wf-value{font-size:clamp(20px,7cqi,30px)}
+}
+/* YouTube and image media keep their own viewport clipping; text and data cards do not. */
+</style>
 </style>
 </head>
 <body>
