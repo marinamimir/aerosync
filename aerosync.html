@@ -2479,6 +2479,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
 @media(max-width:799px){#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{right:6px;bottom:6px;width:48px;height:48px}}
 
+/* Escala estrutural real da dashboard: mais colunas quando compacta = cartões menores, não apenas texto menor. */
+#aerosync-dashboard-polish{}
+#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,4),minmax(0,1fr));grid-auto-rows:minmax(calc(68px*var(--aero-ui-scale,1)),auto)}
+@media(min-width:800px){#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,12),minmax(0,1fr));grid-auto-rows:minmax(calc(74px*var(--aero-ui-scale,1)),auto)}}
+@media(min-width:1200px){#home-sections{grid-auto-rows:minmax(calc(78px*var(--aero-ui-scale,1)),auto)}}
 /* Escala global dos widgets: dimensões internas, tipografia e densidade acompanham o controle de UI.
    CSS zoom preserva o fluxo de layout e as coordenadas de toque (ao contrário de transform:scale). */
 #home-sections{gap:calc(clamp(8px,1vw,16px)*var(--aero-ui-scale));grid-auto-rows:minmax(calc(68px*var(--aero-ui-scale)),auto)}
@@ -3144,6 +3149,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         function applyUIScale(value = uiScale, persist = false) {
             uiScale = Math.min(1.10, Math.max(0.78, Number(value) || 1));
             document.documentElement.style.setProperty('--ui-scale', String(uiScale));
+            document.documentElement.style.setProperty('--aero-ui-scale', String(uiScale));
+            window.dispatchEvent(new Event('aerosync:ui-scale-change'));
             document.documentElement.style.fontSize = (16 * uiScale) + 'px';
             const range = document.getElementById('ui-scale-range');
             const label = document.getElementById('ui-scale-value');
@@ -8072,7 +8079,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 const full = size === 'full' || size.startsWith('12x');
                 sec.classList.toggle('is-hidden', hidden);
                 sec.classList.toggle('is-full', full);
-                const wideGrid=window.matchMedia('(min-width:800px)').matches,totalCols=wideGrid?12:4;
+                const wideGrid=window.matchMedia('(min-width:800px)').matches,baseCols=wideGrid?12:4,totalCols=Math.max(baseCols,Math.round(baseCols/Math.max(.78,Math.min(1.10,uiScale))));
+                homeEl.style.setProperty('--aero-grid-columns', String(totalCols));
                 if(sec.dataset.widget){
                     let [cols,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[6,2];
                     if(sec.dataset.widget==='youtube')cols=Math.max(cols,wideGrid?3:9);
@@ -8107,6 +8115,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             });
         }
         applyLayout();
+        window.addEventListener('aerosync:ui-scale-change',()=>applyLayout());
         window.addEventListener('resize',()=>applyLayout(),{passive:true});
 
         // Adicionar / remover widgets
