@@ -1,6 +1,6 @@
 {
-  "version": "2026.11.13.10",
-  "build": 2026111310,
+  "version": "2026.11.13.11",
+  "build": 2026111311,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
     "Dashboard reconstruída sobre uma grade de células com posições explícitas e sem sobreposição entre widgets.",
@@ -8,6 +8,9 @@
     "Arraste o título de um widget selecionado para movê-lo pela grade; a posição é salva.",
     "A escala da interface altera a densidade da grade: células menores permitem composições mais compactas.",
     "Redimensionamento por bordas e cantos respeita os limites da grade e evita colisões.",
-    "Modo de edição simplificado: contorno nos widgets e controles exibidos somente no item selecionado."
+    "Modo de edição simplificado: contorno nos widgets e controles exibidos somente no item selecionado.",
+    "Widgets de conteúdo agora ampliam as linhas do grid para exibir textos, indicadores e ações sem cortes.",
+    "Arrastar e redimensionar widgets acompanha as medidas reais das linhas responsivas.",
+    "Correção do carrossel de categorias no layout mobile."
   ]
 }
