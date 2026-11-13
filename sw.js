@@ -5,7 +5,7 @@
    - Abrir o app: tenta a versão mais recente da rede; usa o cache apenas sem internet
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    ================================================ */
-const CACHE_VERSION = 'v42';
+const CACHE_VERSION = 'v43';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
