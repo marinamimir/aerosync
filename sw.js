@@ -6,7 +6,7 @@
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v40';
+const CACHE_VERSION = 'v41';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
@@ -18,16 +18,14 @@ const APP_SHELL = [
   './icons/apple-touch-icon.png'
 ];
 
-// 1. Instalação: baixa e guarda o app
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting()) // a versão nova assume sem esperar fechar as abas
+      .then(() => self.skipWaiting())
   );
 });
 
-// 2. Ativação: apaga caches de versões antigas
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
@@ -38,7 +36,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Documento principal: rede primeiro; cache somente como fallback offline.
 async function networkFirst(request, cacheKey = request) {
   const cache = await caches.open(CACHE_NAME);
   try {
@@ -54,7 +51,6 @@ async function networkFirst(request, cacheKey = request) {
   }
 }
 
-// Atualiza e armazena recursos auxiliares sem interromper o app se a rede falhar.
 async function fetchAndCache(request) {
   const response = await fetch(request);
   if (response && response.ok && response.type === 'basic') {
@@ -64,20 +60,17 @@ async function fetchAndCache(request) {
   return response;
 }
 
-// 3. Pedidos: navegação do app em rede primeiro; arquivos auxiliares em cache primeiro
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return; // não mexe em nada de outros sites (ex.: links úteis)
+  if (url.origin !== self.location.origin) return;
 
-  // A versão deve sempre vir da rede para detectar releases mesmo com o app instalado.
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(networkFirst(req));
     return;
   }
 
-  // App: sempre tenta obter o HTML publicado mais recente; cache apenas offline.
   const shell = new URL('./aerosync.html', self.registration.scope).href;
   const isApp = url.pathname === new URL(shell).pathname || url.href.split('?')[0] === self.registration.scope;
   if (req.mode === 'navigate' && isApp) {
@@ -85,7 +78,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Demais arquivos (manifest, ícones): cache, com atualização em segundo plano
   event.respondWith(
     caches.match(req, { ignoreSearch: true }).then((cached) => {
       const network = fetchAndCache(req).catch(() => cached);
