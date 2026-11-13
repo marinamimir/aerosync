@@ -102,7 +102,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
 
 
         /* Carrossel de categorias: altura intrínseca e sem sobreposição no modo Organizar. */
-        #home-sections > .carousel-section { grid-column: span 4 !important; grid-row: auto !important; min-height: 238px; height:auto; overflow:visible !important; z-index:1; }
+        #home-sections > .carousel-section { min-width:0; max-width:100%; min-height:238px; height:auto; overflow:visible !important; z-index:1; }
         .carousel-section > .relative { min-height:238px; height:auto; overflow:visible; }
         .carousel-section .carousel-container { min-height:218px; height:auto; padding:30px 4px 48px; overflow-x:auto; overflow-y:visible; align-items:center; }
         .carousel-section .carousel-item { flex-shrink:0; }
@@ -2877,6 +2877,13 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 @media(prefers-reduced-motion:reduce){
   #home-sections,.home-section{scroll-behavior:auto}
 }
+
+<style id="alife-carousel-grid-fix-v1">
+/* Grid placement owns carousel geometry on every viewport; never hard-code a 4-column mobile span. */
+#home-sections>.carousel-section{min-width:0;max-width:100%;box-sizing:border-box}
+#home-sections>.carousel-section>.relative{min-width:0;max-width:100%;box-sizing:border-box}
+#home-sections>.carousel-section .carousel-container{min-width:0;max-width:100%;box-sizing:border-box}
+</style>
 </style>
 </head>
 <body>
