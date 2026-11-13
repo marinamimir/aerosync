@@ -8085,7 +8085,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 if(sec.dataset.widget){
                     let [cols,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[6,2];
                     if(sec.dataset.widget==='youtube')cols=Math.max(cols,wideGrid?3:9);
-                    const visibleCols=wideGrid?cols:Math.max(1,Math.ceil(cols/3));
+                    const visibleCols=full?totalCols:(wideGrid?cols:Math.max(1,Math.ceil(cols/3)));
                     sec.style.gridColumn=`span ${Math.min(totalCols,visibleCols)}`;
                     sec.style.gridRow=`span ${rows}`;
                     sec.dataset.size=`${cols}x${rows}`;
