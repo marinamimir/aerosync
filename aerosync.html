@@ -2830,6 +2830,54 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 </style>
 
+
+<style id="alife-grid-foundation-v1">
+/* ALife Grid Foundation v1 — shared dimensional tokens; no transforms or data migration. */
+:root{
+  --alife-ui-scale:var(--ui-scale,1);
+  --alife-space-1:calc(4px * var(--alife-ui-scale));
+  --alife-space-2:calc(8px * var(--alife-ui-scale));
+  --alife-space-3:calc(12px * var(--alife-ui-scale));
+  --alife-space-4:calc(16px * var(--alife-ui-scale));
+  --alife-space-5:calc(20px * var(--alife-ui-scale));
+  --alife-space-6:calc(24px * var(--alife-ui-scale));
+  --alife-radius-sm:calc(10px * var(--alife-ui-scale));
+  --alife-radius-md:calc(16px * var(--alife-ui-scale));
+  --alife-radius-lg:calc(22px * var(--alife-ui-scale));
+  --alife-control-size:calc(42px * var(--alife-ui-scale));
+  --alife-grid-gap:calc(12px * var(--alife-ui-scale));
+  --alife-grid-row:calc(68px * var(--alife-ui-scale));
+}
+/* The dashboard grid and its resize math now share the same CSS dimensions. */
+#home-sections{
+  --alife-grid-columns:var(--aero-grid-columns,12);
+  --alife-grid-row:var(--aero-grid-row-size,calc(68px * var(--alife-ui-scale)));
+  --alife-grid-gap:var(--aero-grid-gap,calc(8px * var(--alife-ui-scale)));
+  grid-template-columns:repeat(var(--alife-grid-columns),minmax(0,1fr));
+  grid-auto-rows:minmax(var(--alife-grid-row),auto);
+  column-gap:var(--alife-grid-gap);
+  row-gap:var(--alife-grid-gap);
+}
+/* Editing mode exposes the actual cell rhythm, including intentionally empty cells. */
+#home-sections.editing{
+  background-image:
+    linear-gradient(to right,color-mix(in srgb,var(--accent) 12%,transparent) 1px,transparent 1px),
+    linear-gradient(to bottom,color-mix(in srgb,var(--accent) 12%,transparent) 1px,transparent 1px);
+  background-size:
+    calc((100% + var(--alife-grid-gap)) / var(--alife-grid-columns))
+    calc(var(--alife-grid-row) + var(--alife-grid-gap));
+  background-position:0 0;
+  background-repeat:repeat;
+}
+#home-sections.editing>.home-section{position:relative}
+#home-sections.editing>.home-section.is-resize-selected{
+  outline:1px solid color-mix(in srgb,var(--accent) 52%,transparent);
+  outline-offset:2px;
+}
+@media(prefers-reduced-motion:reduce){
+  #home-sections,.home-section{scroll-behavior:auto}
+}
+</style>
 </head>
 <body>
 
