@@ -1,12 +1,11 @@
 /* ================================================
    ALife — Service Worker (funciona offline)
    Estratégia:
-   - Ao instalar: guarda o app inteiro no cache (o HTML já tem CSS, fontes e ícones embutidos)
+   - Ao instalar: guarda o app inteiro no cache
    - Abrir o app: tenta a versão mais recente da rede; usa o cache apenas sem internet
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
-   Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v41';
+const CACHE_VERSION = 'v42';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
