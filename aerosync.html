@@ -10,6 +10,7 @@
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
     <script>try{var a=JSON.parse(localStorage.getItem('aerosync.appearance')||'{}')||{};var dk=a.mode==='dark'||(a.mode!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(dk)document.documentElement.classList.add('dark');if(a.style==='simple')document.documentElement.setAttribute('data-style','simple');if(a.glass==='soft'||a.glass==='full')document.documentElement.setAttribute('data-glass',a.glass);
     /* tema salvo: aplica as cores antes de desenhar */var th=JSON.parse(localStorage.getItem('aerosync.theme')||'null');if(th&&th.id){var st=document.documentElement.style,ok=function(c){return typeof c==='string'&&/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c)};[['--theme-accent','accent'],['--theme-accent-2','accent2'],['--theme-soft','soft'],['--theme-glow','glow'],['--on-accent','on'],['--surface','surface'],['--page','page'],['--user-icon-color','iconColor']].forEach(function(k){if(ok(th[k[1]]))st.setProperty(k[0],th[k[1]])});}}catch(e){}</script>
+    <script>try{var z=Number(localStorage.getItem('aerosync.uiScale'));if(Number.isFinite(z)&&z>0){z=Math.min(1.10,Math.max(.78,z));document.documentElement.style.setProperty('--ui-scale',String(z));document.documentElement.style.fontSize=(16*z)+'px';}}catch(e){}</script>
     <script>
     // Diagnóstico temporário de boot: exibe erros sem alterar dados do usuário.
     (function () {
