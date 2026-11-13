@@ -2923,6 +2923,48 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 /* YouTube and image media keep their own viewport clipping; text and data cards do not. */
 </style>
+<style id="alife-widget-intrinsic-sizing-v2">
+/* Resolve the legacy canvas override: content widgets size to their content, grid tracks absorb the extra height. */
+#home-sections{
+  grid-auto-rows:minmax(var(--aero-grid-row-size,68px),max-content)!important;
+  align-items:stretch!important;
+}
+#home-sections>.widget-section{
+  height:auto!important;min-height:max-content!important;max-height:none!important;
+  align-self:stretch!important;overflow:visible!important;box-sizing:border-box;
+}
+#home-sections>.widget-section>.w-body{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;box-sizing:border-box;
+}
+#home-sections>.widget-section>.w-body>*{
+  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;flex:0 0 auto!important;box-sizing:border-box;
+}
+/* Text/data cards must never clip their own labels, values, or actions. */
+#home-sections>.widget-section>.w-body>.w-finance,
+#home-sections>.widget-section>.w-body>.w-daily,
+#home-sections>.widget-section>.w-body>.w-focus,
+#home-sections>.widget-section>.w-body>.w-wishlist,
+#home-sections>.widget-section>.w-body>.w-countdown,
+#home-sections>.widget-section>.w-body>.w-weather,
+#home-sections>.widget-section>.w-body>.w-quote{
+  height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important;
+}
+/* Media keeps intentional crop/player boundaries while participating in the new auto-height grid. */
+#home-sections>.widget-section>.w-body>.w-image{
+  height:auto!important;max-height:none!important;overflow:hidden!important;
+}
+#home-sections>.widget-section>.w-body>.w-image img{
+  display:block;width:100%!important;height:auto!important;max-height:none!important;
+}
+#home-sections>.widget-section>.w-body>.w-youtube{
+  height:auto!important;max-height:none!important;overflow:hidden!important;
+}
+#home-sections>.widget-section .wy-stage{width:100%;max-width:100%;box-sizing:border-box}
+#home-sections>.widget-section .wy-stage iframe{width:100%;max-width:100%;box-sizing:border-box}
+</style>
 </head>
 <body>
 
@@ -8497,6 +8539,32 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const p=layout.positions[id];
             return p?{x:Math.max(0,Math.round(p.x/uiScale)),y:Math.max(0,Math.round(p.y/uiScale))}:null;
         }
+                function gridTrackMetrics(){
+            const cs=getComputedStyle(homeEl),raw=cs.gridTemplateRows||'';
+            const tracks=(raw.match(/-?\d+(?:\.\d+)?px/g)||[]).map(v=>parseFloat(v)).filter(v=>Number.isFinite(v)&&v>=0);
+            return{tracks,gap:parseFloat(cs.rowGap)||0,fallback:68*uiScale};
+        }
+        function gridRowIndexAtOffset(offset){
+            const m=gridTrackMetrics(),target=Math.max(0,offset);
+            if(!m.tracks.length)return Math.max(0,Math.round(target/(m.fallback+m.gap)));
+            let cursor=0,best=0,bestDistance=Infinity;
+            for(let i=0;i<m.tracks.length;i++){
+                const distance=Math.abs(target-cursor);
+                if(distance<bestDistance){bestDistance=distance;best=i;}
+                cursor+=m.tracks[i]+m.gap;
+            }
+            if(target>cursor){
+                const step=(m.tracks[m.tracks.length-1]||m.fallback)+m.gap;
+                const extra=Math.round((target-cursor)/Math.max(1,step));
+                return m.tracks.length+Math.max(0,extra);
+            }
+            return best;
+        }
+        function gridRowStepFor(y,rows){
+            const m=gridTrackMetrics(),slice=m.tracks.slice(Math.max(0,y),Math.max(0,y)+Math.max(1,rows));
+            if(!slice.length)return m.fallback+m.gap;
+            return Math.max(8,(slice.reduce((a,v)=>a+v,0)/slice.length)+m.gap);
+        }
         function gridRectIsFree(id,x,y,cols,rows,totalCols){
             return layout.order.every(otherId=>{
                 if(otherId===id||layout.hidden.includes(otherId))return true;
@@ -8661,12 +8729,13 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if(e.cancelable)e.preventDefault();
             const rect=homeEl.getBoundingClientRect(),cs=getComputedStyle(homeEl);
             const totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
-            const gapX=parseFloat(cs.columnGap)||0,gapY=parseFloat(cs.rowGap)||0;
-            const cellW=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols,cellH=parseFloat(cs.gridAutoRows)||68*uiScale;
-            const stepX=cellW+gapX,stepY=cellH+gapY;
+            const gapX=parseFloat(cs.columnGap)||0;
+            const cellW=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
+            const stepX=cellW+gapX;
             const {cols,rows,full}=sectionGridSize(st.id,totalCols);
             let x=full?0:Math.max(0,Math.min(totalCols-cols,Math.round((e.clientX-st.offsetX-rect.left)/stepX)));
-            let y=Math.max(0,Math.round((e.clientY-st.offsetY-rect.top)/stepY));
+            const targetTopOffset=e.clientY-st.offsetY-rect.top;
+            let y=gridRowIndexAtOffset(targetTopOffset);
             if(gridRectIsFree(st.id,x,y,cols,rows,totalCols)){
                 st.preview={x,y};
                 st.sec.style.gridColumn=`${x+1} / span ${cols}`;
@@ -8726,7 +8795,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||0,gapY=parseFloat(gridStyle.rowGap)||0;
             const cellW=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
             const colStep=cellW+gapX;
-            const rowHeight=parseFloat(gridStyle.gridAutoRows)||68*uiScale,rowStep=rowHeight+gapY;
+            const rowStep=gridRowStepFor(pos.y,current.rows);
             resizeState={id,sec,grip,dir,startX:e.clientX,startY:e.clientY,x:pos.x,y:pos.y,storedCols:current.cols,rows:current.rows,totalCols,colStep:Math.max(8,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,canResizeX:id!=='tasks',pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id),previewPosition:{x:pos.x,y:pos.y}};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
