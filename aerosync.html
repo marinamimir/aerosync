@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111307">
+    <meta name="aero-build" content="2026111308">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2507,7 +2507,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
  #home-sections{grid-auto-rows:minmax(calc(78px*var(--aero-ui-scale)),auto);gap:calc(16px*var(--aero-ui-scale))}
 }
 /* Mantém alvos de toque confortáveis mesmo quando a interface está compacta. */
-#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{min-width:44px;min-height:44px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle{min-width:44px;min-height:44px}
 
 /* Escala estrutural real da dashboard: mais colunas quando compacta = cartões menores, não apenas texto menor. */
 #aerosync-dashboard-polish{}
@@ -2555,6 +2555,101 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections .w-finance,#home-sections .w-daily,#home-sections .w-focus,#home-sections .w-wishlist,#home-sections .w-countdown{padding:calc(14px * var(--aero-ui-scale,1));gap:calc(7px * var(--aero-ui-scale,1))}
 #home-sections .w-youtube{padding:calc(10px * var(--aero-ui-scale,1));gap:calc(8px * var(--aero-ui-scale,1))}
 #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{min-width:48px;min-height:48px}
+</style>
+
+
+<style id="alife-widget-fit-v1308">
+/* Conteúdo consciente do espaço disponível: o card dita o layout, não o contrário. */
+#home-sections>.widget-section>.w-body{container-type:size;container-name:alife-widget;min-width:0;min-height:0}
+#home-sections>.widget-section>.w-body>*{min-width:0;min-height:0;max-width:100%;max-height:100%;box-sizing:border-box}
+#home-sections>.widget-section .w-weather,
+#home-sections>.widget-section .w-image,
+#home-sections>.widget-section .w-quote,
+#home-sections>.widget-section .w-finance,
+#home-sections>.widget-section .w-daily,
+#home-sections>.widget-section .w-focus,
+#home-sections>.widget-section .w-wishlist,
+#home-sections>.widget-section .w-countdown,
+#home-sections>.widget-section .w-youtube{min-height:0;max-width:100%;box-sizing:border-box}
+#home-sections>.widget-section .w-weather{padding:clamp(6px,2.4cqi,15px);gap:clamp(3px,1.5cqi,8px);overflow:hidden}
+#home-sections>.widget-section .w-weather-head{gap:4px;min-width:0;font-size:clamp(7px,2.2cqi,10px)}
+#home-sections>.widget-section .w-weather-head>span{min-width:0;overflow-wrap:anywhere}
+#home-sections>.widget-section .w-weather-refresh{flex:0 0 auto}
+#home-sections>.widget-section .w-weather-main{min-width:0;gap:clamp(4px,2cqi,12px)}
+#home-sections>.widget-section .w-weather-main i{flex:0 1 auto;font-size:clamp(17px,7cqi,30px)}
+#home-sections>.widget-section .w-weather-main b{min-width:0;font-size:clamp(18px,8cqi,34px);overflow-wrap:anywhere}
+#home-sections>.widget-section .w-weather-desc,
+#home-sections>.widget-section .w-weather small{font-size:clamp(8px,2.5cqi,12px);overflow-wrap:anywhere}
+#home-sections>.widget-section .w-quote{padding:clamp(8px,3cqi,18px);gap:clamp(2px,1.3cqi,7px);overflow:hidden}
+#home-sections>.widget-section .w-quote>i{font-size:clamp(12px,4cqi,20px)}
+#home-sections>.widget-section .w-quote p{font-size:clamp(10px,4.2cqi,17px);line-height:1.25;overflow-wrap:anywhere;word-break:normal}
+#home-sections>.widget-section .w-quote cite{font-size:clamp(8px,2.8cqi,12px);line-height:1.25;overflow-wrap:anywhere}
+#home-sections>.widget-section .w-finance,
+#home-sections>.widget-section .w-daily,
+#home-sections>.widget-section .w-focus,
+#home-sections>.widget-section .w-wishlist,
+#home-sections>.widget-section .w-countdown{padding:clamp(7px,2.8cqi,15px);gap:clamp(3px,1.5cqi,8px);justify-content:space-evenly;overflow:hidden}
+#home-sections>.widget-section .wf-kicker{min-width:0;font-size:clamp(7px,2.3cqi,10px);letter-spacing:.07em;overflow-wrap:anywhere}
+#home-sections>.widget-section .wf-kicker i{flex:0 0 auto;font-size:clamp(9px,3cqi,13px)}
+#home-sections>.widget-section .wf-value{font-size:clamp(17px,7cqi,30px);line-height:1.02;overflow-wrap:anywhere}
+#home-sections>.widget-section .wf-foot,
+#home-sections>.widget-section .wf-empty{font-size:clamp(8px,2.6cqi,11px);line-height:1.3;overflow-wrap:anywhere}
+#home-sections>.widget-section .wf-mini{min-width:0;gap:4px;font-size:clamp(8px,2.5cqi,11px)}
+#home-sections>.widget-section .wf-mini>*{min-width:0;overflow-wrap:anywhere}
+#home-sections>.widget-section .wf-track{height:clamp(3px,1.5cqi,7px);flex:0 0 auto}
+#home-sections>.widget-section .wf-row{min-width:0;gap:4px;padding:clamp(2px,1.5cqi,7px) 0;font-size:clamp(8px,2.5cqi,11px)}
+#home-sections>.widget-section .wf-row span{min-width:0;max-width:100%}
+#home-sections>.widget-section .wf-row b{white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+#home-sections>.widget-section .wf-row small{font-size:clamp(7px,2.1cqi,9px);overflow-wrap:anywhere}
+#home-sections>.widget-section .wf-empty{padding:2px 0}
+#home-sections>.widget-section .wf-action{max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:clamp(5px,2cqi,9px) clamp(7px,2.5cqi,12px)}
+#home-sections>.widget-section .w-image{overflow:hidden}
+#home-sections>.widget-section .w-image img{min-width:0;min-height:0}
+#home-sections>.widget-section .w-youtube{padding:clamp(5px,2.5cqi,10px);overflow:hidden}
+#home-sections>.widget-section .w-youtube .wy-head{min-width:0;overflow-wrap:anywhere}
+@container alife-widget (max-height: 116px){
+  #home-sections>.widget-section .w-weather,
+  #home-sections>.widget-section .w-finance,
+  #home-sections>.widget-section .w-daily,
+  #home-sections>.widget-section .w-focus,
+  #home-sections>.widget-section .w-wishlist,
+  #home-sections>.widget-section .w-countdown{justify-content:center;gap:3px;padding:5px}
+  #home-sections>.widget-section .w-quote{justify-content:center;gap:2px;padding:6px}
+  #home-sections>.widget-section .wf-track{height:3px}
+  #home-sections>.widget-section .wf-row{padding:2px 0}
+}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle{display:block!important;position:absolute;z-index:90;background:var(--theme-accent,var(--accent));border:2px solid rgba(255,255,255,.98);box-shadow:0 3px 12px rgba(90,50,75,.24);touch-action:none!important;pointer-events:auto}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{left:50%;width:56px;height:44px;border-radius:14px;transform:translateX(-50%)}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n{top:-13px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{bottom:-13px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{top:50%;width:44px;height:56px;border-radius:14px;transform:translateY(-50%)}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e{right:-13px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{left:-13px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-ne,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-sw,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-nw{width:44px;height:44px;border-radius:14px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-ne{right:-10px;top:-10px;transform:none}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{right:-10px;bottom:-10px;top:auto;left:auto;transform:none}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-sw{left:-10px;bottom:-10px;transform:none}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-nw{left:-10px;top:-10px;transform:none}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle::after{content:'';position:absolute;inset:50% auto auto 50%;width:12px;height:12px;border:2px solid #fff;border-radius:4px;transform:translate(-50%,-50%)}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n::after,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s::after{width:20px;height:4px;border:0;border-radius:4px;background:#fff}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e::after,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w::after{width:4px;height:20px;border:0;border-radius:4px;background:#fff}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-ne::after,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-sw::after{border-left:0;border-bottom:0}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se::after,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-nw::after{border-right:0;border-top:0}
+@media(max-width:799px){
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n,
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{width:60px;height:48px}
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e,
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{width:48px;height:60px}
+}
 </style>
 
 </head>
@@ -8030,7 +8125,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button class="st-btn st-danger" data-st="wdel" aria-label="Remover ${esc(label)}" title="Remover"><i class="fas fa-trash"></i></button>` : ''}
                 </div>`;
             sec.prepend(tools);
-            sec.insertAdjacentHTML('beforeend', '<button type="button" class="widget-resize-handle resize-se" data-st="resize" data-dir="se" aria-label="Arraste para redimensionar o widget"></button>');
+            sec.insertAdjacentHTML('beforeend', ['n','ne','e','se','s','sw','w','nw'].map(dir => `<button type="button" class="widget-resize-handle resize-${dir}" data-st="resize" data-dir="${dir}" aria-label="Redimensionar ${esc(label)}"></button>`).join(''));
         }
         SECTION_IDS.forEach(id => addSectionTools(sectionEl(id), false));
 
@@ -8267,13 +8362,13 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;
             e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
             setResizeSelection(sec);
-            const id=sec.dataset.section,totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
+            const id=sec.dataset.section,dir=grip.dataset.dir||'se',totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
             const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
             const colStep=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
             const baseRow=window.matchMedia('(min-width:1200px)').matches?78:window.matchMedia('(min-width:800px)').matches?74:68;
-            const rowStep=Math.max(24,baseRow*uiScale+gapY);
-            resizeState={id,sec,grip,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,totalCols,colStep:Math.max(12,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            const rowStep=Math.max(18,baseRow*uiScale+gapY);
+            resizeState={id,sec,grip,dir,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,totalCols,colStep:Math.max(8,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
@@ -8281,7 +8376,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if(!resizeState||e.pointerId!==resizeState.pointerId)return;
             if(e.cancelable)e.preventDefault();
             const st=resizeState,dx=e.clientX-st.startX,dy=e.clientY-st.startY;
-            const deltaCols=Math.round(dx/st.colStep),deltaRows=Math.round(dy/st.rowStep);
+            const dir=st.dir||'se',movesW=dir.includes('w'),movesE=dir.includes('e'),movesN=dir.includes('n'),movesS=dir.includes('s');
+            const deltaCols=movesE||movesW?Math.round((movesW?-dx:dx)/st.colStep):0;
+            const deltaRows=movesN||movesS?Math.round((movesN?-dy:dy)/st.rowStep):0;
             const col=Math.max(st.minCols,Math.min(12,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
             const next=`${col}x${row}`;
             if(st.previewSize!==next){
@@ -10272,8 +10369,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   function ensureUpdateUI(){
     if(document.getElementById('aero-update-overlay')) return;
     const overlay=document.createElement('div'); overlay.id='aero-update-overlay'; overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true'); overlay.setAttribute('aria-labelledby','aero-update-title');
-    overlay.innerHTML='<section id="aero-update-card" style="position:relative"><button id="aero-update-close" type="button" aria-label="Fechar">×</button><h2 id="aero-update-title">Uma atualização chegou! ✨</h2><p id="aero-update-copy">Há uma versão nova do ALife disponível. Atualize quando for conveniente.</p><div id="aero-update-actions"><button id="aero-update-later" type="button">Mais tarde</button><button id="aero-update-now" type="button">Atualizar agora</button></div></section>';
-    const pill=document.createElement('button'); pill.id='aero-update-pill'; pill.type='button'; pill.innerHTML='<span class="aero-update-dot"></span> Atualização disponível';
+    overlay.innerHTML='<section id="aero-update-card" style="position:relative"><button id="aero-update-close" type="button" aria-label="Fechar">×</button><h2 id="aero-update-title">Atualização disponível</h2><p id="aero-update-copy">Uma nova versão do ALife está pronta. Você pode instalar agora ou continuar usando o app e atualizar depois.</p><div id="aero-update-actions"><button id="aero-update-later" type="button">Depois</button><button id="aero-update-now" type="button">Atualizar</button></div></section>';
+    const pill=document.createElement('button'); pill.id='aero-update-pill'; pill.type='button'; pill.innerHTML='<span class="aero-update-dot"></span> Atualizar ALife';
     document.body.append(overlay,pill);
     const dismiss=()=>{overlay.classList.remove('visible');pill.classList.add('visible');updateDialogShown=false;try{localStorage.setItem(DISMISSED_KEY,String(latestBuild));}catch(e){}};
     overlay.querySelector('#aero-update-later').addEventListener('click',dismiss);
@@ -10281,7 +10378,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
     pill.addEventListener('click',()=>{overlay.classList.add('visible');pill.classList.remove('visible');updateDialogShown=true;});
     overlay.addEventListener('click',e=>{if(e.target===overlay)dismiss();});
     overlay.querySelector('#aero-update-now').addEventListener('click',async()=>{
-      const b=overlay.querySelector('#aero-update-now'); b.disabled=true; b.textContent='Atualizando…';
+      const b=overlay.querySelector('#aero-update-now'); b.disabled=true; b.textContent='Instalando…';
       try {
         if('serviceWorker' in navigator){
           const reg=await navigator.serviceWorker.getRegistration('./');
