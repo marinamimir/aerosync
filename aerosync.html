@@ -8390,7 +8390,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
         function sectionGridSize(id,totalCols){
             const raw=String(layout.sizes[id]||defaultSizeOf(id));
-            const match=/^(\\d{1,2})x(\\d{1,2})$/.exec(raw);
+            const match=/^(\d{1,2})x(\d{1,2})$/.exec(raw);
             let cols=match?Number(match[1]):6,rows=match?Number(match[2]):2;
             cols=Math.max(1,Math.min(24,cols));rows=Math.max(1,Math.min(16,rows));
             const full=FIXED_FULL.includes(id)||id==='tasks'||raw==='full'||raw.startsWith('12x')||cols>=totalCols;
@@ -8606,6 +8606,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             try{if(st.grip.hasPointerCapture?.(e.pointerId))st.grip.releasePointerCapture(e.pointerId);}catch(_){}
             // Persiste o tamanho exato da prévia antes de recalcular o grid.
             layout.sizes[st.id]=st.previewSize;
+            layout.positions[st.id]={x:st.previewPosition.x*uiScale,y:st.previewPosition.y*uiScale};
             st.sec.dataset.size=st.previewSize;
             applyLayout();saveLayout();
         };
@@ -8622,15 +8623,14 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;
             e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
             setResizeSelection(sec);
-            const id=sec.dataset.section,dir=grip.dataset.dir||'se',totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
-            const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
-            const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
-            const colStep=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
-            // Lê a altura real da trilha CSS (não estima pelo conteúdo do widget).
-            // Isso mantém a prévia e o valor salvo usando exatamente a mesma unidade.
-            const firstTrack=parseFloat(gridStyle.gridTemplateRows)||parseFloat(gridStyle.gridAutoRows)||68*uiScale;
-            const rowStep=Math.max(12,firstTrack+gapY);
-            resizeState={id,sec,grip,dir,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,totalCols,colStep:Math.max(8,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            const id=sec.dataset.section,dir=grip.dataset.dir||'se';
+            const totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
+            const current=sectionGridSize(id,totalCols),pos=gridPositionFor(id,totalCols)||{x:0,y:0};
+            const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||0,gapY=parseFloat(gridStyle.rowGap)||0;
+            const cellW=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
+            const colStep=cellW+gapX;
+            const rowHeight=parseFloat(gridStyle.gridAutoRows)||68*uiScale,rowStep=rowHeight+gapY;
+            resizeState={id,sec,grip,dir,startX:e.clientX,startY:e.clientY,x:pos.x,y:pos.y,storedCols:current.cols,rows:current.rows,totalCols,colStep:Math.max(8,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,canResizeX:id!=='tasks',pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id),previewPosition:{x:pos.x,y:pos.y}};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
@@ -8639,16 +8639,18 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if(e.cancelable)e.preventDefault();
             const st=resizeState,dx=e.clientX-st.startX,dy=e.clientY-st.startY;
             const dir=st.dir||'se',movesW=dir.includes('w'),movesE=dir.includes('e'),movesN=dir.includes('n'),movesS=dir.includes('s');
-            const deltaCols=movesE||movesW?Math.round((movesW?-dx:dx)/st.colStep):0;
-            const deltaRows=movesN||movesS?Math.round((movesN?-dy:dy)/st.rowStep):0;
-            const col=Math.max(st.minCols,Math.min(12,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
+            const deltaCols=st.canResizeX&&(movesE||movesW)?Math.round((movesW?-dx:dx)/st.colStep):0;
+            const deltaRows=(movesN||movesS)?Math.round((movesN?-dy:dy)/st.rowStep):0;
+            const col=Math.max(st.minCols,Math.min(st.totalCols,st.storedCols+deltaCols));
+            const row=Math.max(1,Math.min(16,st.rows+deltaRows));
+            const x=movesW?Math.max(0,st.x+st.storedCols-col):st.x;
+            const y=movesN?Math.max(0,st.y+st.rows-row):st.y;
+            if(!gridRectIsFree(st.id,x,y,col,row,st.totalCols))return;
             const next=`${col}x${row}`;
-            if(st.previewSize!==next){
-                st.previewSize=next;
-                st.sec.style.gridColumn=`span ${col>=12?st.totalCols:col}`;
-                st.sec.style.gridRow=`span ${row}`;
-                st.sec.dataset.size=next;
-            }
+            st.previewSize=next;st.previewPosition={x,y};
+            st.sec.style.gridColumn=`${x+1} / span ${col}`;
+            st.sec.style.gridRow=`${y+1} / span ${row}`;
+            st.sec.dataset.size=next;
         },{passive:false});
         window.addEventListener('pointerup',finishWidgetResize);
         window.addEventListener('pointercancel',finishWidgetResize);
@@ -8663,7 +8665,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             frame.classList.add('is-editing');
             document.getElementById('edit-bar').classList.remove('hidden');
             if (audio) audio.resume().then(playPop).catch(() => {});
-            toast('Use as setas para mudar a ordem');
+            toast('Toque em um widget para selecionar; arraste o título para mover');
         }
         function exitEditMode() {
             if (!isEditing()) return;
