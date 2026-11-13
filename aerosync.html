@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111308">
+    <meta name="aero-build" content="2026111309">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2649,6 +2649,86 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
  #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{width:60px;height:48px}
  #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e,
  #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{width:48px;height:60px}
+}
+</style>
+
+
+<style id="alife-cocoon-resize-v1309">
+/* Seleção limpa inspirada no Cocoon: o contorno, não os puxadores, comunica o estado. */
+#home-sections.editing .home-section.is-resize-selected{
+  outline:2px solid color-mix(in srgb,var(--theme-accent,var(--accent)) 88%,white);
+  outline-offset:3px;
+  border-radius:24px;
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--theme-accent,var(--accent)) 13%,transparent);
+  z-index:75!important;
+  overflow:visible!important;
+  touch-action:pan-y;
+}
+#home-sections.editing .home-section.is-resizing{
+  outline-width:2px;
+  box-shadow:0 0 0 6px color-mix(in srgb,var(--theme-accent,var(--accent)) 18%,transparent);
+  transition:none!important;
+}
+/* As oito zonas continuam fáceis de tocar, mas são invisíveis: sem botões enormes. */
+#home-sections.editing .home-section>.widget-resize-handle{display:none!important}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle{
+  display:block!important;position:absolute;z-index:90;
+  padding:0;margin:0;border:0;border-radius:0;
+  background:transparent!important;box-shadow:none!important;
+  opacity:1;touch-action:none!important;pointer-events:auto;
+  -webkit-tap-highlight-color:transparent;
+}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle::after{display:none!important;content:none!important}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{
+  left:24px;right:24px;width:auto;height:22px;transform:none;border-radius:12px;
+}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n{top:-8px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{bottom:-8px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{
+  top:24px;bottom:24px;width:22px;height:auto;transform:none;border-radius:12px;
+}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e{right:-8px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{left:-8px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-ne,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-sw,
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-nw{
+  width:28px;height:28px;transform:none;border-radius:9px;
+}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-ne{right:-5px;top:-5px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{right:-5px;bottom:-5px;top:auto;left:auto}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-sw{left:-5px;bottom:-5px}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-nw{left:-5px;top:-5px}
+/* Trilhas com altura determinística: o conteúdo não pode impedir um widget de ficar achatado. */
+#home-sections{grid-auto-rows:calc(68px*var(--aero-ui-scale,1))}
+@media(min-width:800px){#home-sections{grid-auto-rows:calc(74px*var(--aero-ui-scale,1))}}
+@media(min-width:1200px){#home-sections{grid-auto-rows:calc(78px*var(--aero-ui-scale,1))}}
+#home-sections>.widget-section{min-width:0!important;min-height:0!important;height:100%;align-self:stretch}
+#home-sections>.widget-section>.w-body{height:100%!important;min-width:0!important;min-height:0!important;max-height:100%;overflow:hidden}
+#home-sections>.widget-section>.w-body>*{height:100%!important;min-width:0!important;min-height:0!important;max-height:100%;overflow:hidden}
+#home-sections>.widget-section .w-weather,
+#home-sections>.widget-section .w-image,
+#home-sections>.widget-section .w-quote,
+#home-sections>.widget-section .w-finance,
+#home-sections>.widget-section .w-daily,
+#home-sections>.widget-section .w-focus,
+#home-sections>.widget-section .w-wishlist,
+#home-sections>.widget-section .w-countdown,
+#home-sections>.widget-section .w-youtube{min-height:0!important}
+#home-sections>.widget-section .w-weather,
+#home-sections>.widget-section .w-quote,
+#home-sections>.widget-section .w-finance,
+#home-sections>.widget-section .w-daily,
+#home-sections>.widget-section .w-focus,
+#home-sections>.widget-section .w-wishlist,
+#home-sections>.widget-section .w-countdown{padding:clamp(5px,2.5cqi,14px);gap:clamp(2px,1.2cqi,7px)}
+@media(max-width:799px){
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-n,
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s{height:26px}
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e,
+ #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-w{width:26px}
 }
 </style>
 
@@ -8338,7 +8418,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         const setResizeSelection=(sec)=>{
             homeEl.querySelectorAll('.home-section.is-resize-selected').forEach(x=>x.classList.remove('is-resize-selected'));
             selectedResizeSection=sec?.dataset.section||null;
-            if(sec&&isEditing()&&!FIXED_FULL.includes(selectedResizeSection))sec.classList.add('is-resize-selected');
+            if(sec&&isEditing()&&!FIXED_FULL.includes(selectedResizeSection)){
+                sec.classList.add('is-resize-selected');
+                sec.setAttribute('aria-selected','true');
+            }
+            homeEl.querySelectorAll('.home-section[aria-selected="true"]:not(.is-resize-selected)').forEach(x=>x.removeAttribute('aria-selected'));
         };
         const finishWidgetResize=(e)=>{
             if(!resizeState||e.pointerId!==resizeState.pointerId)return;
@@ -8346,7 +8430,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             st.sec.classList.remove('is-resizing');
             document.documentElement.classList.remove('widget-resizing');
             try{if(st.grip.hasPointerCapture?.(e.pointerId))st.grip.releasePointerCapture(e.pointerId);}catch(_){}
+            // Persiste o tamanho exato da prévia antes de recalcular o grid.
             layout.sizes[st.id]=st.previewSize;
+            st.sec.dataset.size=st.previewSize;
             applyLayout();saveLayout();
         };
         homeEl.addEventListener('click',e=>{
@@ -8366,8 +8452,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
             const colStep=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
-            const baseRow=window.matchMedia('(min-width:1200px)').matches?78:window.matchMedia('(min-width:800px)').matches?74:68;
-            const rowStep=Math.max(18,baseRow*uiScale+gapY);
+            // Lê a altura real da trilha CSS (não estima pelo conteúdo do widget).
+            // Isso mantém a prévia e o valor salvo usando exatamente a mesma unidade.
+            const firstTrack=parseFloat(gridStyle.gridTemplateRows)||parseFloat(gridStyle.gridAutoRows)||68*uiScale;
+            const rowStep=Math.max(12,firstTrack+gapY);
             resizeState={id,sec,grip,dir,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,totalCols,colStep:Math.max(8,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
