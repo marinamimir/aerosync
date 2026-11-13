@@ -1,8 +1,9 @@
 {
-  "version": "2026.11.13.1",
-  "build": 2026111301,
+  "version": "2026.11.13.2",
+  "build": 2026111302,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
+    "Novo controle de escala global da interface (78%–110%), com pré-visualização em tempo real, salvamento automático e restauração do padrão.",
     "Correção do atalho de nova compra no widget financeiro, gráfico de evolução mais responsivo, prévia visual ao personalizar paletas e contraste do botão de nova tarefa.",
     "Proteção adicional para preferências locais ausentes ou inválidas na inicialização da dashboard.",
     "Removido o recurso AeroPets e seu editor da interface; os demais dados locais e módulos foram preservados.",
