@@ -2957,7 +2957,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   height:auto!important;max-height:none!important;overflow:hidden!important;
 }
 #home-sections>.widget-section>.w-body>.w-image img{
-  display:block;width:100%!important;height:auto!important;max-height:none!important;object-fit:contain;
+  display:block;width:100%!important;height:auto!important;max-height:none!important;object-fit:inherit;
 }
 #home-sections>.widget-section>.w-body>.w-youtube{
   height:auto!important;max-height:none!important;overflow:hidden!important;
@@ -8543,11 +8543,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const cs=getComputedStyle(homeEl),raw=cs.gridTemplateRows||'';
             const tracks=(raw.match(/-?\d+(?:\.\d+)?px/g)||[]).map(v=>parseFloat(v)).filter(v=>Number.isFinite(v)&&v>=0);
             return{tracks,gap:parseFloat(cs.rowGap)||0,fallback:68*uiScale};
-        }
-        function gridRowOffsetFor(index){
-            const m=gridTrackMetrics();let offset=0;
-            for(let i=0;i<Math.max(0,index);i++)offset+=(m.tracks[i]??m.tracks[m.tracks.length-1]??m.fallback)+m.gap;
-            return offset;
         }
         function gridRowIndexAtOffset(offset){
             const m=gridTrackMetrics(),target=Math.max(0,offset);
