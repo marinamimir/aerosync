@@ -1,8 +1,9 @@
 {
-  "version": "2026.11.13.5",
-  "build": 2026111305,
+  "version": "2026.11.13.6",
+  "build": 2026111306,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
+    "Correção do dimensionamento interno dos widgets: removida a compensação dupla de zoom e largura/altura, com contenção responsiva para textos e conteúdo em telas móveis.",
     "Correção estrutural da escala da dashboard: mais colunas em escalas compactas reduzem a área real dos widgets, preservando os widgets de largura total.",
     "Correção da escala global para widgets da dashboard: conteúdo, tipografia, espaçamentos e densidade da grade acompanham o ajuste em tempo real.",
     "Novo controle de escala global da interface (78%–110%), com pré-visualização em tempo real, salvamento automático e restauração do padrão.",
