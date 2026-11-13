@@ -1,12 +1,13 @@
 {
-  "version": "2026.11.13.9",
-  "build": 2026111309,
+  "version": "2026.11.13.10",
+  "build": 2026111310,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
-    "Seleção de widgets com contorno discreto, inspirado no Cocoon; alças visuais grandes removidas.",
-    "Redimensionamento por bordas e cantos com áreas de toque discretas, disponível somente no widget selecionado.",
-    "Correção da altura das linhas do grid para permitir widgets mais achatados e preservar o tamanho após soltar o dedo.",
-    "Cálculo do redimensionamento vertical baseado na geometria real do grid, com melhor precisão em celulares e tablets.",
-    "Aviso de atualização sem emojis ou efeitos decorativos."
+    "Dashboard reconstruída sobre uma grade de células com posições explícitas e sem sobreposição entre widgets.",
+    "Espaços vazios são preservados e podem ser usados para posicionar widgets livremente.",
+    "Arraste o título de um widget selecionado para movê-lo pela grade; a posição é salva.",
+    "A escala da interface altera a densidade da grade: células menores permitem composições mais compactas.",
+    "Redimensionamento por bordas e cantos respeita os limites da grade e evita colisões.",
+    "Modo de edição simplificado: contorno nos widgets e controles exibidos somente no item selecionado."
   ]
 }
