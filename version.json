@@ -1,9 +1,9 @@
 {
-  "version": "2026.11.13.4",
-  "build": 2026111304,
+  "version": "2026.11.13.5",
+  "build": 2026111305,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
-    "Correção estrutural da escala da dashboard: grade recalculada com mais colunas em escalas compactas para reduzir a área real dos widgets e aproveitar melhor a tela.",
+    "Correção estrutural da escala da dashboard: mais colunas em escalas compactas reduzem a área real dos widgets, preservando os widgets de largura total.",
     "Correção da escala global para widgets da dashboard: conteúdo, tipografia, espaçamentos e densidade da grade acompanham o ajuste em tempo real.",
     "Novo controle de escala global da interface (78%–110%), com pré-visualização em tempo real, salvamento automático e restauração do padrão.",
     "Correção do atalho de nova compra no widget financeiro, gráfico de evolução mais responsivo, prévia visual ao personalizar paletas e contraste do botão de nova tarefa.",
