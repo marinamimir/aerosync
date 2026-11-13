@@ -1,11 +1,12 @@
 {
-  "version": "2026.11.13.8",
-  "build": 2026111308,
+  "version": "2026.11.13.9",
+  "build": 2026111309,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
-    "Redimensionamento de widgets em oito direções: largura, altura e cantos, com ajuste independente e preciso por toque.",
-    "Widgets compactos passam a adaptar tipografia, espaçamentos e conteúdo ao espaço real disponível, reduzindo cortes e sobras.",
-    "Ajustes responsivos para clima, citações, Daily Overview, Wishlist, foco e demais widgets.",
-    "Aviso de atualização com linguagem mais neutra e discreta."
+    "Seleção de widgets com contorno discreto, inspirado no Cocoon; alças visuais grandes removidas.",
+    "Redimensionamento por bordas e cantos com áreas de toque discretas, disponível somente no widget selecionado.",
+    "Correção da altura das linhas do grid para permitir widgets mais achatados e preservar o tamanho após soltar o dedo.",
+    "Cálculo do redimensionamento vertical baseado na geometria real do grid, com melhor precisão em celulares e tablets.",
+    "Aviso de atualização sem emojis ou efeitos decorativos."
   ]
 }
