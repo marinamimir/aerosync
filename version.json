@@ -1,11 +1,11 @@
 {
-  "version": "2026.11.13.7",
-  "build": 2026111307,
+  "version": "2026.11.13.8",
+  "build": 2026111308,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
-    "Redimensionamento de widgets mais fluido em grade de 12 colunas também em celulares, com ajuste mais preciso por toque.",
-    "Escala global ajustável de 50% a 110%, incluindo densidade da grade, alturas, espaçamentos e tipografia dos widgets.",
-    "Correção do alinhamento horizontal e vertical do conteúdo do widget de data.",
-    "Correção da geometria interna dos widgets para evitar compensações duplicadas de zoom e largura."
+    "Redimensionamento de widgets em oito direções: largura, altura e cantos, com ajuste independente e preciso por toque.",
+    "Widgets compactos passam a adaptar tipografia, espaçamentos e conteúdo ao espaço real disponível, reduzindo cortes e sobras.",
+    "Ajustes responsivos para clima, citações, Daily Overview, Wishlist, foco e demais widgets.",
+    "Aviso de atualização com linguagem mais neutra e discreta."
   ]
 }
