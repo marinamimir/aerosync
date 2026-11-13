@@ -8393,7 +8393,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const match=/^(\d{1,2})x(\d{1,2})$/.exec(raw);
             let cols=match?Number(match[1]):6,rows=match?Number(match[2]):2;
             cols=Math.max(1,Math.min(24,cols));rows=Math.max(1,Math.min(16,rows));
-            const full=FIXED_FULL.includes(id)||id==='tasks'||raw==='full'||raw.startsWith('12x')||cols>=totalCols;
+            const full=FIXED_FULL.includes(id)||id==='tasks'||raw==='full'||cols>=totalCols;
             if(id==='tasks'||FIXED_FULL.includes(id)||full)cols=totalCols;
             else if(sectionEl(id)?.dataset.widget==='youtube')cols=Math.max(3,cols);
             cols=Math.min(totalCols,cols);
