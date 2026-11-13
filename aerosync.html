@@ -2426,7 +2426,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 @media (prefers-reduced-motion:reduce) { #aero-update-overlay,#aero-update-pill { transition:none !important; } }
 </style>
 <style id="aerosync-dashboard-polish">
-:root{--aero-ui-scale:1}
+:root{--aero-ui-scale:var(--ui-scale,1)}
 #home-sections{grid-auto-flow:row dense;gap:clamp(8px,1vw,16px);grid-auto-rows:minmax(68px,auto)}
 .home-section{min-width:0;overflow:visible}
 .home-section.widget-section{min-width:0;min-height:0}
@@ -2478,6 +2478,21 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
 @media(max-width:799px){#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{right:6px;bottom:6px;width:48px;height:48px}}
+
+/* Escala global dos widgets: dimensões internas, tipografia e densidade acompanham o controle de UI.
+   CSS zoom preserva o fluxo de layout e as coordenadas de toque (ao contrário de transform:scale). */
+#home-sections{gap:calc(clamp(8px,1vw,16px)*var(--aero-ui-scale));grid-auto-rows:minmax(calc(68px*var(--aero-ui-scale)),auto)}
+#home-sections>.widget-section>.w-body{overflow:hidden;min-width:0;min-height:0}
+#home-sections>.widget-section>.w-body>*{zoom:var(--aero-ui-scale);width:calc(100%/var(--aero-ui-scale));height:calc(100%/var(--aero-ui-scale));max-width:none}
+#home-sections>.widget-section>.w-body>.w-image{width:calc(100%/var(--aero-ui-scale));height:calc(100%/var(--aero-ui-scale))}
+@media(min-width:800px){
+ #home-sections{grid-auto-rows:minmax(calc(74px*var(--aero-ui-scale)),auto);gap:calc(14px*var(--aero-ui-scale))}
+}
+@media(min-width:1200px){
+ #home-sections{grid-auto-rows:minmax(calc(78px*var(--aero-ui-scale)),auto);gap:calc(16px*var(--aero-ui-scale))}
+}
+/* Mantém alvos de toque confortáveis mesmo quando a interface está compacta. */
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{min-width:44px;min-height:44px}
 </style>
 <style id="aerosync-youtube-widget">
 .w-youtube{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);overflow:hidden}
