@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111306">
+    <meta name="aero-build" content="2026111307">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
     <script>try{var a=JSON.parse(localStorage.getItem('aerosync.appearance')||'{}')||{};var dk=a.mode==='dark'||(a.mode!=='light'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);if(dk)document.documentElement.classList.add('dark');if(a.style==='simple')document.documentElement.setAttribute('data-style','simple');if(a.glass==='soft'||a.glass==='full')document.documentElement.setAttribute('data-glass',a.glass);
     /* tema salvo: aplica as cores antes de desenhar */var th=JSON.parse(localStorage.getItem('aerosync.theme')||'null');if(th&&th.id){var st=document.documentElement.style,ok=function(c){return typeof c==='string'&&/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c)};[['--theme-accent','accent'],['--theme-accent-2','accent2'],['--theme-soft','soft'],['--theme-glow','glow'],['--on-accent','on'],['--surface','surface'],['--page','page'],['--user-icon-color','iconColor']].forEach(function(k){if(ok(th[k[1]]))st.setProperty(k[0],th[k[1]])});}}catch(e){}</script>
-    <script>try{var z=Number(localStorage.getItem('aerosync.uiScale'));if(Number.isFinite(z)&&z>0){z=Math.min(1.10,Math.max(.78,z));document.documentElement.style.setProperty('--ui-scale',String(z));document.documentElement.style.fontSize=(16*z)+'px';}}catch(e){}</script>
+    <script>try{var z=Number(localStorage.getItem('aerosync.uiScale'));if(Number.isFinite(z)&&z>0){z=Math.min(1.10,Math.max(.50,z));document.documentElement.style.setProperty('--ui-scale',String(z));document.documentElement.style.fontSize=(16*z)+'px';}}catch(e){}</script>
     <script>
     // Diagnóstico temporário de boot: exibe erros sem alterar dados do usuário.
     (function () {
@@ -998,7 +998,6 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         html.dark[data-style="simple"] .banner-art { color: #e5e7eb; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
         html.dark[data-style="simple"] .glass-widget { background: #1e2130; }
         html.dark[data-style="simple"] .note-card, html.dark[data-style="simple"] .note-editor { --note: #262a3b; box-shadow: inset 0 0 0 1px #2b2f42; }
-
         /* ===== Botão claro/escuro do topo ===== */
         .theme-toggle {
             width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; position:relative; z-index:4;
@@ -1997,8 +1996,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         html.dark .life-info b { color: #eef0f6; }
         html.dark .life-tags i { color: #d9dce6; }
         html.dark .life-cover.is-empty, html.dark .life-hero.is-empty { background: #262a3b; border-color: #3a3f55; }
-        html.dark .life-tagbox { background: #262a3b; }
-        html.dark .life-tagbox input { color: #eef0f6; }
+        html.dark .life-tagbox { background: #262a3b; }        html.dark .life-tagbox input { color: #eef0f6; }
 
         /* ================================================
            WIDGETS, NOVO MOMENTO ZEN E PAUSAS PRO CAFÉ
@@ -2482,9 +2480,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 /* Escala global dos widgets: dimensões internas, tipografia e densidade acompanham o controle de UI.
    CSS zoom preserva o fluxo de layout e as coordenadas de toque (ao contrário de transform:scale). */
 #home-sections{gap:calc(clamp(8px,1vw,16px)*var(--aero-ui-scale));grid-auto-rows:minmax(calc(68px*var(--aero-ui-scale)),auto)}
-/* O grid já recalcula a área real de cada card conforme a escala.
-   Não aplicar zoom + largura/altura inversas no filho: isso cria uma segunda
-   geometria de layout e pode deslocar/cortar texto em navegadores móveis. */
+/* A geometria do grid define o tamanho real; os filhos nunca compensam zoom com larguras artificiais. */
 #home-sections>.widget-section>.w-body{overflow:hidden;min-width:0;min-height:0;max-width:100%;box-sizing:border-box}
 #home-sections>.widget-section>.w-body>*{zoom:1!important;width:100%;height:100%;min-width:0;max-width:100%;box-sizing:border-box}
 #home-sections>.widget-section>.w-body>.w-image{width:100%;height:100%;max-width:100%}
@@ -2515,7 +2511,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
 /* Escala estrutural real da dashboard: mais colunas quando compacta = cartões menores, não apenas texto menor. */
 #aerosync-dashboard-polish{}
-#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,4),minmax(0,1fr));grid-auto-rows:minmax(calc(68px*var(--aero-ui-scale,1)),auto)}
+#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,12),minmax(0,1fr));grid-auto-rows:minmax(calc(68px*var(--aero-ui-scale,1)),auto)}
 @media(min-width:800px){#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,12),minmax(0,1fr));grid-auto-rows:minmax(calc(74px*var(--aero-ui-scale,1)),auto)}}
 @media(min-width:1200px){#home-sections{grid-auto-rows:minmax(calc(78px*var(--aero-ui-scale,1)),auto)}}
 </style>
@@ -2530,6 +2526,37 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 .wy-placeholder{flex:1;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--icon);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border:1px dashed color-mix(in srgb,var(--accent) 26%,transparent);border-radius:14px}
 .wy-placeholder>i{font-size:27px;color:#ef4444}.wy-placeholder b{font-size:12px}.wy-placeholder small{font-size:10px;opacity:.65}
 </style>
+
+<style id="aerosync-widget-refinement-v1307">
+/* Widget de data: conteúdo centralizado em ambos os eixos, independentemente do estilo visual. */
+#date-widget{width:100%;height:100%;min-width:0;min-height:0;box-sizing:border-box;align-items:center;justify-content:center!important;gap:calc(8px * var(--aero-ui-scale,1))}
+#date-widget>span:first-child{align-self:center;text-align:center;max-width:100%}
+#date-widget .lcd{width:100%;max-width:100%;min-width:0;min-height:0;margin:0!important;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#date-widget #date-weekday,#date-widget #date-main{display:block;width:100%;max-width:100%;text-align:center;overflow-wrap:anywhere}
+#date-widget #date-main{line-height:1.08}
+#date-widget[data-date-style="calendar"] #date-main{font-size:calc(28px * var(--aero-ui-scale,1))}
+#date-widget[data-date-style="minimal"] #date-main{font-size:calc(30px * var(--aero-ui-scale,1))}
+#date-widget[data-date-style="kawaii"] #date-main{font-size:calc(26px * var(--aero-ui-scale,1))}
+#date-widget[data-date-style="badge"] #date-main{font-size:calc(20px * var(--aero-ui-scale,1))}
+
+/* 12 colunas também em telas pequenas: o resize passa a ter passos de 1/12, não 1/4 da tela. */
+#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,12),minmax(0,1fr));grid-auto-rows:minmax(calc(68px * var(--aero-ui-scale,1)),auto);gap:calc(clamp(8px,1vw,16px) * var(--aero-ui-scale,1))}
+@media(min-width:800px){#home-sections{grid-template-columns:repeat(var(--aero-grid-columns,12),minmax(0,1fr));grid-auto-rows:minmax(calc(74px * var(--aero-ui-scale,1)),auto);gap:calc(14px * var(--aero-ui-scale,1))}}
+@media(min-width:1200px){#home-sections{grid-auto-rows:minmax(calc(78px * var(--aero-ui-scale,1)),auto);gap:calc(16px * var(--aero-ui-scale,1))}}
+
+/* Tipografia e elementos internos acompanham a escala compacta sem alterar o tema. */
+#home-sections .w-clock-time{font-size:calc(clamp(30px,8vw,48px) * var(--aero-ui-scale,1))}
+#home-sections .wf-value{font-size:calc(clamp(22px,6vw,30px) * var(--aero-ui-scale,1))}
+#home-sections .w-weather-head{font-size:calc(12px * var(--aero-ui-scale,1))}
+#home-sections .w-weather-main b{font-size:calc(38px * var(--aero-ui-scale,1))}
+#home-sections .w-weather-desc{font-size:calc(12px * var(--aero-ui-scale,1))}
+#home-sections .w-quote p{font-size:calc(16px * var(--aero-ui-scale,1))}
+#home-sections .w-quote cite,#home-sections .w-quote small{font-size:calc(11px * var(--aero-ui-scale,1))}
+#home-sections .w-finance,#home-sections .w-daily,#home-sections .w-focus,#home-sections .w-wishlist,#home-sections .w-countdown{padding:calc(14px * var(--aero-ui-scale,1));gap:calc(7px * var(--aero-ui-scale,1))}
+#home-sections .w-youtube{padding:calc(10px * var(--aero-ui-scale,1));gap:calc(8px * var(--aero-ui-scale,1))}
+#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{min-width:48px;min-height:48px}
+</style>
+
 </head>
 <body>
 
@@ -3016,8 +3043,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 <button class="nav-btn" data-view="life" aria-label="Mundo Pessoal" title="Mundo Pessoal"><i class="fas fa-heart"></i></button>
 
                 <!-- Botão Add de acrílico (usa a cor do tema) -->
-                <button id="add-btn" aria-label="Adicionar tarefa" class="acrylic-fab rounded-full flex items-center justify-center text-white text-3xl border-[3px] border-white -translate-y-5 relative overflow-hidden">
-                    <i class="fas fa-plus relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]"></i>
+                <button id="add-btn" aria-label="Adicionar tarefa" class="acrylic-fab rounded-full flex items-center justify-center text-white text-3xl border-[3px] border-white -translate-y-5 relative overflow-hidden">                    <i class="fas fa-plus relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]"></i>
                 </button>
 
                 <button class="nav-btn" data-view="library" aria-label="Organização" title="Organização"><i class="fas fa-folder-tree"></i></button>
@@ -3165,9 +3191,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         //  APARÊNCIA: claro / escuro / automático + colorido / simples
         // ================================================
         const savedUIScale = Number(store.get(STORAGE_KEYS.uiScale, 1));
-        let uiScale = Number.isFinite(savedUIScale) ? Math.min(1.10, Math.max(0.78, savedUIScale)) : 1;
+        let uiScale = Number.isFinite(savedUIScale) ? Math.min(1.10, Math.max(0.50, savedUIScale)) : 1;
         function applyUIScale(value = uiScale, persist = false) {
-            uiScale = Math.min(1.10, Math.max(0.78, Number(value) || 1));
+            uiScale = Math.min(1.10, Math.max(0.50, Number(value) || 1));
             document.documentElement.style.setProperty('--ui-scale', String(uiScale));
             document.documentElement.style.setProperty('--aero-ui-scale', String(uiScale));
             window.dispatchEvent(new Event('aerosync:ui-scale-change'));
@@ -4017,7 +4043,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     : 'w-2 h-2 rounded-full bg-gray-300 transition-colors';
             });
         }
-
         // requestAnimationFrame: no máximo 1 cálculo por frame = rolagem lisinha
         carousel.addEventListener('scroll', () => {
             if (!rafPending) { rafPending = true; requestAnimationFrame(updateActiveCard); }
@@ -5017,7 +5042,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => toastEl.classList.remove('show'), action ? 5000 : 1800);
         }
-
         function setNav(view) {
             currentView = view;
             navBtns.forEach(b => {
@@ -6016,8 +6040,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if (!sheet.classList.contains('open')) openSheet('widget');
             else { setNav('widget'); sheetTitle.textContent = VIEW_TITLE.widget; renderSheet(); playClick(); }
             sheetTitle.textContent = VIEW_TITLE.widget;
-            sheetBody.scrollTop = 0;
-        }
+            sheetBody.scrollTop = 0;        }
         function renderWidgetsPanel() {
             sheetBody.innerHTML = `
                 <p class="lib-intro"><i class="fas fa-circle-info" aria-hidden="true"></i><span>Adicione quantos quiser. Para mudar a ordem ou o tamanho, use <b>Organizar seções</b> (ou segure numa área vazia da tela inicial).</span></p>
@@ -6344,7 +6367,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 <span class="modal-label mt-6">Tamanho da interface</span>
                 <div class="ui-scale-preview">
                     <div class="ui-scale-actions mb-2"><span class="text-xs font-extrabold">Escala geral</span><span class="ui-scale-value" id="ui-scale-value">${Math.round(uiScale*100)}%</span></div>
-                    <input id="ui-scale-range" type="range" min="78" max="110" step="2" value="${Math.round(uiScale*100)}" aria-label="Tamanho geral da interface">
+                    <input id="ui-scale-range" type="range" min="50" max="110" step="1" value="${Math.round(uiScale*100)}" aria-label="Tamanho geral da interface">
                     <div class="flex justify-between text-[10px] font-bold text-gray-400 mt-1"><span>Mais compacto</span><span>Maior</span></div>
                     <div class="ui-scale-preview-card mt-3"><span class="ui-scale-preview-dot"></span><span class="ui-scale-preview-copy">Prévia de widget<small>Texto, ícones e espaçamentos acompanham a escala</small></span><i class="fas fa-ellipsis"></i></div>
                     <button type="button" data-act="reset-ui-scale" class="pill-btn ghost w-full mt-2">Restaurar tamanho padrão (100%)</button>
@@ -7016,8 +7039,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         }
         function closeHub() {
             if (!hubOpen()) return;
-            flushHub();
-            hub.classList.remove('open');
+            flushHub();            hub.classList.remove('open');
             hub.setAttribute('aria-hidden', 'true');
             const id = hubId;
             hubId = null;
@@ -8016,8 +8038,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             try {
                 const f=JSON.parse(localStorage.getItem('aerosync.finances.v2')||'{}')||{}, now=new Date(), today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-'), ym=today.slice(0,7), day=now.getDate();
                 const cards=f.cards||[],banks=f.banks||[],incomes=f.incomes||[],expenses=f.expenses||[],recurring=f.recurring||[],cats=f.categories||[];
-                const salary=f.salaryUsable===false?0:Number((f.salaryOverrides||{})[ym]!==undefined?f.salaryOverrides[ym]:f.salaryBase)||0;
-                const income=salary+incomes.filter(x=>(x.date||'').slice(0,7)===ym&&x.usable!==false).reduce((a,x)=>a+(Number(x.amount)||0),0)+banks.filter(x=>x.usable).reduce((a,x)=>a+(Number(x.balance)||0),0);
+                const salary=f.salaryUsable===false?0:Number((f.salaryOverrides||{})[ym]!==undefined?f.salaryOverrides[ym]:f.salaryBase)||0;                const income=salary+incomes.filter(x=>(x.date||'').slice(0,7)===ym&&x.usable!==false).reduce((a,x)=>a+(Number(x.amount)||0),0)+banks.filter(x=>x.usable).reduce((a,x)=>a+(Number(x.balance)||0),0);
                 const billingYM=e=>{const raw=e.purchaseDate||e.date||today,p=raw.split('-').map(Number),d=new Date(p[0],p[1]-1,p[2],12),card=cards.find(c=>c.id===(e.cardId||'pix'));if(card&&p[2]>(Number(card.closingDay)||20))d.setMonth(d.getMonth()+1);d.setMonth(d.getMonth()+Math.max(0,(Number(e.instIndex)||1)-1));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');};
                 const month=expenses.filter(e=>{const c=cards.find(x=>x.id===e.cardId);return(!c||c.active!==false)&&billingYM(e)===ym;}),spent=month.reduce((a,e)=>a+(Number(e.amount)||0),0);
                 const bills=recurring.map(r=>{const due=Math.max(1,Math.min(31,Number(r.day)||1)),last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),diff=due>=day?due-day:last-day+due,recorded=month.some(e=>String(e.desc||'').trim().toLowerCase()===String(r.name||'').trim().toLowerCase());return{...r,diff,recorded};}).filter(r=>!r.recorded).sort((a,b)=>a.diff-b.diff);
@@ -8099,12 +8120,12 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 const full = size === 'full' || size.startsWith('12x');
                 sec.classList.toggle('is-hidden', hidden);
                 sec.classList.toggle('is-full', full);
-                const wideGrid=window.matchMedia('(min-width:800px)').matches,baseCols=wideGrid?12:4,totalCols=Math.max(baseCols,Math.round(baseCols/Math.max(.78,Math.min(1.10,uiScale))));
+                const wideGrid=window.matchMedia('(min-width:800px)').matches,baseCols=12,totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
                 homeEl.style.setProperty('--aero-grid-columns', String(totalCols));
                 if(sec.dataset.widget){
                     let [cols,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[6,2];
-                    if(sec.dataset.widget==='youtube')cols=Math.max(cols,wideGrid?3:9);
-                    const visibleCols=full?totalCols:(wideGrid?cols:Math.max(1,Math.ceil(cols/3)));
+                    if(sec.dataset.widget==='youtube')cols=Math.max(cols,3);
+                    const visibleCols=full?totalCols:cols;
                     sec.style.gridColumn=`span ${Math.min(totalCols,visibleCols)}`;
                     sec.style.gridRow=`span ${rows}`;
                     sec.dataset.size=`${cols}x${rows}`;
@@ -8115,7 +8136,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     sec.dataset.size=`12x${rows}`;
                 }else{
                     const fullWidth=id==='carousel'||size.startsWith('12x');
-                    sec.style.gridColumn=`span ${fullWidth?totalCols:(wideGrid?6:2)}`;
+                    sec.style.gridColumn=`span ${fullWidth?totalCols:6}`;
                     sec.style.gridRow='';
                 }
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
@@ -8246,12 +8267,13 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;
             e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
             setResizeSelection(sec);
-            const id=sec.dataset.section,wide=window.matchMedia('(min-width:800px)').matches,totalCols=wide?12:4;
+            const id=sec.dataset.section,totalCols=Math.max(12,Math.round(12/Math.max(.50,Math.min(1.10,uiScale))));
             const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
             const colStep=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
-            const rowStep=(parseFloat(gridStyle.gridAutoRows)||68)+gapY;
-            resizeState={id,sec,grip,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,wide,colStep:Math.max(24,colStep),rowStep:Math.max(48,rowStep),minCols:sec.dataset.widget==='youtube'?(wide?3:9):1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            const baseRow=window.matchMedia('(min-width:1200px)').matches?78:window.matchMedia('(min-width:800px)').matches?74:68;
+            const rowStep=Math.max(24,baseRow*uiScale+gapY);
+            resizeState={id,sec,grip,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,totalCols,colStep:Math.max(12,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
@@ -8259,12 +8281,12 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if(!resizeState||e.pointerId!==resizeState.pointerId)return;
             if(e.cancelable)e.preventDefault();
             const st=resizeState,dx=e.clientX-st.startX,dy=e.clientY-st.startY;
-            const deltaCols=Math.round(dx/st.colStep)*(st.wide?1:3),deltaRows=Math.round(dy/st.rowStep);
+            const deltaCols=Math.round(dx/st.colStep),deltaRows=Math.round(dy/st.rowStep);
             const col=Math.max(st.minCols,Math.min(12,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
             const next=`${col}x${row}`;
             if(st.previewSize!==next){
                 st.previewSize=next;
-                st.sec.style.gridColumn=`span ${st.wide?col:Math.max(1,Math.ceil(col/3))}`;
+                st.sec.style.gridColumn=`span ${col>=12?st.totalCols:col}`;
                 st.sec.style.gridRow=`span ${row}`;
                 st.sec.dataset.size=next;
             }
@@ -9016,8 +9038,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             catBtn.classList.add('selected');
             return;
         }
-        const actBtn = e.target.closest('[data-popact]');
-        if (!actBtn) return;
+        const actBtn = e.target.closest('[data-popact]');        if (!actBtn) return;
         const act = actBtn.dataset.popact;
 
         if (act === 'close') {
@@ -10016,8 +10037,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         } else if (act === 'toggle-row-select') {
             const row = btn.closest('[data-gid]');
             if (!row) return;
-            const gid = row.dataset.gid;
-            if (selectedExpenseGroupIds.has(gid)) selectedExpenseGroupIds.delete(gid);
+            const gid = row.dataset.gid;            if (selectedExpenseGroupIds.has(gid)) selectedExpenseGroupIds.delete(gid);
             else selectedExpenseGroupIds.add(gid);
             renderFin();
         } else if (act === 'bulk-select-all') {
