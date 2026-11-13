@@ -69,6 +69,14 @@ html:root .theme-choice i, html:root .theme-option i { color:var(--user-icon-col
 .home-edit-fab svg { display:block; width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; color:#fff!important; opacity:1!important; }
 .home-edit-fab:active { transform:scale(.94); }
 .theme-custom-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+        .theme-live-preview{margin-top:12px;padding:10px;border-radius:16px;background:rgba(148,163,184,.09);border:1px solid rgba(148,163,184,.16)}
+        .theme-preview-caption{display:block;margin-bottom:7px;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--icon);opacity:.7}
+        .theme-preview-card{padding:12px;border-radius:13px;background:var(--preview-surface,#fff);border:1px solid color-mix(in srgb,var(--preview-accent,#F06AAE) 18%,transparent);box-shadow:0 3px 12px rgba(0,0,0,.06)}
+        .theme-preview-top{display:flex;align-items:center;gap:7px;color:var(--preview-accent,#F06AAE);font-size:12px}.theme-preview-top span{margin-left:auto;font-size:10px;opacity:.6}
+        .theme-preview-task{display:flex;align-items:center;gap:8px;margin-top:10px;padding:9px;border-radius:10px;background:var(--preview-soft,#FFEAF4);color:var(--preview-icon,#D94F98);font-size:11px;font-weight:800}.theme-preview-task span{flex:1;color:var(--preview-ink,#374151)}
+        .theme-preview-action{margin-top:9px;padding:8px 10px;border-radius:10px;background:var(--preview-accent,#F06AAE);color:var(--preview-on,#fff);font-size:11px;font-weight:900;text-align:center}
+        html.dark .theme-live-preview{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+        html.dark .theme-preview-card{background:color-mix(in srgb,var(--preview-surface,#fff) 18%,#1e2130)}
 .theme-color-field { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:800; color:var(--fin-ink,var(--icon)); }
 .theme-color-field input { width:38px; height:34px; padding:2px; border:1px solid #cbd5e1; border-radius:9px; background:transparent; }
 .fin-filter-card { background:var(--fin-card); border:1px solid rgba(148,163,184,.18); border-radius:18px; padding:12px; margin-bottom:12px; }
@@ -467,6 +475,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
             content: ''; position: absolute; bottom: 12px; right: 16px; width: 8px; height: 5px;
             background: rgba(255,255,255,0.6); border-radius: 50%;
         }
+        .acrylic-fab > i { color:#fff !important; -webkit-text-fill-color:#fff; opacity:1 !important; filter:drop-shadow(0 1px 2px rgba(25,25,35,.65)); text-shadow:0 1px 2px rgba(25,25,35,.55); pointer-events:none; }
         .acrylic-fab:hover { transform: translateY(-22px) scale(1.06); }
         .acrylic-fab:active {
             transform: translateY(-14px) scale(0.94);
@@ -6291,6 +6300,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <label class="theme-color-field">Cor suave <input type="color" id="custom-soft" value="${currentTheme?.soft || '#FFEAF4'}"></label>
                     <label class="theme-color-field">Ícones <input type="color" id="custom-icons" value="${currentTheme?.iconColor || currentTheme?.accent || '#D94F98'}"></label>
                 </div>
+                <div class="theme-live-preview" id="theme-live-preview" aria-live="polite"><span class="theme-preview-caption">Prévia da sua paleta</span><div class="theme-preview-card" id="theme-preview-card"><div class="theme-preview-top"><i class="fas fa-sparkles"></i><b>ALife</b><span>Hoje</span></div><div class="theme-preview-task"><i class="fas fa-circle-check"></i><span>Uma tarefa de exemplo</span><b>•••</b></div><div class="theme-preview-action">+ Nova tarefa</div></div></div>
                 <button data-act="save-custom-theme" class="pill-btn primary w-full mt-2"><i class="fas fa-palette mr-1"></i>Salvar minha paleta</button>
                 ${customThemes.length ? `<div class="custom-theme-list mt-3"><span class="text-xs font-extrabold text-gray-500">Minhas paletas</span>${customThemes.map(t=>`<div class="custom-theme-row"><span class="custom-theme-swatch" style="background:linear-gradient(135deg,${t.accent2},${t.accent})"></span><span class="custom-theme-title">${esc(t.name)}</span><button class="custom-theme-delete" data-act="delete-custom-theme" data-id="${esc(t.id)}" aria-label="Excluir tema ${esc(t.name)}" title="Excluir tema"><i class="fas fa-trash"></i></button></div>`).join('')}</div>` : ''}
                 <span class="modal-label mt-4">Sons</span>
@@ -6348,6 +6358,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const next=pref.checked?[...new Set([...selected,pref.dataset.overduePref])]:selected.filter(x=>x!==pref.dataset.overduePref);
             store.set(STORAGE_KEYS.overdueIndicators,next); renderTasks();
         });
+        sheetBody.addEventListener('input', e => { if (!e.target.matches('#custom-accent,#custom-accent2,#custom-surface,#custom-page,#custom-soft,#custom-icons') || currentView !== 'profile') return; const val=id=>document.getElementById(id)?.value||'#F06AAE'; const card=document.getElementById('theme-preview-card'); if(!card)return; card.style.setProperty('--preview-accent',val('custom-accent')); card.style.setProperty('--preview-surface',val('custom-surface')); card.style.setProperty('--preview-soft',val('custom-soft')); card.style.setProperty('--preview-icon',val('custom-icons')); card.style.setProperty('--preview-ink',document.documentElement.classList.contains('dark')?'#f1f3f8':'#374151'); });
         function handleProfileAction(act, data = {}) {
             if (act === 'setting') {
                 if (data.key === 'sound') {
@@ -7793,7 +7804,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // 9. ORGANIZAR A TELA INICIAL (modo edição: evita trocar a ordem sem querer)
         //    Cada bloco muda de lugar (← →), de tamanho (metade / largura toda) e pode ser ocultado
         const homeEl = document.getElementById('home-sections');
-        homeEl.addEventListener('click',e=>{const b=e.target.closest('[data-fin-quick]');if(b){e.preventDefault();e.stopImmediatePropagation();finOpen();playClick();}});
+        homeEl.addEventListener('click',e=>{const b=e.target.closest('[data-fin-quick]');if(b){e.preventDefault();e.stopImmediatePropagation();playClick();openSheet('finance');openExpenseModal();}});
         const mainScroll = document.getElementById('main-scroll');
         const SECTION_IDS = ['progress', 'date', 'carousel', 'focus', 'time', 'note', 'tasks'];
         const FIXED_FULL = ['carousel']; // tarefas agora podem ser redimensionadas
@@ -9543,7 +9554,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 <p class="text-[11px] font-semibold text-gray-400 mb-2">Evolução do mês atual comparado aos 4 anteriores:</p>
 
                 <div class="relative w-full overflow-hidden flex justify-center my-1">
-                    <svg width="100%" height="${comp.svgH}" viewBox="0 0 ${comp.svgW} ${comp.svgH}" class="overflow-visible">
+                    <svg width="100%" height="${comp.svgH}" viewBox="0 0 ${comp.svgW} ${comp.svgH}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Evolução dos gastos nos últimos cinco meses" style="display:block;max-width:100%;overflow:visible">
                         <defs>
                             <linearGradient id="finGradLine" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stop-color="var(--theme-accent, #3b82f6)" stop-opacity="0.32" />
