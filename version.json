@@ -1,18 +1,10 @@
 {
-  "version": "2026.11.13.1",
-  "build": 2026111301,
+  "version": "2026.11.13.30",
+  "build": 2026111330,
   "releasedAt": "2026-11-13",
   "releaseNotes": [
-    "Correção do atalho de nova compra no widget financeiro, gráfico de evolução mais responsivo, prévia visual ao personalizar paletas e contraste do botão de nova tarefa.",
-    "Proteção adicional para preferências locais ausentes ou inválidas na inicialização da dashboard.",
-    "Removido o recurso AeroPets e seu editor da interface; os demais dados locais e módulos foram preservados.",
-    "Rebranding para ALife, preservando identidade visual e identificadores locais.",
-    "Dashboard inicial de novas instalações com data, relógio e lista de tarefas; demais seções opcionais.",
-    "Correção do ciclo de atualização do aplicativo instalado.",
-    "A versão interna do HTML agora corresponde à versão publicada.",
-    "Widgets financeiros antigos removidos da tela inicial por padrão; continuam disponíveis para adicionar sob demanda.",
-    "Novo Overview financeiro com indicadores e gráficos configuráveis e atalho discreto para registrar compras.",
-    "Galeria de widgets organizada por áreas: Vida pessoal, Finanças, Produtividade e Decoração.",
-    "Cadernos para organizar publicações e notas em formato de blog, com editor rico, títulos, listas, citações e cores."
+    "Restaurada a base anterior à introdução do controle de escala global da interface.",
+    "Restaurado o modelo original de widgets, anterior às reformulações experimentais de grid, posicionamento livre e redimensionamento estrutural.",
+    "Mantidos os módulos e dados locais compatíveis com a base restaurada."
   ]
 }
