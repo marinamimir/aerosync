@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111639">
+    <meta name="aero-build" content="2026111640">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8711,6 +8711,52 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   line-height:1.15;
   max-width:100%;
   overflow-wrap:anywhere;
+}
+
+/* Build 40 — editor e dashboard usam a mesma geometria vertical.
+   O gap maior no modo de edição alterava a altura real dos cards ao sair do editor,
+   embora o span salvo fosse o mesmo. */
+#home-sections,
+#home-sections.editing {
+  row-gap:12px!important;
+  align-items:stretch!important;
+}
+/* O bloco de progresso também precisa responder ao tamanho do próprio card,
+   sem depender da altura/largura da viewport do aparelho. */
+#home-sections > [data-section="progress"] { container-type:size; }
+#home-sections > [data-section="progress"] #progress-widget {
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start!important;
+  gap:clamp(2px,1.5cqb,8px);
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  padding:clamp(6px,4cqi,14px)!important;
+  overflow:hidden;
+}
+#home-sections > [data-section="progress"] #progress-widget > div:first-child {
+  min-width:0;
+  gap:4px;
+  font-size:clamp(7px,min(3.5cqi,5cqb),11px);
+  line-height:1.15;
+}
+#home-sections > [data-section="progress"] #progress-pct {
+  margin:0!important;
+  font-size:clamp(12px,min(12cqi,20cqb),34px)!important;
+  line-height:1.05;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#home-sections > [data-section="progress"] #progress-widget > .w-full {
+  flex:0 0 auto;
+  height:clamp(3px,1.2cqb,7px)!important;
+  margin:0!important;
+}
+@media(max-width:799px) {
+  #home-sections.editing { row-gap:12px!important; }
 }
 
 </style>
