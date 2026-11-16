@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111635">
+    <meta name="aero-build" content="2026111636">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2462,39 +2462,36 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections.editing .widget-resize-handle{display:none!important}
 /* The legacy edit-mode rule disables pointer events on every direct child; explicitly re-enable resize grips so Android can receive their pointerdown instead of scrolling the page. */
 #home-sections.editing .home-section>.widget-resize-handle{pointer-events:auto!important;touch-action:none!important}
-#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
-#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
-#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se,
-#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{display:block!important}
-#home-sections.editing .home-section:not(.widget-section):not([data-section="tasks"]).is-resize-selected>.widget-resize-handle,
+/* Native dashboard sections and dynamic widgets share the same resize grips. Categories remains fixed. */
+#home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-e,
+#home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-s,
+#home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-se{display:block!important}
+/* Missões stays full-width; its vertical grip adjusts height only. */
 #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-e,
 #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-se{display:none!important}
 #home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
 /* Android touch targets: 48 CSS px minimum, with a small visual grip. Keep edge controls separate on compact cards. */
 @media(max-width:799px){
- #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
- #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
- #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{
+ #home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-e,
+ #home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-s{
   display:block!important;width:48px;height:48px;min-width:48px;min-height:48px;
   padding:0;margin:0;border:0!important;border-radius:50%;background:transparent!important;
   box-shadow:none!important;transform:none;touch-action:none!important;
   -webkit-tap-highlight-color:transparent;z-index:100;
  }
- #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e{
+ #home-sections.editing .home-section.is-resize-selected:not([data-section="tasks"]):not([data-section="carousel"])>.widget-resize-handle.resize-e{
   right:-24px;left:auto;top:50%;bottom:auto;transform:translateY(-50%);
  }
- #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
- #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{
+ #home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-s{
   left:50%;right:auto;bottom:-24px;top:auto;transform:translateX(-50%);
  }
- #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e::after{
+ #home-sections.editing .home-section.is-resize-selected:not([data-section="tasks"]):not([data-section="carousel"])>.widget-resize-handle.resize-e::after{
   left:50%;top:50%;width:6px;height:24px;border:0;border-radius:99px;
   background:var(--theme-accent,var(--accent));box-shadow:0 0 0 2px rgba(255,255,255,.96);
   transform:translate(-50%,-50%);pointer-events:none;
  }
- #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s::after,
- #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s::after{
+ #home-sections.editing .home-section.is-resize-selected:not([data-section="carousel"])>.widget-resize-handle.resize-s::after{
   left:50%;top:50%;width:24px;height:6px;border:0;border-radius:99px;
   background:var(--theme-accent,var(--accent));box-shadow:0 0 0 2px rgba(255,255,255,.96);
   transform:translate(-50%,-50%);pointer-events:none;
@@ -8123,16 +8120,16 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     sec.style.gridColumn=`span ${Math.min(4,cols)}`;
                     sec.style.gridRow=`span ${rows}`;
                     sec.dataset.size=`${Math.min(4,cols)}x${rows}`;
-                }else if(id==='tasks'){
-                    const [,rows]=/^[1-4]x[1-8]$/.test(size)?size.split('x').map(Number):[4,2];
+                }else if(id==='carousel'){
                     sec.style.gridColumn='span 4';
-                    sec.style.gridRow=rows>1?`span ${rows}`:'auto';
-                    sec.dataset.size=`4x${rows}`;
-                }else{
-                    const fullWidth=id==='carousel'||size.startsWith('4x');
-                    sec.style.gridColumn=`span ${fullWidth?4:2}`;
                     sec.style.gridRow='';
-                    sec.dataset.size=size;
+                    sec.dataset.size='4x2';
+                }else{
+                    let [cols,rows]=/^[1-4]x[1-8]$/.test(size)?size.split('x').map(Number):(id==='tasks'?[4,2]:[2,2]);
+                    if(id==='tasks')cols=4;
+                    sec.style.gridColumn=`span ${Math.min(4,cols)}`;
+                    sec.style.gridRow=`span ${Math.min(8,rows)}`;
+                    sec.dataset.size=`${Math.min(4,cols)}x${Math.min(8,rows)}`;
                 }
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
                 sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;

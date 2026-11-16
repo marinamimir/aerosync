@@ -1,9 +1,10 @@
 {
-  "version": "2026.11.16.35",
-  "build": 2026111635,
+  "version": "2026.11.16.36",
+  "build": 2026111636,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Seleção de widgets no modo Organizar iniciada no pointerdown para melhorar a resposta ao toque no Android.",
-    "Mantidos os controles de redimensionamento, o layout original e a escala atual da interface."
+    "Alças de redimensionamento habilitadas também para os widgets nativos do dashboard.",
+    "Widgets nativos agora usam dimensões independentes de largura e altura; Missões mantém largura total e ajuste vertical.",
+    "Preservados o layout original, a escala da interface e os tamanhos salvos."
   ]
 }
