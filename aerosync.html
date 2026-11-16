@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111633">
+    <meta name="aero-build" content="2026111634">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2460,6 +2460,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
  /* Glass mode clips descendants with clip-path; release the selected card while editing so resize grips can sit outside its bounds. */
  #home-sections.editing>.widget-section.is-resize-selected{overflow:visible!important;clip-path:none!important;-webkit-clip-path:none!important}
 #home-sections.editing .widget-resize-handle{display:none!important}
+/* The legacy edit-mode rule disables pointer events on every direct child; explicitly re-enable resize grips so Android can receive their pointerdown instead of scrolling the page. */
+#home-sections.editing .home-section>.widget-resize-handle{pointer-events:auto!important;touch-action:none!important}
 #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
 #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
 #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se,
