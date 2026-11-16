@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111631">
+    <meta name="aero-build" content="2026111632">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2467,6 +2467,26 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-se{display:none!important}
 #home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
+
+/* Touch-first resize: Android/coarse pointers get one generous corner target. */
+@media (pointer:coarse){
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s{display:none!important}
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se{
+  display:block!important;width:56px;height:56px;right:-5px;bottom:-5px;top:auto;left:auto;transform:none;
+  border:0;border-radius:14px;background:transparent;box-shadow:none;touch-action:none!important;
+  pointer-events:auto;z-index:100;min-width:56px;min-height:56px;padding:0
+ }
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se::before{
+  content:'';position:absolute;right:5px;bottom:5px;width:22px;height:22px;border-radius:8px;
+  background:var(--theme-accent,var(--accent));border:2px solid rgba(255,255,255,.98);
+  box-shadow:0 2px 10px rgba(90,50,75,.28);pointer-events:none
+ }
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se::after{
+  width:8px;height:8px;left:auto;top:auto;right:13px;bottom:13px;transform:none;
+  border:2px solid #fff;border-left:0;border-top:0;border-radius:0;pointer-events:none
+ }
+}
 </style>
 <style id="aerosync-youtube-widget">
 .w-youtube{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);overflow:hidden}
@@ -8267,7 +8287,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
             const colStep=(homeEl.clientWidth-gapX*3)/4,rect=sec.getBoundingClientRect();
             const rowStep=Math.max(48,(rect.height-gapY*Math.max(0,(rows||2)-1))/(rows||2)+gapY);
-            resizeState={id,sec,grip,dir:grip.dataset.dir||'se',startX:e.clientX,startY:e.clientY,storedCols:storedCols||2,rows:rows||2,colStep:Math.max(24,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,originalSize:layout.sizes[id]||defaultSizeOf(id),previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            resizeState={id,sec,grip,dir:(grip.dataset.dir==='se'&&window.matchMedia('(pointer: coarse)').matches?'auto':(grip.dataset.dir||'se')),startX:e.clientX,startY:e.clientY,storedCols:storedCols||2,rows:rows||2,colStep:Math.max(24,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,originalSize:layout.sizes[id]||defaultSizeOf(id),previewSize:layout.sizes[id]||defaultSizeOf(id)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
@@ -8275,8 +8295,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const st=resizeState;if(!st||e.pointerId!==st.pointerId)return;
             if(e.cancelable)e.preventDefault();
             const dx=e.clientX-st.startX,dy=e.clientY-st.startY;
-            const deltaCols=st.dir.includes('e')?Math.round(dx/st.colStep):0;
-            const deltaRows=st.dir.includes('s')?Math.round(dy/st.rowStep):0;
+            const dir=st.dir==='auto'?(Math.abs(dx)>Math.abs(dy)*1.35?'e':Math.abs(dy)>Math.abs(dx)*1.35?'s':'se'):st.dir;
+            const deltaCols=dir.includes('e')?Math.round(dx/st.colStep):0;
+            const deltaRows=dir.includes('s')?Math.round(dy/st.rowStep):0;
             const col=Math.max(st.minCols,Math.min(4,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
             const next=col+'x'+row;
             if(st.previewSize!==next){
