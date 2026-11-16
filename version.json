@@ -1,11 +1,10 @@
 {
-  "version": "2026.11.16.43",
-  "build": 2026111643,
+  "version": "2026.11.16.44",
+  "build": 2026111644,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Recalculada a área do carrossel Categorias para ocupar três trilhas reais da grade, sem invadir widgets vizinhos.",
-    "Ajustado o encaixe denso da grade para preencher espaços livres sem sobreposição.",
-    "Adicionada tipografia e composição proporcionais ao tamanho real dos widgets Hoje, Tempo hoje, Progresso, Foco, Clima e Relógio.",
-    "Mantidos os controles, dados, estilos e interações existentes; sem alteração de escala global."
+    "Tipografia interna dos widgets acompanha proporcionalmente a largura de cada card, sem alterar a escala global da interface.",
+    "Grade responsiva adapta a quantidade de colunas ao espaço disponível em celulares, tablets e telas grandes.",
+    "Suas Missões mantém o cabeçalho no fluxo natural e separa o título da lista de tarefas para evitar sobreposição."
   ]
 }
