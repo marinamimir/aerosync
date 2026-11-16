@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.45",
-  "build": 2026111645,
+  "version": "2026.11.16.46",
+  "build": 2026111646,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Tipografia de cada widget acompanha largura e altura reais usando observação de redimensionamento, sem escala global da interface.",
-    "Colunas adaptáveis em celulares, tablets e telas grandes permitem acomodar mais widgets lado a lado conforme o espaço disponível.",
-    "Suas Missões mantém cabeçalho e lista em fluxo vertical independente para evitar sobreposição."
+    "Escala tipográfica independente para os widgets nativos Hoje e Tempo hoje, acompanhando largura e altura reais.",
+    "Rótulos, dia, data e tempo registrado aumentam e reorganizam o espaçamento conforme o tamanho do card.",
+    "Observador de dimensões agora acompanha widgets personalizados e os dois cards nativos."
   ]
 }
