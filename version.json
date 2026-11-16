@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.41",
-  "build": 2026111641,
+  "version": "2026.11.16.42",
+  "build": 2026111642,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Corrigido o fluxo vertical da lista de Missões: a altura volta a acompanhar o conteúdo e não deixa widgets sobrepostos.",
-    "Limitada a altura máxima dos widgets em telas estreitas para evitar cards gigantes por gestos de toque.",
-    "Preservados o layout original e a escala geral da interface."
+    "Separada a barra de ferramentas do fluxo de layout para que os controles não alterem a geometria dos widgets.",
+    "Removidos os botões redundantes de mover por setas e alternar tamanho; reorganização continua por arraste e redimensionamento pelas alças.",
+    "Preservados ocultar, editar e remover widgets, além do layout e da escala originais."
   ]
 }
