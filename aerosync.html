@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111641">
+    <meta name="aero-build" content="2026111642">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8014,11 +8014,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             tools.className = 'section-tools';
             tools.innerHTML = `<span class="st-label">${esc(label)}</span>
                 <div class="st-btns">
-                    <button class="st-btn" data-st="prev" aria-label="Mover ${esc(label)} para antes" title="Mover para antes"><i class="fas fa-arrow-left"></i></button>
-                    <button class="st-btn" data-st="next" aria-label="Mover ${esc(label)} para depois" title="Mover para depois"><i class="fas fa-arrow-right"></i></button>
-                    <button class="st-btn" data-st="size" title="Alternar tamanho" aria-label="Alternar tamanho"><i class="fas fa-up-right-and-down-left-from-center"></i></button>
-                    
-                    <button class="st-btn" data-st="hide"><i class="fas fa-eye"></i></button>
+                    <button class="st-btn" data-st="hide" aria-label="Ocultar ${esc(label)}" title="Ocultar"><i class="fas fa-eye"></i></button>
                     ${isWidget ? `<button class="st-btn" data-st="wedit" aria-label="Editar ${esc(label)}" title="Editar"><i class="fas fa-pen"></i></button>
                     <button class="st-btn st-danger" data-st="wdel" aria-label="Remover ${esc(label)}" title="Remover"><i class="fas fa-trash"></i></button>` : ''}
                 </div>`;
@@ -8147,14 +8143,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                         sec.dataset.size=`${Math.min(4,cols)}x${Math.min(8,rows)}`;
                     }
                 }
-                sec.querySelector('[data-st="prev"]').disabled = i === 0;
-                sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;
-                const sb = sec.querySelector('[data-st="size"]');
-                const sizeLabel = fixed ? 'Este bloco sempre usa a largura toda' : `Tamanho ${size}; ajuste no editor ou arraste o puxador`;
-                sb.disabled = fixed;
-                sb.title = sizeLabel;
-                sb.setAttribute('aria-label', `${label}: ${sizeLabel}`);
-                sb.innerHTML = `<i class="fas ${full ? 'fa-down-left-and-up-right-to-center' : 'fa-up-right-and-down-left-from-center'}"></i>`;
                 const hb = sec.querySelector('[data-st="hide"]');
                 hb.classList.toggle('is-on', hidden);
                 hb.setAttribute('aria-pressed', String(hidden));
@@ -8217,13 +8205,6 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             e.stopPropagation();
             const sec = b.closest('.home-section');
             const id = sec.dataset.section;
-            const i = layout.order.indexOf(id), o = layout.order;
-            if (b.dataset.st === 'prev' && i > 0) [o[i - 1], o[i]] = [o[i], o[i - 1]];
-            if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
-            if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) {
-                const choices=sec.dataset.widget?(sec.dataset.widget==='youtube'?['3x2','3x3','3x4','4x4']:['1x1','2x1','2x2','3x2','4x2','4x3','4x4']):id==='tasks'?['4x1','4x2','4x3','4x4']:['2x2','4x2'];
-                const current=layout.sizes[id]||defaultSizeOf(id);layout.sizes[id]=choices[(choices.indexOf(current)+1)%choices.length];
-            }
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
             if (b.dataset.st === 'wedit') { openWidgetEditor(id); return; }
             if (b.dataset.st === 'wdel') { removeWidget(id); return; }
@@ -8356,7 +8337,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             frame.classList.add('is-editing');
             document.getElementById('edit-bar').classList.remove('hidden');
             if (audio) audio.resume().then(playPop).catch(() => {});
-            toast('Use as setas para mudar a ordem');
+            toast('Arraste os widgets para reorganizar; use as alças para redimensionar');
         }
         function exitEditMode() {
             if (!isEditing()) return;
@@ -8774,6 +8755,30 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 @media(max-width:799px) {
   #home-sections.editing { row-gap:12px!important; }
+}
+
+
+/* Build 42 — toolbar isolada da geometria dos widgets. */
+#home-sections.editing > .home-section { position:relative!important; }
+#home-sections.editing > .home-section > .section-tools {
+ position:absolute!important; z-index:120!important; top:8px!important; left:8px!important; right:8px!important;
+ display:flex!important; align-items:center!important; justify-content:space-between!important; gap:8px!important;
+ margin:0!important; padding:5px 7px!important; min-width:0!important; box-sizing:border-box!important;
+ border:1px solid color-mix(in srgb,var(--theme-accent,var(--accent)) 22%,transparent)!important;
+ border-radius:14px!important; background:color-mix(in srgb,var(--surface,#fff) 90%,transparent)!important;
+ -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); box-shadow:0 3px 12px rgba(30,20,35,.10);
+ pointer-events:auto!important;
+}
+#home-sections.editing > .home-section > .section-tools .st-label {
+ flex:1 1 auto!important; min-width:0!important; font-size:10px!important; line-height:1.2!important;
+ overflow:hidden!important; text-overflow:ellipsis!important; cursor:grab; touch-action:none;
+}
+#home-sections.editing > .home-section > .section-tools .st-btns {
+ display:flex!important; flex:0 0 auto!important; flex-wrap:nowrap!important; align-items:center!important; gap:5px!important;
+}
+#home-sections.editing > .home-section > .section-tools .st-btn {
+ width:30px!important; height:30px!important; min-width:30px!important; min-height:30px!important;
+ flex:0 0 30px!important; margin:0!important; touch-action:manipulation;
 }
 
 </style>
