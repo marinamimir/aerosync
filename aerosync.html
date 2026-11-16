@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111643">
+    <meta name="aero-build" content="2026111644">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -1132,13 +1132,13 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         html.dark .search-box input { color: #eef0f6; }
 
         /* ===== Blocos da tela inicial em grade (metade ou largura toda) ===== */
-        #home-sections { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 78px; grid-auto-flow: row; gap: 12px 8px; align-items: stretch; }
+        #home-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 76px), 1fr)); grid-auto-rows: 78px; grid-auto-flow: row; gap: 12px 8px; align-items: stretch; }
         .home-section { margin-bottom: 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
         .home-section > :not(.section-tools):not(.home-note-empty) { flex: 1; min-height: 0; }
         /* Blocos nativos continuam ocupando toda a largura; widgets usam spans próprios. */
         #home-sections > .home-section:not([data-widget]):not([data-section="tasks"]) { grid-column: span 2; }
-        #home-sections > .carousel-section, .home-section.is-full { grid-column: span 4; }
-        #home-sections > [data-section="tasks"] { grid-column: span 4; grid-row: auto; min-width:0; min-height:fit-content; height:auto; overflow:visible; }
+        #home-sections > .carousel-section, .home-section.is-full { grid-column: 1 / -1; }
+        #home-sections > [data-section="tasks"] { grid-column: 1 / -1; grid-row: auto; min-width:0; min-height:fit-content; height:auto; overflow:visible; }
         #home-sections > [data-section="tasks"] > .relative { flex:0 0 auto; min-height:0; overflow:visible; }
         #home-sections > [data-section="tasks"] #task-list { min-width:0; min-height:0; overflow:visible; }
         #home-sections > [data-section="tasks"] .task-item { min-width:0; max-width:100%; }
@@ -8123,7 +8123,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 }else if(id==='carousel'){
                     // Categorias ocupa três trilhas reais da grade: a altura visual
                     // nunca pode transbordar para a próxima linha e cobrir outro card.
-                    sec.style.gridColumn='span 4';
+                    sec.style.gridColumn='1 / -1';
                     sec.style.gridRow='span 3';
                     sec.dataset.size='4x3';
                 }else{
@@ -8135,12 +8135,12 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                         // Aplicar grid-row: span N força uma altura artificial e deixa
                         // os cartões seguintes passarem por trás das tarefas.
                         cols=4;
-                        sec.style.gridColumn='span 4';
+                        sec.style.gridColumn='1 / -1';
                         sec.style.gridRow='auto';
                         sec.style.minHeight='0';
                         sec.dataset.size='4xauto';
                     }else{
-                        sec.style.gridColumn=`span ${Math.min(4,cols)}`;
+                        sec.style.gridColumn=cols>=4?'1 / -1':`span ${Math.min(4,cols)}`;
                         sec.style.gridRow=`span ${Math.min(8,rows)}`;
                         sec.dataset.size=`${Math.min(4,cols)}x${Math.min(8,rows)}`;
                     }
@@ -8962,6 +8962,53 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   #home-sections > .carousel-section { grid-row:span 3!important; }
 }
 
+
+        /* ALife responsive refinement 2026.11.16.44
+           Grid keeps the existing free-order/resize model, but its tracks adapt to available width. */
+        @media (min-width: 600px) {
+            #home-sections { grid-template-columns: repeat(auto-fit, minmax(min(100%, 132px), 1fr)); }
+        }
+        @media (min-width: 1000px) {
+            #home-sections { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+        }
+        /* A widget is a size container: its typography follows its own width, not the device viewport. */
+        #home-sections > .widget-section { container-type: inline-size; container-name: al-widget; }
+        #home-sections > .widget-section .w-body { font-size: clamp(12px, 4cqi, 25px); line-height: 1.25; }
+        #home-sections > .widget-section .w-body :is(p,span,strong,b,small,label,button,h1,h2,h3,h4) {
+            font-size: clamp(10px, 4cqi, 25px) !important;
+            line-height: 1.22;
+        }
+        #home-sections > .widget-section .w-body :is(.wf-kicker,.wf-foot,.wf-mini,.wy-placeholder small,.wfo-stats small) {
+            font-size: clamp(9px, 2.8cqi, 16px) !important;
+        }
+        #home-sections > .widget-section .w-body :is(.wf-value,.wfo-stats b,.wfo-head) {
+            font-size: clamp(16px, 7cqi, 38px) !important;
+        }
+        #home-sections > .widget-section .w-body :is(i,svg) { max-width: 100%; }
+        #home-sections > [data-section="tasks"] .tasks-head {
+            flex: 0 0 auto !important;
+            min-height: max-content !important;
+            height: auto !important;
+            align-self: stretch;
+            margin: 0 0 16px !important;
+            position: relative;
+            z-index: 1;
+        }
+        #home-sections > [data-section="tasks"] .tasks-head > div { min-width: 0; }
+        #home-sections > [data-section="tasks"] > .relative {
+            flex: 0 0 auto !important;
+            width: 100%;
+            position: relative;
+            clear: both;
+        }
+        #home-sections > [data-section="tasks"] #task-list { display: flex; flex-direction: column; gap: 12px; }
+        #home-sections > [data-section="tasks"] #task-list.view-grid { display: grid; }
+        #home-sections > [data-section="tasks"] .task-item { position: relative; }
+        @media (max-width: 420px) {
+            #home-sections > .widget-section .w-body :is(p,span,strong,b,small,label,button,h1,h2,h3,h4) {
+                overflow-wrap: anywhere;
+            }
+        }
 </style>
 
 <div id="fin-sheet" aria-hidden="true">
