@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111647">
+    <meta name="aero-build" content="2026111648">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8059,7 +8059,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             }
             if (w.type === 'clock') return `<div class="w-clock w-clock-${w.style||'soft'}"><span class="w-clock-time">${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span><small>${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})}</small></div>`;
             if (w.type === 'weather') { const d=w.weather||{};return `<div class="w-weather ${w.background==='solid'?'has-bg':''}"><div class="w-weather-head"><span><i class="fas fa-location-dot"></i> Clima local</span><button type="button" class="w-weather-refresh" data-act="wd-weather-refresh" aria-label="Atualizar clima"><i class="fas fa-rotate"></i></button></div><div class="w-weather-main"><i class="fas ${esc(d.icon||'fa-cloud-sun')}"></i><b>${d.temp==null?'--°':Math.round(d.temp)+'°'}</b></div><div class="w-weather-desc">${esc(d.label||'Toque em atualizar para consultar')}</div>${d.city?`<small>${esc(d.city)}</small>`:''}</div>`; }
-            if (w.type === 'luck') { const quotes=['Hoje, uma pequena escolha pode abrir um caminho bonito.','Sua sorte floresce quando você respeita seu próprio ritmo.','Uma surpresa gentil pode aparecer onde menos espera.','Confie no próximo passo, não precisa enxergar a escada inteira.','Hoje é um ótimo dia para acolher uma ideia nova.','O acaso também gosta de quem se permite tentar.','Pequenas alegrias estão procurando você.','Sua curiosidade é seu trevo de quatro folhas.','Uma pausa na hora certa também é sorte.','O melhor detalhe do dia pode ser o mais simples.','Permita-se receber coisas boas sem culpa.','Uma conversa leve pode mudar o tom do dia.','Hoje, escolha o que faz seu coração respirar.','Você está mais perto do que imagina.'];const day=new Date();const key=day.getFullYear()*10000+(day.getMonth()+1)*100+day.getDate();const quote=quotes[((key*9301+49297)>>>0)%quotes.length];return `<blockquote class="w-quote q-${w.style||'accent'}"><i class="fas fa-clover"></i><span class="w-luck-label">SORTE DO DIA</span><p>${quote}</p><small>${day.toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small></blockquote>`; }
+            if (w.type === 'luck') { const quotes=['Hoje, uma pequena escolha pode abrir um caminho bonito.','Sua sorte floresce quando você respeita seu próprio ritmo.','Uma surpresa gentil pode aparecer onde menos espera.','Confie no próximo passo, não precisa enxergar a escada inteira.','Hoje é um ótimo dia para acolher uma ideia nova.','O acaso também gosta de quem se permite tentar.','Pequenas alegrias estão procurando você.','Sua curiosidade é seu trevo de quatro folhas.','Uma pausa na hora certa também é sorte.','O melhor detalhe do dia pode ser o mais simples.','Permita-se receber coisas boas sem culpa.','Uma conversa leve pode mudar o tom do dia.','Hoje, escolha o que faz seu coração respirar.','Você está mais perto do que imagina.'];const day=new Date();const key=day.getFullYear()*10000+(day.getMonth()+1)*100+day.getDate();const quote=quotes[((key*9301+49297)>>>0)%quotes.length];return `<blockquote class="w-quote w-luck q-${w.style||'accent'}"><i class="fas fa-clover"></i><span class="w-luck-label">SORTE DO DIA</span><p>${quote}</p><small>${day.toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small></blockquote>`; }
             return `<blockquote class="w-quote q-${w.style}${w.text.trim() ? '' : ' is-empty'}">
                 <i class="fas fa-quote-left" aria-hidden="true"></i>
                 <p>${w.text.trim() ? esc(w.text) : 'Toque para escrever sua citação'}</p>
@@ -8795,7 +8795,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
 /* Build 43 — geometria consistente, conteúdo proporcional e encaixe sem colisões. */
 #home-sections {
-  grid-auto-flow:row dense!important;
+  grid-auto-flow:row!important;
   grid-auto-rows:78px!important;
   align-items:stretch!important;
 }
@@ -8967,7 +8967,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 #home-sections > [data-widget] .w-body > * { min-width:0; max-width:100%; }
 @media(max-width:799px) {
-  #home-sections { grid-auto-flow:row dense!important; grid-auto-rows:78px!important; }
+  #home-sections { grid-auto-flow:row!important; grid-auto-rows:78px!important; }
   #home-sections > .carousel-section { grid-row:span 3!important; }
 }
 
@@ -8983,16 +8983,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         /* A widget is a size container: its typography follows its own width, not the device viewport. */
         #home-sections > .widget-section { container-type: inline-size; container-name: al-widget; }
         #home-sections > .widget-section .w-body { font-size: clamp(11px, calc(14px * var(--widget-scale, 1)), 25px); line-height: 1.25; }
-        #home-sections > .widget-section .w-body :is(p,span,strong,b,small,label,button,h1,h2,h3,h4) {
-            font-size: clamp(10px, calc(14px * var(--widget-scale, 1)), 25px) !important;
-            line-height: 1.22;
-        }
-        #home-sections > .widget-section .w-body :is(.wf-kicker,.wf-foot,.wf-mini,.wy-placeholder small,.wfo-stats small) {
-            font-size: clamp(9px, calc(11px * var(--widget-scale, 1)), 16px) !important;
-        }
-        #home-sections > .widget-section .w-body :is(.wf-value,.wfo-stats b,.wfo-head) {
-            font-size: clamp(16px, calc(25px * var(--widget-scale, 1)), 38px) !important;
-        }
+        /* Typography is defined by each widget component, not a global descendant selector. */
+        #home-sections > .widget-section .w-body { line-height: 1.25; }
         #home-sections > .widget-section .w-body :is(i,svg) { max-width: 100%; }
         #home-sections > [data-section="tasks"] .tasks-head {
             flex: 0 0 auto !important;
@@ -10921,7 +10913,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
     for (const entry of entries) {
       const el=entry.target, width=entry.contentRect.width;
       if (!width) continue;
-      const scale=Math.max(.75,Math.min(1.25,width/240));
+      const scale=Math.max(.72,Math.min(1.08,width/240));
       el.style.setProperty('--widget-scale',String(scale));
     }
   });
@@ -10937,5 +10929,103 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
-</body>
+<style id="alife-smart-widget-layout-20261116">
+/* Stable packing: resizing an earlier card must not visually reorder later cards. */
+#home-sections { grid-auto-flow:row!important; }
+@media(max-width:799px){ #home-sections { grid-auto-flow:row!important; } }
+#home-sections > .widget-section > .w-body {
+  box-sizing:border-box; width:100%; height:100%; min-width:0; min-height:0;
+  max-width:100%; line-height:1.25;
+}
+#home-sections > .widget-section { min-width:0; min-height:0; }
+#home-sections > .widget-section .w-body :is(p,small,cite) { min-width:0; overflow-wrap:anywhere; }
+
+/* Luck: use available height without inflating text. */
+#home-sections > .widget-section .w-body .w-luck {
+  box-sizing:border-box; width:100%; height:100%; min-width:0; min-height:0;
+  display:flex; flex-direction:column; justify-content:space-evenly; align-items:stretch;
+  gap:clamp(5px,2.5cqi,14px); padding:clamp(10px,4cqi,20px); overflow:hidden;
+}
+#home-sections > .widget-section .w-body .w-luck > i { flex:0 0 auto; font-size:clamp(14px,5cqi,22px); }
+#home-sections > .widget-section .w-body .w-luck .w-luck-label {
+  flex:0 0 auto; font-size:clamp(9px,3.8cqi,13px)!important;
+  line-height:1.2; letter-spacing:.12em; overflow-wrap:anywhere;
+}
+#home-sections > .widget-section .w-body .w-luck p {
+  flex:1 1 auto; display:flex; align-items:center; min-height:0; margin:0;
+  font-size:clamp(12px,5.8cqi,18px)!important; line-height:1.3!important;
+  overflow:visible; overflow-wrap:anywhere; -webkit-line-clamp:unset;
+}
+#home-sections > .widget-section .w-body .w-luck small {
+  flex:0 0 auto; align-self:flex-end; margin:0;
+  font-size:clamp(10px,4cqi,14px)!important; line-height:1.2;
+}
+
+/* Quotes remain content-led and centered. */
+#home-sections > .widget-section .w-body .w-quote:not(.w-luck) {
+  box-sizing:border-box; width:100%; height:100%; min-width:0; min-height:0;
+  justify-content:center; gap:clamp(5px,2cqi,10px);
+}
+#home-sections > .widget-section .w-body .w-quote:not(.w-luck) p {
+  flex:0 1 auto; margin:0; font-size:clamp(12px,5.5cqi,17px)!important;
+  line-height:1.3!important; -webkit-line-clamp:unset; overflow-wrap:anywhere;
+}
+#home-sections > .widget-section .w-body .w-quote:not(.w-luck) cite {
+  font-size:clamp(10px,4cqi,13px)!important; line-height:1.25;
+}
+
+/* Finance overview: stats use the available card area; charts expand only when present. */
+#home-sections > .widget-section .w-body .w-finance-overview {
+  box-sizing:border-box; width:100%; height:100%; min-width:0; min-height:0;
+  display:flex; flex-direction:column; justify-content:space-between;
+  gap:clamp(5px,2cqi,10px); overflow:hidden;
+}
+#home-sections > .widget-section .w-body .wfo-head { flex:0 0 auto; min-width:0; }
+#home-sections > .widget-section .w-body .wfo-stats {
+  flex:1 1 auto; min-height:0; align-content:stretch;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,105px),1fr));
+  gap:clamp(5px,2.5cqi,9px); margin:clamp(4px,2cqi,8px) 0;
+}
+#home-sections > .widget-section .w-body .wfo-stats>div {
+  min-width:0; min-height:0; display:flex; flex-direction:column;
+  justify-content:center; overflow:hidden; padding:clamp(5px,3cqi,10px);
+}
+#home-sections > .widget-section .w-body .wfo-stats small {
+  font-size:clamp(9px,3.5cqi,12px)!important; line-height:1.2;
+}
+#home-sections > .widget-section .w-body .wfo-stats b {
+  font-size:clamp(11px,4.3cqi,17px)!important; line-height:1.15;
+  white-space:normal; overflow-wrap:anywhere; word-break:normal;
+}
+#home-sections > .widget-section .w-body .wfo-bars {
+  flex:0 1 100px; min-height:42px; height:auto; max-height:120px;
+}
+#home-sections > .widget-section .w-body .wfo-pie { flex:0 0 auto; }
+
+/* Compact widgets distribute their content without scaling fonts from height. */
+#home-sections > .widget-section .w-body .w-weather {
+  justify-content:space-evenly; gap:clamp(5px,2.5cqi,10px);
+}
+#home-sections > .widget-section .w-body .w-clock { justify-content:space-evenly; }
+#home-sections > .widget-section .w-body .w-weather-head,
+#home-sections > .widget-section .w-body .w-weather-desc,
+#home-sections > .widget-section .w-body .w-clock small {
+  line-height:1.2; overflow-wrap:anywhere;
+}
+
+/* Date stays readable at minimum width. */
+#home-sections > [data-section="date"] #date-widget { min-width:0; min-height:0; }
+#home-sections > [data-section="date"] #date-widget > .lcd { flex:1 1 auto; min-height:0; }
+#home-sections > [data-section="date"] #date-weekday {
+  font-size:clamp(8px,3.5cqi,13px)!important; line-height:1.15;
+  white-space:normal; overflow-wrap:anywhere;
+}
+#home-sections > [data-section="date"] #date-main {
+  font-size:clamp(11px,7.5cqi,25px)!important; line-height:1.08;
+  letter-spacing:-.03em!important; white-space:nowrap;
+}
+#home-sections > [data-section="time"] #time-today {
+  font-size:clamp(13px,9cqi,30px)!important; line-height:1.08;
+}
+</style></body>
 </html>
