@@ -1,10 +1,11 @@
 {
-  "version": "2026.11.16.46",
-  "build": 2026111646,
+  "version": "2026.11.16.47",
+  "build": 2026111647,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Escala tipográfica independente para os widgets nativos Hoje e Tempo hoje, acompanhando largura e altura reais.",
-    "Rótulos, dia, data e tempo registrado aumentam e reorganizam o espaçamento conforme o tamanho do card.",
-    "Observador de dimensões agora acompanha widgets personalizados e os dois cards nativos."
+    "Grade responsiva agora mede a quantidade real de colunas antes de aplicar spans, evitando colunas implícitas e widgets fora da tela.",
+    "Alças de redimensionamento usam a largura real das trilhas e limitam o tamanho à grade disponível no dispositivo.",
+    "Escala tipográfica passa a depender da largura do widget, sem inflar textos em cards altos.",
+    "Refinados Sorte do dia e Hoje para evitar textos exagerados e data cortada em cards menores."
   ]
 }
