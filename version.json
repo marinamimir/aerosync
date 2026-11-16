@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.37",
-  "build": 2026111637,
+  "version": "2026.11.16.38",
+  "build": 2026111638,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Composição interna dos widgets Progresso, Hoje, Foco e Tempo hoje mais estável ao redimensionar.",
-    "Textos e conteúdo do calendário agora se adaptam melhor a cards estreitos.",
-    "Ajuste do cálculo de passos verticais usando as linhas reais do grid; preservados layout original e escala."
+    "Corrigida a altura dos widgets fora do modo Organizar: linhas do dashboard agora têm altura fixa e previsível.",
+    "Altura passa a ser controlada pelo número de linhas salvo no tamanho do widget, sem expansão automática por conteúdo.",
+    "Preservados o layout original, os tamanhos salvos e a escala geral da interface."
   ]
 }
