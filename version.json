@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.38",
-  "build": 2026111638,
+  "version": "2026.11.16.39",
+  "build": 2026111639,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Corrigida a altura dos widgets fora do modo Organizar: linhas do dashboard agora têm altura fixa e previsível.",
-    "Altura passa a ser controlada pelo número de linhas salvo no tamanho do widget, sem expansão automática por conteúdo.",
-    "Preservados o layout original, os tamanhos salvos e a escala geral da interface."
+    "Calendário e Tempo hoje passam a dimensionar fontes, espaçamentos e elementos pela área real do próprio widget.",
+    "Relógio digital e estilos visuais de relógio também acompanham largura e altura do card.",
+    "Preservados os tamanhos salvos, o layout original e a escala geral da interface."
   ]
 }

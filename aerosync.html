@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111638">
+    <meta name="aero-build" content="2026111639">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8650,6 +8650,67 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   #home-sections > [data-section="date"] #date-widget,
   #home-sections > [data-section="progress"] #progress-widget { padding:10px!important; }
   #home-sections > [data-section="date"] #date-weekday { font-size:9px!important; }
+}
+
+
+/* Build 39 — tipografia e elementos visuais proporcionais ao próprio widget (não à viewport). */
+#home-sections > [data-section="date"],
+#home-sections > [data-section="time"],
+#home-sections > [data-widget] { container-type:size; }
+#home-sections > [data-section="date"] #date-widget {
+  gap:clamp(3px,2cqb,12px)!important;
+  padding:clamp(7px,4cqi,14px)!important;
+}
+#home-sections > [data-section="date"] #date-widget > span {
+  font-size:clamp(7px, min(4.2cqi,5cqb), 11px)!important;
+  line-height:1.15;
+}
+#home-sections > [data-section="date"] #date-widget > span i { font-size:.95em; }
+#home-sections > [data-section="date"] #date-widget > .lcd {
+  padding:clamp(3px, min(3cqi,3cqb), 10px)!important;
+  border-radius:clamp(7px,3cqi,16px);
+  gap:clamp(1px,1cqb,5px);
+}
+#home-sections > [data-section="date"] #date-weekday {
+  font-size:clamp(7px, min(4.8cqi,6cqb), 14px)!important;
+  letter-spacing:clamp(0px,.25cqi,1.2px)!important;
+  line-height:1.1;
+}
+#home-sections > [data-section="date"] #date-main {
+  font-size:clamp(12px, min(10cqi,15cqb), 30px)!important;
+  letter-spacing:clamp(-1px,.1cqi,1px)!important;
+  line-height:1.05;
+}
+#home-sections > [data-section="time"] #time-widget {
+  padding:clamp(7px,4cqi,16px)!important;
+  gap:clamp(4px,2cqb,12px)!important;
+}
+#home-sections > [data-section="time"] #time-widget > span {
+  font-size:clamp(7px, min(4.5cqi,5cqb), 12px)!important;
+  line-height:1.15;
+}
+#home-sections > [data-section="time"] #time-today {
+  font-size:clamp(13px, min(12cqi,17cqb), 38px)!important;
+  line-height:1.05;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-widget] .w-clock {
+  box-sizing:border-box;
+  min-height:0;
+  padding:clamp(5px,4cqi,14px);
+  gap:clamp(2px,2cqb,8px);
+}
+#home-sections > [data-widget] .w-clock-time {
+  font-size:clamp(14px, min(13cqi,22cqb), 48px);
+  line-height:1;
+  white-space:nowrap;
+}
+#home-sections > [data-widget] .w-clock small {
+  font-size:clamp(7px, min(3.5cqi,5cqb), 11px);
+  line-height:1.15;
+  max-width:100%;
+  overflow-wrap:anywhere;
 }
 
 </style>
