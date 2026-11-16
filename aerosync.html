@@ -2458,9 +2458,13 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections.editing .home-section.is-dragging *{cursor:grabbing!important}
 #home-sections.editing .home-section.is-resize-selected{z-index:70!important;overflow:visible!important}
 #home-sections.editing .widget-resize-handle{display:none!important}
-#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-e,
-#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-s,
-#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{display:block!important}
+#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
+#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
+#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se,
+#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{display:block!important}
+#home-sections.editing .home-section:not(.widget-section):not([data-section="tasks"]).is-resize-selected>.widget-resize-handle,
+#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-e,
+#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-se{display:none!important}
 #home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
 </style>
