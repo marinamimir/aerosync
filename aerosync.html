@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111645">
+    <meta name="aero-build" content="2026111646">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -9009,6 +9009,46 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 overflow-wrap: anywhere;
             }
         }
+
+        /* Native Hoje / Tempo hoje cards use their own measured dimensions too. */
+        #home-sections > [data-section="date"],
+        #home-sections > [data-section="time"] {
+            container-type: inline-size;
+            container-name: al-native-widget;
+            min-width: 0;
+        }
+        #home-sections > [data-section="date"] #date-widget,
+        #home-sections > [data-section="time"] #time-widget {
+            width: 100%; height: 100%; min-width: 0; min-height: 0;
+            display: flex; flex-direction: column; justify-content: space-between;
+            gap: clamp(6px, calc(10px * var(--widget-scale, 1)), 22px);
+            padding: clamp(10px, calc(14px * var(--widget-scale, 1)), 28px) !important;
+        }
+        #home-sections > [data-section="date"] #date-widget > span,
+        #home-sections > [data-section="time"] #time-widget > span {
+            font-size: clamp(10px, calc(12px * var(--widget-scale, 1)), 22px) !important;
+            line-height: 1.2; white-space: normal;
+        }
+        #home-sections > [data-section="date"] #date-widget .lcd {
+            padding: clamp(7px, calc(10px * var(--widget-scale, 1)), 20px) !important;
+            margin-top: auto !important; margin-bottom: auto;
+        }
+        #home-sections > [data-section="date"] #date-weekday {
+            font-size: clamp(11px, calc(14px * var(--widget-scale, 1)), 26px) !important;
+            line-height: 1.2;
+        }
+        #home-sections > [data-section="date"] #date-main {
+            font-size: clamp(20px, calc(27px * var(--widget-scale, 1)), 48px) !important;
+            line-height: 1.1;
+        }
+        #home-sections > [data-section="time"] #time-today {
+            display: inline-block;
+            font-size: clamp(22px, calc(32px * var(--widget-scale, 1)), 56px) !important;
+            line-height: 1.1; white-space: normal; overflow-wrap: anywhere;
+        }
+        #home-sections > [data-section="time"] #time-widget > div {
+            margin-top: auto !important; margin-bottom: auto;
+        }
 </style>
 
 <div id="fin-sheet" aria-hidden="true">
@@ -10831,10 +10871,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 </script>
 
 <script>
-/* Widget typography follows both width and height, including touch resizing. */
+/* Per-card typography scaling: widgets and native date/time cards. */
 (function () {
   if (!('ResizeObserver' in window)) return;
   const observed = new WeakSet();
+  const selector = '#home-sections > .widget-section, #home-sections > [data-section="date"], #home-sections > [data-section="time"]';
   const resizeObserver = new ResizeObserver(entries => {
     for (const entry of entries) {
       const el = entry.target;
@@ -10843,16 +10884,16 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
       const width = size?.inlineSize || entry.contentRect.width;
       const height = size?.blockSize || entry.contentRect.height;
       if (!width || !height) continue;
-      const scale = Math.sqrt((width * height) / (220 * 160));
-      el.style.setProperty('--widget-scale', String(Math.max(.78, Math.min(1.65, scale))));
+      const base = el.dataset.section === 'time' ? 190 * 210 : 190 * 150;
+      const scale = Math.sqrt((width * height) / base);
+      el.style.setProperty('--widget-scale', String(Math.max(.78, Math.min(1.85, scale))));
     }
   });
   const observe = root => {
-    if (root.matches?.('#home-sections > .widget-section') && !observed.has(root)) {
-      observed.add(root);
-      resizeObserver.observe(root);
+    if (root.matches?.(selector) && !observed.has(root)) {
+      observed.add(root); resizeObserver.observe(root);
     }
-    root.querySelectorAll?.('#home-sections > .widget-section').forEach(el => {
+    root.querySelectorAll?.(selector).forEach(el => {
       if (!observed.has(el)) { observed.add(el); resizeObserver.observe(el); }
     });
   };
