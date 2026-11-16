@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111631">
+    <meta name="aero-build" content="2026111632">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2467,6 +2467,37 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-se{display:none!important}
 #home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
+/* Android touch targets: 48 CSS px minimum, with a small visual grip. Keep edge controls separate on compact cards. */
+@media(max-width:799px){
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
+ #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{
+  display:block!important;width:48px;height:48px;min-width:48px;min-height:48px;
+  padding:0;margin:0;border:0!important;border-radius:50%;background:transparent!important;
+  box-shadow:none!important;transform:none;touch-action:none!important;
+  -webkit-tap-highlight-color:transparent;z-index:100;
+ }
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e{
+  right:-24px;left:auto;top:50%;bottom:auto;transform:translateY(-50%);
+ }
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
+ #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{
+  left:50%;right:auto;bottom:-24px;top:auto;transform:translateX(-50%);
+ }
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e::after{
+  left:50%;top:50%;width:6px;height:24px;border:0;border-radius:99px;
+  background:var(--theme-accent,var(--accent));box-shadow:0 0 0 2px rgba(255,255,255,.96);
+  transform:translate(-50%,-50%);pointer-events:none;
+ }
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s::after,
+ #home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s::after{
+  left:50%;top:50%;width:24px;height:6px;border:0;border-radius:99px;
+  background:var(--theme-accent,var(--accent));box-shadow:0 0 0 2px rgba(255,255,255,.96);
+  transform:translate(-50%,-50%);pointer-events:none;
+ }
+ /* On narrow screens, width and height are adjusted independently to avoid overlapping hit areas. */
+ #home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se{display:none!important}
+}
 </style>
 <style id="aerosync-youtube-widget">
 .w-youtube{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);overflow:hidden}
