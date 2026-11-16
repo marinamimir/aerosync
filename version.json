@@ -1,11 +1,10 @@
 {
-  "version": "2026.11.16.48",
-  "build": 2026111648,
+  "version": "2026.11.16.49",
+  "build": 2026111649,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Substituída a tipografia global por regras específicas de cada widget para evitar textos superdimensionados.",
-    "Reorganizado o conteúdo de Sorte do Dia, citações e visão financeira para aproveitar melhor a área interna dos cards.",
-    "Estabilizado o fluxo da grade para impedir que widgets posteriores saltem para espaços anteriores durante redimensionamento.",
-    "Melhorados os limites de texto e data em cards estreitos."
+    "Refinada a tipografia responsiva com limites específicos por widget e escala baseada na largura real do card.",
+    "Ajustados títulos, números e descrições de Finanças, Hoje, Tempo, Progresso, Foco, Clima e Relógio.",
+    "Reduzidos cortes e quebras excessivas de palavras em widgets estreitos, sem alterar a geometria da grade."
   ]
 }
