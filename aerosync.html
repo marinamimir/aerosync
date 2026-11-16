@@ -8126,10 +8126,20 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     sec.dataset.size='4x2';
                 }else{
                     let [cols,rows]=/^[1-4]x[1-8]$/.test(size)?size.split('x').map(Number):(id==='tasks'?[4,2]:[2,2]);
-                    if(id==='tasks')cols=4;
-                    sec.style.gridColumn=`span ${Math.min(4,cols)}`;
-                    sec.style.gridRow=`span ${Math.min(8,rows)}`;
-                    sec.dataset.size=`${Math.min(4,cols)}x${Math.min(8,rows)}`;
+                    if(id==='tasks'){
+                        // Missões tem altura determinada pelo conteúdo da lista.
+                        // Aplicar grid-row: span N força uma altura artificial e deixa
+                        // os cartões seguintes passarem por trás das tarefas.
+                        cols=4;
+                        sec.style.gridColumn='span 4';
+                        sec.style.gridRow='auto';
+                        sec.style.minHeight='0';
+                        sec.dataset.size='4xauto';
+                    }else{
+                        sec.style.gridColumn=`span ${Math.min(4,cols)}`;
+                        sec.style.gridRow=`span ${Math.min(8,rows)}`;
+                        sec.dataset.size=`${Math.min(4,cols)}x${Math.min(8,rows)}`;
+                    }
                 }
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
                 sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;
