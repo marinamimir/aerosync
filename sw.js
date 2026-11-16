@@ -6,7 +6,7 @@
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v83';
+const CACHE_VERSION = 'v84';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
@@ -18,7 +18,6 @@ const APP_SHELL = [
   './icons/apple-touch-icon.png'
 ];
 
-// 1. Instalação: baixa e guarda o app
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -26,8 +25,6 @@ self.addEventListener('install', (event) => {
       .then(() => self.skipWaiting())
   );
 });
-
-// 2. Ativação: apaga caches de versões antigas
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
@@ -37,7 +34,6 @@ self.addEventListener('activate', (event) => {
       .then(() => self.clients.claim())
   );
 });
-
 async function networkFirst(request, cacheKey = request) {
   const cache = await caches.open(CACHE_NAME);
   try {
@@ -52,7 +48,6 @@ async function networkFirst(request, cacheKey = request) {
     throw error;
   }
 }
-
 async function fetchAndCache(request) {
   const response = await fetch(request);
   if (response && response.ok && response.type === 'basic') {
@@ -61,25 +56,21 @@ async function fetchAndCache(request) {
   }
   return response;
 }
-
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(networkFirst(req));
     return;
   }
-
   const shell = new URL('./aerosync.html', self.registration.scope).href;
   const isApp = url.pathname === new URL(shell).pathname || url.href.split('?')[0] === self.registration.scope;
   if (req.mode === 'navigate' && isApp) {
     event.respondWith(networkFirst(req, shell));
     return;
   }
-
   event.respondWith(
     caches.match(req, { ignoreSearch: true }).then((cached) => {
       const network = fetchAndCache(req).catch(() => cached);
