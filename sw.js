@@ -6,7 +6,7 @@
    - Sem internet: tudo continua funcionando; seus dados ficam no localStorage
    Lançou uma versão nova do aerosync.html? Troque o número em CACHE_VERSION.
    ================================================ */
-const CACHE_VERSION = 'v76';
+const CACHE_VERSION = 'v77';
 const CACHE_NAME = `aerosync-${CACHE_VERSION}`;
 const APP_SHELL = [
   './aerosync.html',
