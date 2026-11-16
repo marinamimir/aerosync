@@ -7964,7 +7964,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 if (FIXED_FULL.includes(id)) return;
                 const oldSize = savedLayout.sizes[id];
                 if (['half','full'].includes(oldSize)) layout.sizes[id] = oldSize === 'full' ? '4x2' : '2x2';
-                else if (savedLayout.v >= 3 && /^(?:[1-9]|1[0-2])x[1-8]$/.test(oldSize || '')) { const [c,r]=oldSize.split('x').map(Number); layout.sizes[id] = Math.max(1,Math.min(4,Math.ceil(c/3)))+'x'+Math.min(8,r); }
+                else if (savedLayout.v === 3 && /^(?:[1-9]|1[0-2])x[1-8]$/.test(oldSize || '')) { const [c,r]=oldSize.split('x').map(Number); layout.sizes[id] = Math.max(1,Math.min(4,Math.ceil(c/3)))+'x'+Math.min(8,r); }
                 else if (/^[1-4]x[1-8]$/.test(oldSize || '')) layout.sizes[id]=oldSize;
             });
         }
