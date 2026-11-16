@@ -8834,8 +8834,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections > [data-section="focus"],
 #home-sections > [data-widget] {
   container-type:size;
-  contain:layout paint;
+  contain:layout;
 }
+#home-sections:not(.editing) > .home-section:not([data-section="tasks"]) { overflow:hidden; }
+#home-sections.editing > .home-section { overflow:visible!important; }
 #home-sections > [data-section="date"] #date-widget,
 #home-sections > [data-section="time"] #time-widget,
 #home-sections > [data-section="progress"] #progress-widget,
