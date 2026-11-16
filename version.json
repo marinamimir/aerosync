@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.39",
-  "build": 2026111639,
+  "version": "2026.11.16.40",
+  "build": 2026111640,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Calendário e Tempo hoje passam a dimensionar fontes, espaçamentos e elementos pela área real do próprio widget.",
-    "Relógio digital e estilos visuais de relógio também acompanham largura e altura do card.",
-    "Preservados os tamanhos salvos, o layout original e a escala geral da interface."
+    "Editor e dashboard passam a usar o mesmo espaçamento vertical, evitando mudança de altura ao sair do modo de edição.",
+    "Widget Progresso adapta tipografia, espaçamento e barra à área real do próprio card.",
+    "Preservados tamanhos salvos, posições, espaços vazios e escala geral da interface."
   ]
 }
