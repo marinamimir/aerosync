@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.32",
-  "build": 2026111632,
+  "version": "2026.11.16.33",
+  "build": 2026111633,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Aprimadas as alças de redimensionamento no Android com áreas de toque mínimas de 48 px.",
-    "Separados os controles de largura e altura em telas estreitas para evitar sobreposição em widgets pequenos.",
-    "Mantidos o modelo original dos widgets, o layout responsivo e a ausência de escala global da interface."
+    "Corrigido o recorte das alças de redimensionamento em widgets com efeito Glass durante o modo Organizar.",
+    "Mantidas as áreas de toque de 48 px e os controles independentes de largura e altura.",
+    "Preservados o modelo original dos widgets, o layout responsivo e a escala da interface."
   ]
 }
