@@ -1,10 +1,11 @@
 {
-  "version": "2026.11.13.30",
-  "build": 2026111330,
-  "releasedAt": "2026-11-13",
+  "version": "2026.11.16.31",
+  "build": 2026111631,
+  "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Restaurada a base anterior à introdução do controle de escala global da interface.",
-    "Restaurado o modelo original de widgets, anterior às reformulações experimentais de grid, posicionamento livre e redimensionamento estrutural.",
-    "Mantidos os módulos e dados locais compatíveis com a base restaurada."
+    "Consolidada a grade de widgets em quatro colunas, sem escala global da interface.",
+    "Adicionado arraste a partir de áreas livres dos widgets e redimensionamento independente de largura e altura.",
+    "Conteúdo dos widgets adaptado às dimensões individuais dos cartões, com preservação e migração dos layouts existentes.",
+    "Ajustados controles de redimensionamento para respeitar as dimensões compatíveis de cada bloco."
   ]
 }
