@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111330">
+    <meta name="aero-build" content="2026111631">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -2414,8 +2414,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 @media (prefers-reduced-motion:reduce) { #aero-update-overlay,#aero-update-pill { transition:none !important; } }
 </style>
 <style id="aerosync-dashboard-polish">
-:root{--aero-ui-scale:1}
-#home-sections{grid-auto-flow:row dense;gap:clamp(8px,1vw,16px);grid-auto-rows:minmax(68px,auto)}
+
+#home-sections{grid-auto-flow:row;gap:12px 8px;grid-auto-rows:minmax(78px,auto)}
 .home-section{min-width:0;overflow:visible}
 .home-section.widget-section{min-width:0;min-height:0}
 #home-sections>.widget-section .w-body{min-width:0;height:100%;min-height:0;overflow:hidden}
@@ -2438,34 +2438,35 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 .widget-resizing,.widget-resizing *{cursor:grabbing!important;-webkit-user-select:none!important;user-select:none!important}
 .widget-resizing #main-scroll{overscroll-behavior:contain}
 @media(max-width:799px){#home-sections.editing .widget-resize-handle.resize-n,#home-sections.editing .widget-resize-handle.resize-s{height:34px}#home-sections.editing .widget-resize-handle.resize-e,#home-sections.editing .widget-resize-handle.resize-w{width:34px}}
-.w-quote p{font-size:calc(16px * var(--aero-ui-scale))}
-.w-quote cite,.w-weather-desc,.wf-foot,.wf-row,.wf-cat{font-size:calc(12px * var(--aero-ui-scale))}
-.wf-kicker{font-size:calc(10px * var(--aero-ui-scale))}
+.w-quote p{font-size:16px}
+.w-quote cite,.w-weather-desc,.wf-foot,.wf-row,.wf-cat{font-size:12px}
+.wf-kicker{font-size:10px}
 .wd-size-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
 .wd-size-control{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:800;color:var(--icon)}
 .wd-size-control b{font-size:12px;color:var(--accent)}
 .wd-size-control input{width:100%;accent-color:var(--accent)}
 @media(min-width:800px){
- #home-sections{grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:minmax(74px,auto);gap:14px}
- #home-sections>.home-section:not([data-widget]):not([data-section="tasks"]){grid-column:span 6}
- #home-sections>.carousel-section,#home-sections>.home-section.is-full{grid-column:span 12}
- #home-sections>[data-section="tasks"]{grid-column:span 12}
+ #home-sections{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(78px,auto);gap:12px 8px;grid-auto-flow:row}
  .wd-add-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
  .wd-preview:not(.is-full){width:min(75%,640px)}
 }
-@media(min-width:1200px){#home-sections{grid-auto-rows:minmax(78px,auto);gap:16px}.wd-add-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1200px){.wd-add-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
-/* Widget resize interaction v2: single selected corner handle, touch-first */
-#home-sections.editing .home-section{touch-action:pan-y}
-#home-sections.editing .home-section.is-resize-selected{touch-action:none!important;z-index:70!important;overflow:visible!important}
+/* Widget interaction v3: free-surface drag + independent width/height resize */
+#home-sections.editing .home-section{touch-action:none!important}
+#home-sections.editing .home-section.is-dragging{z-index:90!important;opacity:.88;transform:scale(1.01);transition:none!important;cursor:grabbing!important}
+#home-sections.editing .home-section.is-dragging *{cursor:grabbing!important}
+#home-sections.editing .home-section.is-resize-selected{z-index:70!important;overflow:visible!important}
 #home-sections.editing .widget-resize-handle{display:none!important}
-#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{display:block!important;position:absolute;right:8px;bottom:8px;top:auto;left:auto;transform:none;width:44px;height:44px;border:2px solid rgba(255,255,255,.98);border-radius:15px;background:var(--theme-accent,var(--accent));box-shadow:0 3px 12px rgba(90,50,75,.22);touch-action:none!important;pointer-events:auto;z-index:80}
-#home-sections.editing .home-section.is-resizing>.widget-resize-handle.resize-se{background:var(--theme-accent-2,var(--theme-accent,var(--accent)))}
-#home-sections.editing .widget-resize-handle.resize-se::after{content:'';position:absolute;right:11px;bottom:11px;width:15px;height:15px;border-right:3px solid #fff;border-bottom:3px solid #fff;border-radius:0 0 3px 0;left:auto;top:auto;transform:none;pointer-events:none}
-#home-sections.editing .home-section:not(.is-resize-selected)>.widget-resize-handle{display:none!important}
+#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-e,
+#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-s,
+#home-sections.editing .widget-section.is-resize-selected>.widget-resize-handle.resize-se,
+#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-s{display:block!important}
+#home-sections.editing .home-section:not(.widget-section):not([data-section="tasks"]).is-resize-selected>.widget-resize-handle,
+#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-e,
+#home-sections.editing [data-section="tasks"].is-resize-selected>.widget-resize-handle.resize-se{display:none!important}
 #home-sections.editing .home-section.is-resizing{transition:none!important;user-select:none!important;-webkit-user-select:none!important}
 .widget-resizing,.widget-resizing *{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important}
-@media(max-width:799px){#home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{right:6px;bottom:6px;width:48px;height:48px}}
 </style>
 <style id="aerosync-youtube-widget">
 .w-youtube{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%);border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);overflow:hidden}
@@ -2477,6 +2478,76 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 .w-youtube.is-collapsed .wy-stage{height:0!important;min-height:0!important;max-height:0!important;aspect-ratio:auto;border:0;margin:0}
 .wy-placeholder{flex:1;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--icon);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border:1px dashed color-mix(in srgb,var(--accent) 26%,transparent);border-radius:14px}
 .wy-placeholder>i{font-size:27px;color:#ef4444}.wy-placeholder b{font-size:12px}.wy-placeholder small{font-size:10px;opacity:.65}
+</style>
+<style id="alife-widget-container-responsive">
+/* Widget bodies become independent sizing contexts: contents respond to their own card, not viewport width. */
+#home-sections>.widget-section,
+#home-sections>.widget-section>.w-body{min-width:0;min-height:0;max-width:100%}
+#home-sections>.widget-section>.w-body{container-type:inline-size;container-name:alife-widget}
+.w-weather{min-width:0;min-height:0;padding:clamp(8px,4cqi,15px);gap:clamp(4px,2cqi,7px);overflow:hidden}
+.w-weather-head{gap:6px;min-width:0;font-size:clamp(8px,3.2cqi,10px)}
+.w-weather-main{min-width:0;gap:clamp(6px,3cqi,12px)}
+.w-weather-main i{font-size:clamp(18px,9cqi,28px)}
+.w-weather-main b{font-size:clamp(22px,12cqi,34px)}
+.w-weather-desc{font-size:clamp(9px,4.2cqi,12px);overflow-wrap:anywhere}
+.w-clock{min-width:0;min-height:0;padding:clamp(6px,4cqi,12px);gap:clamp(3px,2cqi,6px);overflow:hidden}
+.w-clock-time{font-size:clamp(23px,15cqi,48px);max-width:100%;white-space:nowrap}
+.w-clock small{font-size:clamp(8px,3.5cqi,10px)}
+.w-image{min-width:0;min-height:clamp(88px,42cqi,150px);max-width:100%}
+.is-full>.w-body .w-image,.wd-preview.is-full .w-image{min-height:clamp(120px,48cqi,200px)}
+.w-image figcaption{font-size:clamp(9px,4cqi,12px);line-height:1.25;overflow-wrap:anywhere}
+.w-finance,.w-daily,.w-focus,.w-wishlist,.w-countdown{min-width:0;min-height:0;padding:clamp(8px,4cqi,14px);gap:clamp(4px,2.4cqi,7px);overflow:hidden}
+.wf-kicker{font-size:clamp(8px,3.3cqi,9px);min-width:0;overflow-wrap:anywhere}
+.wf-value{font-size:clamp(17px,9cqi,30px);overflow-wrap:anywhere}
+.wf-foot{font-size:clamp(9px,3.8cqi,10px);overflow-wrap:anywhere}
+.wf-row,.wf-cat{gap:5px;padding:clamp(4px,2.2cqi,7px) 0;font-size:clamp(9px,4cqi,11px)}
+.wf-row strong,.wf-cat b{font-size:clamp(9px,3.7cqi,10px)}
+.wfo-stats{gap:clamp(4px,2.5cqi,8px);margin:clamp(5px,3cqi,10px) 0}
+.wfo-stats>div{min-width:0;padding:clamp(5px,3cqi,8px)}
+.wfo-stats small{font-size:clamp(8px,3.5cqi,10px);overflow-wrap:anywhere}
+.wfo-stats b{font-size:clamp(10px,4.8cqi,14px);white-space:normal;overflow-wrap:anywhere}
+.wfo-bars{height:clamp(48px,32cqi,86px);gap:clamp(3px,2cqi,10px)}
+.wfo-bars small{font-size:clamp(7px,3cqi,9px)}
+.wfo-pie{width:clamp(48px,34cqi,92px);height:auto;aspect-ratio:1}
+.wfo-line{height:clamp(48px,32cqi,90px)}
+.w-youtube{min-width:0;min-height:0;padding:clamp(6px,3cqi,10px);gap:clamp(4px,2.5cqi,8px)}
+.wy-head{min-width:0;min-height:0;font-size:clamp(9px,4cqi,12px);gap:5px}
+.wy-toggle{flex:0 0 30px}
+.wy-stage{min-width:0;min-height:0;width:100%;height:auto;aspect-ratio:16/9;max-height:440px}
+.wy-stage iframe{min-width:0;min-height:0}
+.wy-placeholder{min-width:0;min-height:clamp(64px,35cqi,110px);padding:6px;overflow-wrap:anywhere}
+.wy-placeholder b{font-size:clamp(10px,4cqi,12px)}
+.wy-placeholder small{font-size:clamp(8px,3.2cqi,10px)}
+/* Quote and empty-image widgets also scale to their own card. */
+.w-quote{min-width:0;min-height:0;padding:clamp(7px,4cqi,18px);gap:clamp(3px,2cqi,6px);overflow:hidden}
+.w-quote>i{font-size:clamp(12px,6cqi,18px)}
+.w-quote p{font-size:clamp(11px,6.2cqi,16px);line-height:1.32;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;line-clamp:6;overflow:hidden}
+.w-quote cite{font-size:clamp(9px,4.4cqi,12px);overflow-wrap:anywhere}
+.w-quote.is-empty p{font-size:clamp(10px,5.4cqi,14px)}
+.w-image.is-empty{min-height:clamp(72px,38cqi,150px);padding:clamp(6px,4cqi,16px);gap:clamp(3px,2cqi,6px)}
+.w-image.is-empty>i{font-size:clamp(18px,10cqi,26px)}
+.w-image.is-empty span{font-size:clamp(9px,4cqi,12px);overflow-wrap:anywhere}
+@container alife-widget (max-width:230px){
+ .wfo-stats{grid-template-columns:minmax(0,1fr)}
+ .w-weather-main{gap:5px}
+ .w-weather-main i{font-size:19px}
+ .w-weather-main b{font-size:24px}
+ .w-clock-time{font-size:clamp(22px,14cqi,34px)}
+ .w-youtube{padding:6px}
+ .wy-head{gap:4px}
+ .wy-toggle{width:26px;height:26px;flex-basis:26px}
+}
+@container alife-widget (max-width:165px){
+ .w-weather{padding:7px}
+ .w-weather-head{font-size:8px}
+ .w-weather-main{flex-wrap:wrap;gap:3px}
+ .w-weather-main b{font-size:21px}
+ .w-clock{padding:5px}
+ .w-clock-time{font-size:22px;letter-spacing:-.07em}
+ .w-image figcaption{left:5px;right:5px;bottom:5px;padding:4px 6px}
+ .wf-row strong,.wf-cat b{white-space:normal;overflow-wrap:anywhere}
+ .wy-head>span{font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -7872,7 +7943,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         if (Array.isArray(rawWidgets) && rawWidgets.length && JSON.stringify(rawWidgets) !== JSON.stringify(widgets)) saveWidgets(); // grava a versão limpa
         const widgetById = (id) => widgets.find(w => w.id === id);
         const allSectionIds = () => [...SECTION_IDS, ...widgets.map(w => w.id)];
-        const defaultSizeOf = (id) => {const w=widgetById(id);if(w?.type==='youtube')return '9x4';if(w?.type==='quote')return '12x2';return DEFAULT_SIZES[id]?(DEFAULT_SIZES[id]==='full'?'12x2':DEFAULT_SIZES[id]==='half'?'6x2':DEFAULT_SIZES[id]):'6x2';};
+        const defaultSizeOf = (id) => {const w=widgetById(id);if(w?.type==='youtube')return '3x4';if(w?.type==='quote')return '4x2';const size=DEFAULT_SIZES[id];return size?(size==='full'?'4x2':size==='half'?'2x2':size):'2x2';};
         const defaultLayout = () => ({ order: [...widgets.map(w => w.id), ...SECTION_IDS], hidden: [], sizes: Object.fromEntries(allSectionIds().map(id => [id, defaultSizeOf(id)])) });
         // A versão anterior juntava Progresso+Hoje ("summary") e Foco+Tempo ("focus")
         const OLD_IDS = { summary: ['progress', 'date'], focus: ['focus', 'time'] };
@@ -7896,12 +7967,12 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             knownIds.forEach(id => {
                 if (FIXED_FULL.includes(id)) return;
                 const oldSize = savedLayout.sizes[id];
-                if (['half','full'].includes(oldSize)) layout.sizes[id] = oldSize === 'full' ? '12x2' : '6x2';
-                else if (/^[1-4]x[1-4]$/.test(oldSize || '')) { const [c,r]=oldSize.split('x').map(Number); layout.sizes[id] = Math.max(1,c*3)+'x'+Math.min(8,r); }
-                else if (/^(?:[1-9]|1[0-2])x[1-8]$/.test(oldSize || '')) layout.sizes[id]=oldSize;
+                if (['half','full'].includes(oldSize)) layout.sizes[id] = oldSize === 'full' ? '4x2' : '2x2';
+                else if (savedLayout.v === 3 && /^(?:[1-9]|1[0-2])x[1-8]$/.test(oldSize || '')) { const [c,r]=oldSize.split('x').map(Number); layout.sizes[id] = Math.max(1,Math.min(4,Math.ceil(c/3)))+'x'+Math.min(8,r); }
+                else if (/^[1-4]x[1-8]$/.test(oldSize || '')) layout.sizes[id]=oldSize;
             });
         }
-        const saveLayout = () => store.set(STORAGE_KEYS.layout, { v: 3, ...layout });
+        const saveLayout = () => store.set(STORAGE_KEYS.layout, { v: 4, ...layout });
         const sectionEl = (id) => homeEl.querySelector(`[data-section="${id}"]`);
 
         // Cada bloco ganha uma barrinha (só aparece no modo Organizar); widgets também têm Editar e Remover
@@ -7920,7 +7991,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button class="st-btn st-danger" data-st="wdel" aria-label="Remover ${esc(label)}" title="Remover"><i class="fas fa-trash"></i></button>` : ''}
                 </div>`;
             sec.prepend(tools);
-            sec.insertAdjacentHTML('beforeend', '<button type="button" class="widget-resize-handle resize-se" data-st="resize" data-dir="se" aria-label="Arraste para redimensionar o widget"></button>');
+            sec.insertAdjacentHTML('beforeend', '<button type="button" class="widget-resize-handle resize-e" data-st="resize" data-dir="e" aria-label="Redimensionar largura"></button><button type="button" class="widget-resize-handle resize-s" data-st="resize" data-dir="s" aria-label="Redimensionar altura"></button><button type="button" class="widget-resize-handle resize-se" data-st="resize" data-dir="se" aria-label="Redimensionar largura e altura"></button>');
         }
         SECTION_IDS.forEach(id => addSectionTools(sectionEl(id), false));
 
@@ -8008,26 +8079,25 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             layout.order.forEach((id, i) => {
                 const sec = sectionEl(id), label = sec.dataset.label;
                 const hidden = layout.hidden.includes(id), size = layout.sizes[id] || defaultSizeOf(id), fixed = FIXED_FULL.includes(id);
-                const full = size === 'full' || size.startsWith('12x');
+                const full = size === 'full' || size.startsWith('4x');
                 sec.classList.toggle('is-hidden', hidden);
                 sec.classList.toggle('is-full', full);
-                const wideGrid=window.matchMedia('(min-width:800px)').matches,totalCols=wideGrid?12:4;
                 if(sec.dataset.widget){
-                    let [cols,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[6,2];
-                    if(sec.dataset.widget==='youtube')cols=Math.max(cols,wideGrid?3:9);
-                    const visibleCols=wideGrid?cols:Math.max(1,Math.ceil(cols/3));
-                    sec.style.gridColumn=`span ${Math.min(totalCols,visibleCols)}`;
+                    let [cols,rows]=/^[1-4]x[1-8]$/.test(size)?size.split('x').map(Number):[2,2];
+                    if(sec.dataset.widget==='youtube')cols=Math.max(cols,3);
+                    sec.style.gridColumn=`span ${Math.min(4,cols)}`;
                     sec.style.gridRow=`span ${rows}`;
-                    sec.dataset.size=`${cols}x${rows}`;
+                    sec.dataset.size=`${Math.min(4,cols)}x${rows}`;
                 }else if(id==='tasks'){
-                    const [,rows]=/^(?:[1-9]|1[0-2])x[1-8]$/.test(size)?size.split('x').map(Number):[12,2];
-                    sec.style.gridColumn=`span ${totalCols}`;
+                    const [,rows]=/^[1-4]x[1-8]$/.test(size)?size.split('x').map(Number):[4,2];
+                    sec.style.gridColumn='span 4';
                     sec.style.gridRow=rows>1?`span ${rows}`:'auto';
-                    sec.dataset.size=`12x${rows}`;
+                    sec.dataset.size=`4x${rows}`;
                 }else{
-                    const fullWidth=id==='carousel'||size.startsWith('12x');
-                    sec.style.gridColumn=`span ${fullWidth?totalCols:(wideGrid?6:2)}`;
+                    const fullWidth=id==='carousel'||size.startsWith('4x');
+                    sec.style.gridColumn=`span ${fullWidth?4:2}`;
                     sec.style.gridRow='';
+                    sec.dataset.size=size;
                 }
                 sec.querySelector('[data-st="prev"]').disabled = i === 0;
                 sec.querySelector('[data-st="next"]').disabled = i === layout.order.length - 1;
@@ -8103,7 +8173,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if (b.dataset.st === 'prev' && i > 0) [o[i - 1], o[i]] = [o[i], o[i - 1]];
             if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
             if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) {
-                const choices=sec.dataset.widget==='youtube'?['9x4','12x4','12x6','12x8']:['3x2','6x2','9x2','12x2','6x4','12x4'];
+                const choices=sec.dataset.widget?(sec.dataset.widget==='youtube'?['3x2','3x3','3x4','4x4']:['1x1','2x1','2x2','3x2','4x2','4x3','4x4']):id==='tasks'?['4x1','4x2','4x3','4x4']:['2x2','4x2'];
                 const current=layout.sizes[id]||defaultSizeOf(id);layout.sizes[id]=choices[(choices.indexOf(current)+1)%choices.length];
             }
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
@@ -8125,29 +8195,66 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         homeEl.addEventListener('drop', e => { if(!isEditing()||!draggedSection) return; const target=e.target.closest('.home-section'); if(!target||target===draggedSection) return; e.preventDefault(); const ids=layout.order, from=ids.indexOf(draggedSection.dataset.section), to=ids.indexOf(target.dataset.section); if(from>=0&&to>=0){ ids.splice(from,1); ids.splice(to,0,draggedSection.dataset.section); saveLayout(); applyLayout(); } });
         homeEl.addEventListener('dragend', () => { if(draggedSection) draggedSection.classList.remove('dragging'); draggedSection=null; homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target')); });
         let pointerDragState=null;
-        homeEl.addEventListener('pointerdown',e=>{const handle=e.target.closest('.section-tools .st-label');if(!handle||!isEditing()||e.pointerType==='mouse')return;const sec=handle.closest('.home-section');pointerDragState={id:sec.dataset.section,startX:e.clientX,startY:e.clientY,active:false};});
-        homeEl.addEventListener('pointermove',e=>{if(!pointerDragState||!isEditing())return;if(!pointerDragState.active&&Math.hypot(e.clientX-pointerDragState.startX,e.clientY-pointerDragState.startY)>8)pointerDragState.active=true;if(!pointerDragState.active)return;const under=document.elementFromPoint(e.clientX,e.clientY),target=under?.closest?.('.home-section');if(!target||target.dataset.section===pointerDragState.id)return;const from=layout.order.indexOf(pointerDragState.id),to=layout.order.indexOf(target.dataset.section);if(from<0||to<0)return;layout.order.splice(from,1);layout.order.splice(to,0,pointerDragState.id);applyLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));target.classList.add('drop-target');});
-        homeEl.addEventListener('pointerup',()=>{if(pointerDragState?.active){saveLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));}pointerDragState=null;});homeEl.addEventListener('pointercancel',()=>{pointerDragState=null;});
+        const dragIgnoreSelector='button,input,select,textarea,a,iframe,video,audio,[contenteditable="true"],[data-act],[data-yt-toggle],[data-st="resize"]';
+        const finishWidgetDrag=(e,cancelled=false)=>{
+            const st=pointerDragState;if(!st||e.pointerId!==st.pointerId)return;
+            pointerDragState=null;
+            st.sec.classList.remove('is-dragging');
+            document.documentElement.classList.remove('widget-dragging');
+            homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+            try{if(homeEl.hasPointerCapture?.(e.pointerId))homeEl.releasePointerCapture(e.pointerId);}catch(_){}
+            if(cancelled&&st.active){layout.order=[...st.startOrder];applyLayout();}
+            else if(st.active){saveLayout();st.sec.dataset.justDragged='1';window.setTimeout(()=>{delete st.sec.dataset.justDragged;},350);}
+        };
+        homeEl.addEventListener('pointerdown',e=>{
+            if(!isEditing()||e.isPrimary===false||(e.pointerType==='mouse'&&e.button!==0))return;
+            const sec=e.target.closest('.home-section');
+            if(!sec||e.target.closest(dragIgnoreSelector))return;
+            pointerDragState={id:sec.dataset.section,sec,startX:e.clientX,startY:e.clientY,active:false,pointerId:e.pointerId,startOrder:[...layout.order],lastOverId:null};
+            try{homeEl.setPointerCapture(e.pointerId);}catch(_){}
+        });
+        window.addEventListener('pointermove',e=>{
+            const st=pointerDragState;if(!st||e.pointerId!==st.pointerId||!isEditing())return;
+            if(!st.active&&Math.hypot(e.clientX-st.startX,e.clientY-st.startY)>8){
+                st.active=true;st.sec.classList.add('is-dragging');document.documentElement.classList.add('widget-dragging');
+            }
+            if(!st.active)return;
+            if(e.cancelable)e.preventDefault();
+            const under=document.elementFromPoint(e.clientX,e.clientY),target=under?.closest?.('.home-section');
+            if(!target||target.dataset.section===st.id||target.dataset.section===st.lastOverId)return;
+            const from=layout.order.indexOf(st.id),to=layout.order.indexOf(target.dataset.section);
+            if(from<0||to<0)return;
+            layout.order.splice(from,1);layout.order.splice(to,0,st.id);st.lastOverId=target.dataset.section;
+            applyLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+            target.classList.add('drop-target');
+        },{passive:false});
+        window.addEventListener('pointerup',e=>finishWidgetDrag(e,false));
+        window.addEventListener('pointercancel',e=>finishWidgetDrag(e,true));
+        window.addEventListener('lostpointercapture',e=>finishWidgetDrag(e,true));
+        homeEl.addEventListener('click',e=>{
+            const sec=e.target.closest('.home-section');
+            if(sec?.dataset.justDragged){e.preventDefault();e.stopPropagation();delete sec.dataset.justDragged;}
+        },true);
         let resizeState=null, selectedResizeSection=null;
         const setResizeSelection=(sec)=>{
             homeEl.querySelectorAll('.home-section.is-resize-selected').forEach(x=>x.classList.remove('is-resize-selected'));
             selectedResizeSection=sec?.dataset.section||null;
             if(sec&&isEditing()&&!FIXED_FULL.includes(selectedResizeSection))sec.classList.add('is-resize-selected');
         };
-        const finishWidgetResize=(e)=>{
-            if(!resizeState||e.pointerId!==resizeState.pointerId)return;
-            const st=resizeState;resizeState=null;
+        const finishWidgetResize=(e,cancelled=false)=>{
+            const st=resizeState;if(!st||e.pointerId!==st.pointerId)return;
+            resizeState=null;
             st.sec.classList.remove('is-resizing');
             document.documentElement.classList.remove('widget-resizing');
             try{if(st.grip.hasPointerCapture?.(e.pointerId))st.grip.releasePointerCapture(e.pointerId);}catch(_){}
-            layout.sizes[st.id]=st.previewSize;
-            applyLayout();saveLayout();
+            if(cancelled){layout.sizes[st.id]=st.originalSize;applyLayout();}
+            else{layout.sizes[st.id]=st.previewSize;applyLayout();saveLayout();}
         };
         homeEl.addEventListener('click',e=>{
             if(!isEditing())return;
             if(e.target.closest('[data-st="resize"],[data-st]'))return;
             const sec=e.target.closest('.home-section');
-            if(sec&&!FIXED_FULL.includes(sec.dataset.section)){setResizeSelection(sec);}
+            if(sec&&!FIXED_FULL.includes(sec.dataset.section))setResizeSelection(sec);
             else setResizeSelection(null);
         },true);
         homeEl.addEventListener('pointerdown',e=>{
@@ -8156,31 +8263,32 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;
             e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
             setResizeSelection(sec);
-            const id=sec.dataset.section,wide=window.matchMedia('(min-width:800px)').matches,totalCols=wide?12:4;
-            const [storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
+            const id=sec.dataset.section,[storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
-            const colStep=(homeEl.clientWidth-gapX*(totalCols-1))/totalCols;
-            const rowStep=(parseFloat(gridStyle.gridAutoRows)||68)+gapY;
-            resizeState={id,sec,grip,startX:e.clientX,startY:e.clientY,storedCols:storedCols||6,rows:rows||2,wide,colStep:Math.max(24,colStep),rowStep:Math.max(48,rowStep),minCols:sec.dataset.widget==='youtube'?(wide?3:9):1,pointerId:e.pointerId,previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            const colStep=(homeEl.clientWidth-gapX*3)/4,rect=sec.getBoundingClientRect();
+            const rowStep=Math.max(48,(rect.height-gapY*Math.max(0,(rows||2)-1))/(rows||2)+gapY);
+            resizeState={id,sec,grip,dir:grip.dataset.dir||'se',startX:e.clientX,startY:e.clientY,storedCols:storedCols||2,rows:rows||2,colStep:Math.max(24,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,originalSize:layout.sizes[id]||defaultSizeOf(id),previewSize:layout.sizes[id]||defaultSizeOf(id)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
         window.addEventListener('pointermove',e=>{
-            if(!resizeState||e.pointerId!==resizeState.pointerId)return;
+            const st=resizeState;if(!st||e.pointerId!==st.pointerId)return;
             if(e.cancelable)e.preventDefault();
-            const st=resizeState,dx=e.clientX-st.startX,dy=e.clientY-st.startY;
-            const deltaCols=Math.round(dx/st.colStep)*(st.wide?1:3),deltaRows=Math.round(dy/st.rowStep);
-            const col=Math.max(st.minCols,Math.min(12,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
-            const next=`${col}x${row}`;
+            const dx=e.clientX-st.startX,dy=e.clientY-st.startY;
+            const deltaCols=st.dir.includes('e')?Math.round(dx/st.colStep):0;
+            const deltaRows=st.dir.includes('s')?Math.round(dy/st.rowStep):0;
+            const col=Math.max(st.minCols,Math.min(4,st.storedCols+deltaCols)),row=Math.max(1,Math.min(8,st.rows+deltaRows));
+            const next=col+'x'+row;
             if(st.previewSize!==next){
                 st.previewSize=next;
-                st.sec.style.gridColumn=`span ${st.wide?col:Math.max(1,Math.ceil(col/3))}`;
-                st.sec.style.gridRow=`span ${row}`;
+                st.sec.style.gridColumn='span '+col;
+                st.sec.style.gridRow='span '+row;
                 st.sec.dataset.size=next;
             }
         },{passive:false});
-        window.addEventListener('pointerup',finishWidgetResize);
-        window.addEventListener('pointercancel',finishWidgetResize);
+        window.addEventListener('pointerup',e=>finishWidgetResize(e,false));
+        window.addEventListener('pointercancel',e=>finishWidgetResize(e,true));
+        window.addEventListener('lostpointercapture',e=>finishWidgetResize(e,true));
 
         const setDragEnabled = enabled => homeEl.querySelectorAll('.home-section').forEach(sec=>{ sec.draggable=false; sec.style.removeProperty('touch-action'); });
         const isEditing = () => homeEl.classList.contains('editing');
