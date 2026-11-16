@@ -1,11 +1,11 @@
 {
-  "version": "2026.11.16.47",
-  "build": 2026111647,
+  "version": "2026.11.16.48",
+  "build": 2026111648,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Grade responsiva agora mede a quantidade real de colunas antes de aplicar spans, evitando colunas implícitas e widgets fora da tela.",
-    "Alças de redimensionamento usam a largura real das trilhas e limitam o tamanho à grade disponível no dispositivo.",
-    "Escala tipográfica passa a depender da largura do widget, sem inflar textos em cards altos.",
-    "Refinados Sorte do dia e Hoje para evitar textos exagerados e data cortada em cards menores."
+    "Substituída a tipografia global por regras específicas de cada widget para evitar textos superdimensionados.",
+    "Reorganizado o conteúdo de Sorte do Dia, citações e visão financeira para aproveitar melhor a área interna dos cards.",
+    "Estabilizado o fluxo da grade para impedir que widgets posteriores saltem para espaços anteriores durante redimensionamento.",
+    "Melhorados os limites de texto e data em cards estreitos."
   ]
 }
