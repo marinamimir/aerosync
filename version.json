@@ -1,10 +1,11 @@
 {
-  "version": "2026.11.16.49",
-  "build": 2026111649,
+  "version": "2026.11.16.50",
+  "build": 2026111650,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Refinada a tipografia responsiva com limites específicos por widget e escala baseada na largura real do card.",
-    "Ajustados títulos, números e descrições de Finanças, Hoje, Tempo, Progresso, Foco, Clima e Relógio.",
-    "Reduzidos cortes e quebras excessivas de palavras em widgets estreitos, sem alterar a geometria da grade."
+    "Ajustado o contador do widget Progresso para manter 10/10 em uma única linha.",
+    "Corrigido o cabeçalho do Overview Financeiro para impedir que o botão de adicionar cubra o título.",
+    "Refinados os cards de finanças e clima em dimensões estreitas ou baixas, reduzindo cortes de texto e gráficos desproporcionais.",
+    "Ajustada a distribuição do conteúdo do widget Foco em cards altos sem ampliar a tipografia."
   ]
 }
