@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.33",
-  "build": 2026111633,
+  "version": "2026.11.16.34",
+  "build": 2026111634,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Corrigido o recorte das alças de redimensionamento em widgets com efeito Glass durante o modo Organizar.",
-    "Mantidas as áreas de toque de 48 px e os controles independentes de largura e altura.",
-    "Preservados o modelo original dos widgets, o layout responsivo e a escala da interface."
+    "Corrigido o bloqueio de eventos de toque nas alças de redimensionamento no modo Organizar.",
+    "Restaurada a captura de gestos nas alças para evitar que o Android interprete o arrasto como rolagem da página.",
+    "Preservados o layout original, o efeito Glass e as áreas de toque ampliadas."
   ]
 }
