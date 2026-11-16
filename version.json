@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.44",
-  "build": 2026111644,
+  "version": "2026.11.16.45",
+  "build": 2026111645,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Tipografia interna dos widgets acompanha proporcionalmente a largura de cada card, sem alterar a escala global da interface.",
-    "Grade responsiva adapta a quantidade de colunas ao espaço disponível em celulares, tablets e telas grandes.",
-    "Suas Missões mantém o cabeçalho no fluxo natural e separa o título da lista de tarefas para evitar sobreposição."
+    "Tipografia de cada widget acompanha largura e altura reais usando observação de redimensionamento, sem escala global da interface.",
+    "Colunas adaptáveis em celulares, tablets e telas grandes permitem acomodar mais widgets lado a lado conforme o espaço disponível.",
+    "Suas Missões mantém cabeçalho e lista em fluxo vertical independente para evitar sobreposição."
   ]
 }
