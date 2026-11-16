@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111642">
+    <meta name="aero-build" content="2026111643">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8121,9 +8121,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     sec.style.gridRow=`span ${rows}`;
                     sec.dataset.size=`${Math.min(4,cols)}x${rows}`;
                 }else if(id==='carousel'){
+                    // Categorias ocupa três trilhas reais da grade: a altura visual
+                    // nunca pode transbordar para a próxima linha e cobrir outro card.
                     sec.style.gridColumn='span 4';
-                    sec.style.gridRow='';
-                    sec.dataset.size='4x2';
+                    sec.style.gridRow='span 3';
+                    sec.dataset.size='4x3';
                 }else{
                     let [cols,rows]=/^[1-4]x[1-8]$/.test(size)?size.split('x').map(Number):(id==='tasks'?[4,2]:[2,2]);
                     const maxSectionRows=window.matchMedia('(max-width:799px)').matches?4:8;
@@ -8779,6 +8781,183 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections.editing > .home-section > .section-tools .st-btn {
  width:30px!important; height:30px!important; min-width:30px!important; min-height:30px!important;
  flex:0 0 30px!important; margin:0!important; touch-action:manipulation;
+}
+
+
+/* Build 43 — geometria consistente, conteúdo proporcional e encaixe sem colisões. */
+#home-sections {
+  grid-auto-flow:row dense!important;
+  grid-auto-rows:78px!important;
+  align-items:stretch!important;
+}
+#home-sections.editing { row-gap:12px!important; }
+#home-sections > .home-section {
+  box-sizing:border-box!important;
+  min-width:0!important;
+  min-height:0!important;
+  align-self:stretch!important;
+}
+#home-sections > .carousel-section {
+  grid-column:span 4!important;
+  grid-row:span 3!important;
+  min-height:238px!important;
+  height:100%!important;
+  overflow:hidden!important;
+  position:relative;
+  z-index:1;
+}
+#home-sections > .carousel-section > .relative {
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  height:100%;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#home-sections > .carousel-section .carousel-container {
+  flex:1 1 auto;
+  min-height:0!important;
+  height:auto!important;
+  padding:clamp(8px,2cqb,18px) 4px clamp(8px,2cqb,16px)!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+}
+#home-sections > .carousel-section #carousel-dots {
+  flex:0 0 auto;
+  margin-top:4px!important;
+}
+#home-sections > .home-section:not(.carousel-section) { z-index:0; }
+#home-sections > .home-section:not([data-section="tasks"]) { overflow:hidden; }
+#home-sections > [data-section="date"],
+#home-sections > [data-section="time"],
+#home-sections > [data-section="progress"],
+#home-sections > [data-section="focus"],
+#home-sections > [data-widget] {
+  container-type:size;
+  contain:layout paint;
+}
+#home-sections > [data-section="date"] #date-widget,
+#home-sections > [data-section="time"] #time-widget,
+#home-sections > [data-section="progress"] #progress-widget,
+#home-sections > [data-section="focus"] > div:not(.section-tools),
+#home-sections > [data-widget] > .w-body {
+  box-sizing:border-box!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+}
+#home-sections > [data-section="date"] #date-widget,
+#home-sections > [data-section="time"] #time-widget,
+#home-sections > [data-section="progress"] #progress-widget,
+#home-sections > [data-section="focus"] > div:not(.section-tools) {
+  padding:clamp(6px,4cqi,16px)!important;
+  gap:clamp(2px,2cqb,10px)!important;
+}
+#home-sections > [data-section="date"] #date-widget > span,
+#home-sections > [data-section="time"] #time-widget > span,
+#home-sections > [data-section="progress"] #progress-widget > div:first-child {
+  font-size:clamp(7px,min(4.2cqi,5cqb),12px)!important;
+  line-height:1.15!important;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-section="date"] #date-widget > .lcd {
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:0;
+  margin:0!important;
+  padding:clamp(3px,min(3cqi,3cqb),10px)!important;
+  overflow:hidden;
+}
+#home-sections > [data-section="date"] #date-weekday {
+  font-size:clamp(7px,min(4.8cqi,6cqb),14px)!important;
+  line-height:1.1!important;
+  letter-spacing:clamp(0px,.2cqi,1px)!important;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-section="date"] #date-main {
+  font-size:clamp(12px,min(10cqi,15cqb),30px)!important;
+  line-height:1.05!important;
+  letter-spacing:clamp(-1px,.1cqi,1px)!important;
+  white-space:nowrap;
+}
+#home-sections > [data-section="time"] #time-today,
+#home-sections > [data-section="focus"] #timer-display {
+  font-size:clamp(12px,min(12cqi,17cqb),38px)!important;
+  line-height:1.05!important;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-section="time"] #time-widget > .mt-2,
+#home-sections > [data-section="focus"] .mt-2 {
+  margin:0!important;
+  min-width:0;
+}
+#home-sections > [data-section="progress"] #progress-pct {
+  font-size:clamp(12px,min(12cqi,20cqb),34px)!important;
+  line-height:1.05!important;
+}
+#home-sections > [data-widget="weather"] .w-weather {
+  box-sizing:border-box;
+  width:100%;
+  height:100%;
+  min-height:0!important;
+  padding:clamp(6px,4cqi,15px)!important;
+  gap:clamp(2px,2cqb,8px)!important;
+  overflow:hidden;
+}
+#home-sections > [data-widget="weather"] .w-weather-head {
+  gap:4px;
+  font-size:clamp(7px,min(3.8cqi,5cqb),11px)!important;
+  min-width:0;
+}
+#home-sections > [data-widget="weather"] .w-weather-main { gap:clamp(4px,3cqi,12px); min-width:0; }
+#home-sections > [data-widget="weather"] .w-weather-main i {
+  font-size:clamp(14px,min(12cqi,18cqb),30px)!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-main b {
+  font-size:clamp(16px,min(14cqi,22cqb),36px)!important;
+  line-height:1.05;
+}
+#home-sections > [data-widget="weather"] .w-weather-desc,
+#home-sections > [data-widget="weather"] .w-weather small {
+  font-size:clamp(7px,min(3.8cqi,5cqb),12px)!important;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-widget] .w-clock {
+  width:100%;
+  height:100%;
+  min-height:0!important;
+  padding:clamp(5px,4cqi,14px)!important;
+  gap:clamp(2px,2cqb,8px)!important;
+  overflow:hidden;
+}
+#home-sections > [data-widget] .w-clock-time {
+  font-size:clamp(14px,min(13cqi,22cqb),48px)!important;
+  line-height:1!important;
+}
+#home-sections > [data-widget] .w-clock small {
+  font-size:clamp(7px,min(3.5cqi,5cqb),11px)!important;
+}
+#home-sections > [data-widget] .w-image,
+#home-sections > [data-widget] .w-quote {
+  box-sizing:border-box;
+  width:100%;
+  height:100%;
+  min-height:0!important;
+  max-width:100%;
+  overflow:hidden;
+}
+#home-sections > [data-widget] .w-body > * { min-width:0; max-width:100%; }
+@media(max-width:799px) {
+  #home-sections { grid-auto-flow:row dense!important; grid-auto-rows:78px!important; }
+  #home-sections > .carousel-section { grid-row:span 3!important; }
 }
 
 </style>
