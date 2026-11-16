@@ -2453,7 +2453,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 @media(min-width:1200px){.wd-add-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* Widget resize interaction v2: single selected corner handle, touch-first */
-#home-sections.editing .home-section{touch-action:pan-y}
+#home-sections.editing .home-section{touch-action:none!important}
+#home-sections.editing .home-section.is-dragging{z-index:90!important;opacity:.88;transform:scale(1.01);transition:none!important;cursor:grabbing!important}
+#home-sections.editing .home-section.is-dragging *{cursor:grabbing!important}
 #home-sections.editing .home-section.is-resize-selected{touch-action:none!important;z-index:70!important;overflow:visible!important}
 #home-sections.editing .widget-resize-handle{display:none!important}
 #home-sections.editing .home-section.is-resize-selected>.widget-resize-handle.resize-se{display:block!important;position:absolute;right:8px;bottom:8px;top:auto;left:auto;transform:none;width:44px;height:44px;border:2px solid rgba(255,255,255,.98);border-radius:15px;background:var(--theme-accent,var(--accent));box-shadow:0 3px 12px rgba(90,50,75,.22);touch-action:none!important;pointer-events:auto;z-index:80}
@@ -8121,9 +8123,46 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         homeEl.addEventListener('drop', e => { if(!isEditing()||!draggedSection) return; const target=e.target.closest('.home-section'); if(!target||target===draggedSection) return; e.preventDefault(); const ids=layout.order, from=ids.indexOf(draggedSection.dataset.section), to=ids.indexOf(target.dataset.section); if(from>=0&&to>=0){ ids.splice(from,1); ids.splice(to,0,draggedSection.dataset.section); saveLayout(); applyLayout(); } });
         homeEl.addEventListener('dragend', () => { if(draggedSection) draggedSection.classList.remove('dragging'); draggedSection=null; homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target')); });
         let pointerDragState=null;
-        homeEl.addEventListener('pointerdown',e=>{const handle=e.target.closest('.section-tools .st-label');if(!handle||!isEditing()||e.pointerType==='mouse')return;const sec=handle.closest('.home-section');pointerDragState={id:sec.dataset.section,startX:e.clientX,startY:e.clientY,active:false};});
-        homeEl.addEventListener('pointermove',e=>{if(!pointerDragState||!isEditing())return;if(!pointerDragState.active&&Math.hypot(e.clientX-pointerDragState.startX,e.clientY-pointerDragState.startY)>8)pointerDragState.active=true;if(!pointerDragState.active)return;const under=document.elementFromPoint(e.clientX,e.clientY),target=under?.closest?.('.home-section');if(!target||target.dataset.section===pointerDragState.id)return;const from=layout.order.indexOf(pointerDragState.id),to=layout.order.indexOf(target.dataset.section);if(from<0||to<0)return;layout.order.splice(from,1);layout.order.splice(to,0,pointerDragState.id);applyLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));target.classList.add('drop-target');});
-        homeEl.addEventListener('pointerup',()=>{if(pointerDragState?.active){saveLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));}pointerDragState=null;});homeEl.addEventListener('pointercancel',()=>{pointerDragState=null;});
+        const dragIgnoreSelector='button,input,select,textarea,a,iframe,video,audio,[contenteditable="true"],[data-act],[data-yt-toggle],[data-st="resize"]';
+        const finishWidgetDrag=(e,cancelled=false)=>{
+            const st=pointerDragState;if(!st||e.pointerId!==st.pointerId)return;
+            pointerDragState=null;
+            st.sec.classList.remove('is-dragging');
+            document.documentElement.classList.remove('widget-dragging');
+            homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+            try{if(homeEl.hasPointerCapture?.(e.pointerId))homeEl.releasePointerCapture(e.pointerId);}catch(_){}
+            if(cancelled&&st.active){layout.order=[...st.startOrder];applyLayout();}
+            else if(st.active){saveLayout();st.sec.dataset.justDragged='1';window.setTimeout(()=>{delete st.sec.dataset.justDragged;},350);}
+        };
+        homeEl.addEventListener('pointerdown',e=>{
+            if(!isEditing()||e.isPrimary===false||(e.pointerType==='mouse'&&e.button!==0))return;
+            const sec=e.target.closest('.home-section');
+            if(!sec||e.target.closest(dragIgnoreSelector))return;
+            pointerDragState={id:sec.dataset.section,sec,startX:e.clientX,startY:e.clientY,active:false,pointerId:e.pointerId,startOrder:[...layout.order],lastOverId:null};
+            try{homeEl.setPointerCapture(e.pointerId);}catch(_){}
+        });
+        window.addEventListener('pointermove',e=>{
+            const st=pointerDragState;if(!st||e.pointerId!==st.pointerId||!isEditing())return;
+            if(!st.active&&Math.hypot(e.clientX-st.startX,e.clientY-st.startY)>8){
+                st.active=true;st.sec.classList.add('is-dragging');document.documentElement.classList.add('widget-dragging');
+            }
+            if(!st.active)return;
+            if(e.cancelable)e.preventDefault();
+            const under=document.elementFromPoint(e.clientX,e.clientY),target=under?.closest?.('.home-section');
+            if(!target||target.dataset.section===st.id||target.dataset.section===st.lastOverId)return;
+            const from=layout.order.indexOf(st.id),to=layout.order.indexOf(target.dataset.section);
+            if(from<0||to<0)return;
+            layout.order.splice(from,1);layout.order.splice(to,0,st.id);st.lastOverId=target.dataset.section;
+            applyLayout();homeEl.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+            target.classList.add('drop-target');
+        },{passive:false});
+        window.addEventListener('pointerup',e=>finishWidgetDrag(e,false));
+        window.addEventListener('pointercancel',e=>finishWidgetDrag(e,true));
+        window.addEventListener('lostpointercapture',e=>finishWidgetDrag(e,true));
+        homeEl.addEventListener('click',e=>{
+            const sec=e.target.closest('.home-section');
+            if(sec?.dataset.justDragged){e.preventDefault();e.stopPropagation();delete sec.dataset.justDragged;}
+        },true);
         let resizeState=null, selectedResizeSection=null;
         const setResizeSelection=(sec)=>{
             homeEl.querySelectorAll('.home-section.is-resize-selected').forEach(x=>x.classList.remove('is-resize-selected'));
