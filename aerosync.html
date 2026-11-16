@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111636">
+    <meta name="aero-build" content="2026111637">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8305,7 +8305,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const id=sec.dataset.section,[storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
             const colStep=(homeEl.clientWidth-gapX*3)/4,rect=sec.getBoundingClientRect();
-            const rowStep=Math.max(48,(rect.height-gapY*Math.max(0,(rows||2)-1))/(rows||2)+gapY);
+            const rowTracks=gridStyle.gridTemplateRows.split(' ').map(v=>parseFloat(v)).filter(Number.isFinite);const rowStep=Math.max(48,(rowTracks[0]||78)+gapY);
             resizeState={id,sec,grip,dir:grip.dataset.dir||'se',startX:e.clientX,startY:e.clientY,storedCols:storedCols||2,rows:rows||2,colStep:Math.max(24,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,originalSize:layout.sizes[id]||defaultSizeOf(id),previewSize:layout.sizes[id]||defaultSizeOf(id)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
@@ -8569,6 +8569,84 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         background: linear-gradient(155deg, #24283b, #1c1f2e);
         border-color: rgba(255,255,255,0.1);
     }
+
+/* Build 37 — estabiliza a composição interna quando os cards mudam de proporção. */
+#home-sections > [data-section="progress"] #progress-widget,
+#home-sections > [data-section="date"] #date-widget,
+#home-sections > [data-section="time"] #time-widget,
+#home-sections > [data-section="focus"] > div:not(.section-tools) {
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  height:100%;
+  overflow:hidden;
+}
+#home-sections > [data-section="progress"] #progress-widget {
+  justify-content:flex-start!important;
+  gap:4px;
+}
+#home-sections > [data-section="progress"] #progress-pct {
+  margin-top:0!important;
+  line-height:1.05;
+  flex:0 0 auto;
+}
+#home-sections > [data-section="progress"] #progress-widget > .w-full {
+  flex:0 0 auto;
+  margin-top:2px!important;
+}
+#home-sections > [data-section="date"] #date-widget {
+  justify-content:flex-start!important;
+  gap:clamp(6px,1.5vh,12px);
+}
+#home-sections > [data-section="date"] #date-widget > .lcd {
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin-top:0!important;
+  padding-inline:clamp(4px,1.5vw,10px);
+  overflow:hidden;
+}
+#home-sections > [data-section="date"] #date-weekday {
+  max-width:100%;
+  font-size:clamp(9px,2.7vw,14px)!important;
+  letter-spacing:clamp(0px,.12vw,1.2px)!important;
+  line-height:1.2;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-section="date"] #date-main {
+  max-width:100%;
+  font-size:clamp(18px,6vw,28px)!important;
+  letter-spacing:clamp(-1.2px,.1vw,1px)!important;
+  line-height:1.1;
+  white-space:nowrap;
+}
+#home-sections > [data-section="focus"] > div:not(.section-tools),
+#home-sections > [data-section="time"] #time-widget {
+  justify-content:center!important;
+  gap:clamp(8px,1.5vh,14px);
+}
+#home-sections > [data-section="focus"] #timer-display,
+#home-sections > [data-section="time"] #time-today {
+  display:inline-block;
+  max-width:100%;
+  font-size:clamp(21px,7vw,38px);
+  line-height:1.1;
+  overflow-wrap:anywhere;
+}
+#home-sections > [data-section="focus"] .mt-2,
+#home-sections > [data-section="time"] .mt-2 {
+  margin-top:0!important;
+  min-width:0;
+}
+@media(max-width:380px){
+  #home-sections > [data-section="date"] #date-widget,
+  #home-sections > [data-section="progress"] #progress-widget { padding:10px!important; }
+  #home-sections > [data-section="date"] #date-weekday { font-size:9px!important; }
+}
+
 </style>
 
 <div id="fin-sheet" aria-hidden="true">

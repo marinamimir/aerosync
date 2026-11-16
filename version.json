@@ -1,10 +1,10 @@
 {
-  "version": "2026.11.16.36",
-  "build": 2026111636,
+  "version": "2026.11.16.37",
+  "build": 2026111637,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Alças de redimensionamento habilitadas também para os widgets nativos do dashboard.",
-    "Widgets nativos agora usam dimensões independentes de largura e altura; Missões mantém largura total e ajuste vertical.",
-    "Preservados o layout original, a escala da interface e os tamanhos salvos."
+    "Composição interna dos widgets Progresso, Hoje, Foco e Tempo hoje mais estável ao redimensionar.",
+    "Textos e conteúdo do calendário agora se adaptam melhor a cards estreitos.",
+    "Ajuste do cálculo de passos verticais usando as linhas reais do grid; preservados layout original e escala."
   ]
 }
