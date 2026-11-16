@@ -2514,6 +2514,15 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 .wy-placeholder{min-width:0;min-height:clamp(64px,35cqi,110px);padding:6px;overflow-wrap:anywhere}
 .wy-placeholder b{font-size:clamp(10px,4cqi,12px)}
 .wy-placeholder small{font-size:clamp(8px,3.2cqi,10px)}
+/* Quote and empty-image widgets also scale to their own card. */
+.w-quote{min-width:0;min-height:0;padding:clamp(7px,4cqi,18px);gap:clamp(3px,2cqi,6px);overflow:hidden}
+.w-quote>i{font-size:clamp(12px,6cqi,18px)}
+.w-quote p{font-size:clamp(11px,6.2cqi,16px);line-height:1.32;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;line-clamp:6;overflow:hidden}
+.w-quote cite{font-size:clamp(9px,4.4cqi,12px);overflow-wrap:anywhere}
+.w-quote.is-empty p{font-size:clamp(10px,5.4cqi,14px)}
+.w-image.is-empty{min-height:clamp(72px,38cqi,150px);padding:clamp(6px,4cqi,16px);gap:clamp(3px,2cqi,6px)}
+.w-image.is-empty>i{font-size:clamp(18px,10cqi,26px)}
+.w-image.is-empty span{font-size:clamp(9px,4cqi,12px);overflow-wrap:anywhere}
 @container alife-widget (max-width:230px){
  .wfo-stats{grid-template-columns:minmax(0,1fr)}
  .w-weather-main{gap:5px}
