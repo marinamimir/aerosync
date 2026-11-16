@@ -1,11 +1,10 @@
 {
-  "version": "2026.11.16.31",
-  "build": 2026111631,
+  "version": "2026.11.16.32",
+  "build": 2026111632,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Consolidada a grade de widgets em quatro colunas, sem escala global da interface.",
-    "Adicionado arraste a partir de áreas livres dos widgets e redimensionamento independente de largura e altura.",
-    "Conteúdo dos widgets adaptado às dimensões individuais dos cartões, com preservação e migração dos layouts existentes.",
-    "Ajustados controles de redimensionamento para respeitar as dimensões compatíveis de cada bloco."
+    "Aprimadas as alças de redimensionamento no Android com áreas de toque mínimas de 48 px.",
+    "Separados os controles de largura e altura em telas estreitas para evitar sobreposição em widgets pequenos.",
+    "Mantidos o modelo original dos widgets, o layout responsivo e a ausência de escala global da interface."
   ]
 }
