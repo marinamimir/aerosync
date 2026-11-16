@@ -1,10 +1,11 @@
 {
-  "version": "2026.11.16.42",
-  "build": 2026111642,
+  "version": "2026.11.16.43",
+  "build": 2026111643,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Separada a barra de ferramentas do fluxo de layout para que os controles não alterem a geometria dos widgets.",
-    "Removidos os botões redundantes de mover por setas e alternar tamanho; reorganização continua por arraste e redimensionamento pelas alças.",
-    "Preservados ocultar, editar e remover widgets, além do layout e da escala originais."
+    "Recalculada a área do carrossel Categorias para ocupar três trilhas reais da grade, sem invadir widgets vizinhos.",
+    "Ajustado o encaixe denso da grade para preencher espaços livres sem sobreposição.",
+    "Adicionada tipografia e composição proporcionais ao tamanho real dos widgets Hoje, Tempo hoje, Progresso, Foco, Clima e Relógio.",
+    "Mantidos os controles, dados, estilos e interações existentes; sem alteração de escala global."
   ]
 }
