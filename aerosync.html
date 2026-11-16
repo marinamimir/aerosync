@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111646">
+    <meta name="aero-build" content="2026111647">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -8103,6 +8103,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             layout.order = layout.order.filter(id => ids.includes(id));
             ids.forEach(id => { if (!layout.order.includes(id)) layout.order.unshift(id); if (!layout.sizes[id]) layout.sizes[id] = defaultSizeOf(id); });
             layout.hidden = layout.hidden.filter(id => ids.includes(id));
+            // Use the real number of CSS grid tracks. A 4-column span on a 3-track phone
+            // creates implicit columns and pushes later widgets beyond the viewport.
+            const gridTracks = getComputedStyle(homeEl).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean);
+            const maxGridCols = Math.max(1, gridTracks.length || 1);
             layout.order.forEach(id => homeEl.appendChild(sectionEl(id)));
             layout.order.forEach((id, i) => {
                 const sec = sectionEl(id), label = sec.dataset.label;
@@ -8117,9 +8121,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     const maxWidgetRows=window.matchMedia('(max-width:799px)').matches?4:8;
                     rows=Math.min(maxWidgetRows,Math.max(1,rows));
                     if(sec.dataset.widget==='youtube')cols=Math.max(cols,3);
-                    sec.style.gridColumn=`span ${Math.min(4,cols)}`;
+                    cols=Math.min(maxGridCols,cols);
+                    sec.style.gridColumn=cols>=maxGridCols?'1 / -1':`span ${cols}`;
                     sec.style.gridRow=`span ${rows}`;
-                    sec.dataset.size=`${Math.min(4,cols)}x${rows}`;
+                    sec.dataset.size=`${cols}x${rows}`;
                 }else if(id==='carousel'){
                     // Categorias ocupa três trilhas reais da grade: a altura visual
                     // nunca pode transbordar para a próxima linha e cobrir outro card.
@@ -8140,9 +8145,10 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                         sec.style.minHeight='0';
                         sec.dataset.size='4xauto';
                     }else{
-                        sec.style.gridColumn=cols>=4?'1 / -1':`span ${Math.min(4,cols)}`;
+                        cols=Math.min(maxGridCols,cols);
+                        sec.style.gridColumn=cols>=maxGridCols?'1 / -1':`span ${cols}`;
                         sec.style.gridRow=`span ${Math.min(8,rows)}`;
-                        sec.dataset.size=`${Math.min(4,cols)}x${Math.min(8,rows)}`;
+                        sec.dataset.size=`${cols}x${Math.min(8,rows)}`;
                     }
                 }
                 const hb = sec.querySelector('[data-st="hide"]');
@@ -8301,11 +8307,14 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const sec=grip.closest('.home-section');if(!sec||FIXED_FULL.includes(sec.dataset.section))return;
             e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
             setResizeSelection(sec);
-            const id=sec.dataset.section,[storedCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
+            const id=sec.dataset.section,[rawCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
-            const colStep=(homeEl.clientWidth-gapX*3)/4,rect=sec.getBoundingClientRect();
+            const tracks=gridStyle.gridTemplateColumns.trim().split(/\\s+/).filter(Boolean);
+            const maxCols=Math.max(1,tracks.length||1),trackWidth=parseFloat(tracks[0])||((homeEl.clientWidth-gapX*(maxCols-1))/maxCols);
+            const colStep=trackWidth+gapX;
             const rowTracks=gridStyle.gridTemplateRows.split(' ').map(v=>parseFloat(v)).filter(Number.isFinite);const rowStep=Math.max(48,(rowTracks[0]||78)+gapY);
-            resizeState={id,sec,grip,dir:grip.dataset.dir||'se',startX:e.clientX,startY:e.clientY,storedCols:storedCols||2,rows:rows||2,colStep:Math.max(24,colStep),rowStep,minCols:sec.dataset.widget==='youtube'?3:1,pointerId:e.pointerId,originalSize:layout.sizes[id]||defaultSizeOf(id),previewSize:layout.sizes[id]||defaultSizeOf(id)};
+            const storedCols=Math.min(maxCols,Math.max(1,rawCols||2)),minCols=Math.min(maxCols,sec.dataset.widget==='youtube'?3:1);
+            resizeState={id,sec,grip,dir:grip.dataset.dir||'se',startX:e.clientX,startY:e.clientY,storedCols,rows:rows||2,colStep:Math.max(24,colStep),rowStep,minCols,maxCols,pointerId:e.pointerId,originalSize:layout.sizes[id]||defaultSizeOf(id),previewSize:storedCols+'x'+(rows||2)};
             sec.classList.add('is-resizing');document.documentElement.classList.add('widget-resizing');
             try{grip.setPointerCapture(e.pointerId);}catch(_){}
         });
@@ -8316,11 +8325,11 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const deltaCols=st.dir.includes('e')?Math.round(dx/st.colStep):0;
             const deltaRows=st.dir.includes('s')?Math.round(dy/st.rowStep):0;
             const maxRows=window.matchMedia('(max-width:799px)').matches?4:8;
-            const col=Math.max(st.minCols,Math.min(4,st.storedCols+deltaCols)),row=Math.max(1,Math.min(maxRows,st.rows+deltaRows));
+            const col=Math.max(st.minCols,Math.min(st.maxCols,st.storedCols+deltaCols)),row=Math.max(1,Math.min(maxRows,st.rows+deltaRows));
             const next=col+'x'+row;
             if(st.previewSize!==next){
                 st.previewSize=next;
-                st.sec.style.gridColumn='span '+col;
+                st.sec.style.gridColumn=col>=st.maxCols?'1 / -1':'span '+col;
                 st.sec.style.gridRow='span '+row;
                 st.sec.dataset.size=next;
             }
@@ -8798,7 +8807,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
   align-self:stretch!important;
 }
 #home-sections > .carousel-section {
-  grid-column:span 4!important;
+  grid-column:1 / -1!important;
   grid-row:span 3!important;
   min-height:238px!important;
   height:100%!important;
@@ -9049,6 +9058,38 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         #home-sections > [data-section="time"] #time-widget > div {
             margin-top: auto !important; margin-bottom: auto;
         }
+
+/* Build 47 — keep every widget inside the actual responsive grid tracks. */
+#home-sections { width:100%; max-width:100%; min-width:0; }
+#home-sections > .home-section { min-width:0!important; max-width:100%; }
+#home-sections > .carousel-section { grid-column:1 / -1!important; }
+
+/* Text scale is width-led, not area-led: tall cards must not inflate typography. */
+#home-sections > .widget-section .w-body { min-width:0; max-width:100%; }
+#home-sections > .widget-section .w-body .w-quote {
+  padding:clamp(8px, calc(12px * var(--widget-scale, .8)), 18px)!important;
+  gap:clamp(3px, calc(5px * var(--widget-scale, .8)), 8px)!important;
+}
+#home-sections > .widget-section .w-body .w-quote p {
+  font-size:clamp(11px, calc(14px * var(--widget-scale, .8)), 18px)!important;
+  line-height:1.25!important;
+}
+#home-sections > .widget-section .w-body .w-quote cite,
+#home-sections > .widget-section .w-body .w-luck-label {
+  font-size:clamp(9px, calc(10px * var(--widget-scale, .8)), 13px)!important;
+  line-height:1.2!important;
+}
+#home-sections > [data-section="date"] #date-widget { padding:clamp(7px, calc(10px * var(--widget-scale, .8)), 16px)!important; gap:clamp(3px, calc(6px * var(--widget-scale, .8)), 10px)!important; }
+#home-sections > [data-section="date"] #date-widget > span { font-size:clamp(9px, calc(12px * var(--widget-scale, .8)), 15px)!important; }
+#home-sections > [data-section="date"] #date-weekday { font-size:clamp(8px, calc(11px * var(--widget-scale, .8)), 14px)!important; }
+#home-sections > [data-section="date"] #date-main { font-size:clamp(12px, calc(24px * var(--widget-scale, .8)), 30px)!important; line-height:1.05!important; letter-spacing:0!important; white-space:nowrap!important; }
+#home-sections > [data-section="date"] #date-widget > .lcd { padding:clamp(3px, calc(5px * var(--widget-scale, .8)), 9px)!important; min-width:0!important; }
+#home-sections > [data-section="time"] #time-today { font-size:clamp(14px, calc(26px * var(--widget-scale, .8)), 38px)!important; line-height:1.05!important; }
+
+/* Prevent long words and date strings from forcing an implicit min-content width. */
+#home-sections > .home-section,
+#home-sections > .home-section > *,
+#home-sections > .widget-section .w-body > * { min-width:0!important; }
 </style>
 
 <div id="fin-sheet" aria-hidden="true">
@@ -10871,42 +10912,29 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 </script>
 
 <script>
-/* Per-card typography scaling: widgets and native date/time cards. */
+/* Width-based responsive type scale. Height affects layout spacing, never font size. */
 (function () {
   if (!('ResizeObserver' in window)) return;
   const observed = new WeakSet();
   const selector = '#home-sections > .widget-section, #home-sections > [data-section="date"], #home-sections > [data-section="time"]';
-  const resizeObserver = new ResizeObserver(entries => {
+  const observer = new ResizeObserver(entries => {
     for (const entry of entries) {
-      const el = entry.target;
-      const box = entry.borderBoxSize;
-      const size = Array.isArray(box) ? box[0] : box;
-      const width = size?.inlineSize || entry.contentRect.width;
-      const height = size?.blockSize || entry.contentRect.height;
-      if (!width || !height) continue;
-      const base = el.dataset.section === 'time' ? 190 * 210 : 190 * 150;
-      const scale = Math.sqrt((width * height) / base);
-      el.style.setProperty('--widget-scale', String(Math.max(.78, Math.min(1.85, scale))));
+      const el=entry.target, width=entry.contentRect.width;
+      if (!width) continue;
+      const scale=Math.max(.75,Math.min(1.25,width/240));
+      el.style.setProperty('--widget-scale',String(scale));
     }
   });
   const observe = root => {
-    if (root.matches?.(selector) && !observed.has(root)) {
-      observed.add(root); resizeObserver.observe(root);
-    }
-    root.querySelectorAll?.(selector).forEach(el => {
-      if (!observed.has(el)) { observed.add(el); resizeObserver.observe(el); }
-    });
+    if (root.matches?.(selector)&&!observed.has(root)){observed.add(root);observer.observe(root);}
+    root.querySelectorAll?.(selector).forEach(el=>{if(!observed.has(el)){observed.add(el);observer.observe(el);}});
   };
-  const start = () => {
-    const home = document.getElementById('home-sections');
-    if (!home) return;
+  const start=()=>{
+    const home=document.getElementById('home-sections');if(!home)return;
     observe(home);
-    new MutationObserver(records => records.forEach(record =>
-      record.addedNodes.forEach(node => { if (node.nodeType === 1) observe(node); })
-    )).observe(home, { childList: true });
+    new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)observe(n);}))).observe(home,{childList:true});
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
-  else start();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
 </body>
