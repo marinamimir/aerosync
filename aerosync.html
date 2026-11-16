@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111648">
+    <meta name="aero-build" content="2026111649">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -11027,5 +11027,113 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 #home-sections > [data-section="time"] #time-today {
   font-size:clamp(13px,9cqi,30px)!important; line-height:1.08;
 }
+
+/* Build 49 — widget typography tuned by each card's own width.
+   Keep the existing grid geometry untouched; text never scales from card height. */
+#home-sections > .widget-section { container-type:inline-size; container-name:al-widget; }
+#home-sections > .widget-section .w-body,
+#home-sections > [data-section="date"] #date-widget,
+#home-sections > [data-section="time"] #time-widget,
+#home-sections > [data-section="progress"] #progress-widget,
+#home-sections > [data-section="focus"] > div {
+  min-width:0!important; max-width:100%; box-sizing:border-box;
+}
+#home-sections > .widget-section .w-body :is(span,b,strong,small,p,label,h1,h2,h3) {
+  min-width:0; max-width:100%; overflow-wrap:normal; word-break:normal; hyphens:none;
+}
+
+/* Finance: keep the kicker compact and break only between words. */
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-head { min-width:0; }
+#home-sections > .widget-section .w-body .w-finance-overview .wf-kicker {
+  display:flex; align-items:center; gap:5px; min-width:0;
+  font-size:clamp(8px,3.5cqi,11px)!important;
+  line-height:1.18!important; letter-spacing:.07em!important;
+  white-space:normal; overflow-wrap:normal; word-break:normal;
+}
+#home-sections > .widget-section .w-body .wfo-stats small {
+  font-size:clamp(8px,3.3cqi,10px)!important; line-height:1.2!important;
+}
+#home-sections > .widget-section .w-body .wfo-stats b {
+  font-size:clamp(10px,4.1cqi,14px)!important; line-height:1.12!important;
+  letter-spacing:-.025em; overflow-wrap:anywhere;
+}
+
+/* Date and time: legible without oversized numerals in narrow cards. */
+#home-sections > [data-section="date"] #date-widget > span,
+#home-sections > [data-section="time"] #time-widget > span {
+  font-size:clamp(9px,3.8cqi,12px)!important; line-height:1.2!important;
+  letter-spacing:.045em!important; white-space:normal;
+}
+#home-sections > [data-section="date"] #date-weekday {
+  font-size:clamp(9px,4cqi,12px)!important; line-height:1.15!important;
+  letter-spacing:.08em!important;
+}
+#home-sections > [data-section="date"] #date-main {
+  font-size:clamp(15px,8cqi,24px)!important; line-height:1.08!important;
+  letter-spacing:-.025em!important; white-space:nowrap!important;
+}
+#home-sections > [data-section="time"] #time-today {
+  font-size:clamp(14px,8.5cqi,26px)!important; line-height:1.08!important;
+  letter-spacing:-.035em!important; white-space:normal; overflow-wrap:anywhere;
+}
+
+/* Progress and focus: title, counter and main value each get their own scale. */
+#home-sections > [data-section="progress"] #progress-widget > div:first-child > span {
+  font-size:clamp(8px,3.6cqi,11px)!important; line-height:1.15!important;
+  letter-spacing:.045em!important;
+}
+#home-sections > [data-section="progress"] #done-count,
+#home-sections > [data-section="progress"] #total-count {
+  font-size:clamp(9px,3.8cqi,12px)!important;
+}
+#home-sections > [data-section="progress"] #progress-pct {
+  font-size:clamp(15px,9cqi,27px)!important; line-height:1.05!important;
+  letter-spacing:-.035em!important;
+}
+#home-sections > [data-section="focus"] > div > div:first-child > span {
+  font-size:clamp(9px,3.8cqi,12px)!important; line-height:1.15!important;
+}
+#home-sections > [data-section="focus"] #timer-display {
+  display:inline-block; max-width:100%;
+  font-size:clamp(16px,10cqi,30px)!important; line-height:1.05!important;
+  letter-spacing:-.035em!important; white-space:nowrap;
+}
+#home-sections > [data-section="focus"] #timer-btn {
+  width:clamp(30px,17cqi,46px); height:clamp(30px,17cqi,46px);
+  flex:0 0 auto;
+}
+
+/* Weather and clock: width-led font sizes, no viewport-based jumps. */
+#home-sections > [data-widget="weather"] .w-weather-head {
+  font-size:clamp(8px,3.6cqi,11px)!important; line-height:1.18!important;
+  letter-spacing:.045em!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-main { gap:clamp(4px,3cqi,9px); }
+#home-sections > [data-widget="weather"] .w-weather-main i {
+  font-size:clamp(14px,9cqi,23px)!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-main b {
+  font-size:clamp(17px,11cqi,29px)!important; line-height:1.02!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-desc,
+#home-sections > [data-widget="weather"] .w-weather small {
+  font-size:clamp(8px,3.8cqi,11px)!important; line-height:1.2!important;
+}
+#home-sections > [data-widget] .w-clock-time {
+  font-size:clamp(16px,12cqi,36px)!important; line-height:1!important;
+  letter-spacing:-.045em!important; white-space:nowrap;
+}
+#home-sections > [data-widget] .w-clock small {
+  font-size:clamp(8px,3.7cqi,11px)!important; line-height:1.2!important;
+}
+
+/* Keep compact widget contents inside their own cards. */
+#home-sections > .widget-section .w-body :is(.wf-kicker,.w-weather-head,.w-weather-desc,.w-clock small) {
+  overflow-wrap:break-word; min-width:0;
+}
+#home-sections > .widget-section .w-body :is(#date-main,#time-today,#timer-display) {
+  max-width:100%; font-variant-numeric:tabular-nums;
+}
+
 </style></body>
 </html>
