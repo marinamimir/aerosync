@@ -2475,6 +2475,67 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 .wy-placeholder{flex:1;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--icon);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border:1px dashed color-mix(in srgb,var(--accent) 26%,transparent);border-radius:14px}
 .wy-placeholder>i{font-size:27px;color:#ef4444}.wy-placeholder b{font-size:12px}.wy-placeholder small{font-size:10px;opacity:.65}
 </style>
+<style id="alife-widget-container-responsive">
+/* Widget bodies become independent sizing contexts: contents respond to their own card, not viewport width. */
+#home-sections>.widget-section,
+#home-sections>.widget-section>.w-body{min-width:0;min-height:0;max-width:100%}
+#home-sections>.widget-section>.w-body{container-type:inline-size;container-name:alife-widget}
+.w-weather{min-width:0;min-height:0;padding:clamp(8px,4cqi,15px);gap:clamp(4px,2cqi,7px);overflow:hidden}
+.w-weather-head{gap:6px;min-width:0;font-size:clamp(8px,3.2cqi,10px)}
+.w-weather-main{min-width:0;gap:clamp(6px,3cqi,12px)}
+.w-weather-main i{font-size:clamp(18px,9cqi,28px)}
+.w-weather-main b{font-size:clamp(22px,12cqi,34px)}
+.w-weather-desc{font-size:clamp(9px,4.2cqi,12px);overflow-wrap:anywhere}
+.w-clock{min-width:0;min-height:0;padding:clamp(6px,4cqi,12px);gap:clamp(3px,2cqi,6px);overflow:hidden}
+.w-clock-time{font-size:clamp(23px,15cqi,48px);max-width:100%;white-space:nowrap}
+.w-clock small{font-size:clamp(8px,3.5cqi,10px)}
+.w-image{min-width:0;min-height:clamp(88px,42cqi,150px);max-width:100%}
+.is-full>.w-body .w-image,.wd-preview.is-full .w-image{min-height:clamp(120px,48cqi,200px)}
+.w-image figcaption{font-size:clamp(9px,4cqi,12px);line-height:1.25;overflow-wrap:anywhere}
+.w-finance,.w-daily,.w-focus,.w-wishlist,.w-countdown{min-width:0;min-height:0;padding:clamp(8px,4cqi,14px);gap:clamp(4px,2.4cqi,7px);overflow:hidden}
+.wf-kicker{font-size:clamp(8px,3.3cqi,9px);min-width:0;overflow-wrap:anywhere}
+.wf-value{font-size:clamp(17px,9cqi,30px);overflow-wrap:anywhere}
+.wf-foot{font-size:clamp(9px,3.8cqi,10px);overflow-wrap:anywhere}
+.wf-row,.wf-cat{gap:5px;padding:clamp(4px,2.2cqi,7px) 0;font-size:clamp(9px,4cqi,11px)}
+.wf-row strong,.wf-cat b{font-size:clamp(9px,3.7cqi,10px)}
+.wfo-stats{gap:clamp(4px,2.5cqi,8px);margin:clamp(5px,3cqi,10px) 0}
+.wfo-stats>div{min-width:0;padding:clamp(5px,3cqi,8px)}
+.wfo-stats small{font-size:clamp(8px,3.5cqi,10px);overflow-wrap:anywhere}
+.wfo-stats b{font-size:clamp(10px,4.8cqi,14px);white-space:normal;overflow-wrap:anywhere}
+.wfo-bars{height:clamp(48px,32cqi,86px);gap:clamp(3px,2cqi,10px)}
+.wfo-bars small{font-size:clamp(7px,3cqi,9px)}
+.wfo-pie{width:clamp(48px,34cqi,92px);height:auto;aspect-ratio:1}
+.wfo-line{height:clamp(48px,32cqi,90px)}
+.w-youtube{min-width:0;min-height:0;padding:clamp(6px,3cqi,10px);gap:clamp(4px,2.5cqi,8px)}
+.wy-head{min-width:0;min-height:0;font-size:clamp(9px,4cqi,12px);gap:5px}
+.wy-toggle{flex:0 0 30px}
+.wy-stage{min-width:0;min-height:0;width:100%;height:auto;aspect-ratio:16/9;max-height:440px}
+.wy-stage iframe{min-width:0;min-height:0}
+.wy-placeholder{min-width:0;min-height:clamp(64px,35cqi,110px);padding:6px;overflow-wrap:anywhere}
+.wy-placeholder b{font-size:clamp(10px,4cqi,12px)}
+.wy-placeholder small{font-size:clamp(8px,3.2cqi,10px)}
+@container alife-widget (max-width:230px){
+ .wfo-stats{grid-template-columns:minmax(0,1fr)}
+ .w-weather-main{gap:5px}
+ .w-weather-main i{font-size:19px}
+ .w-weather-main b{font-size:24px}
+ .w-clock-time{font-size:clamp(22px,14cqi,34px)}
+ .w-youtube{padding:6px}
+ .wy-head{gap:4px}
+ .wy-toggle{width:26px;height:26px;flex-basis:26px}
+}
+@container alife-widget (max-width:165px){
+ .w-weather{padding:7px}
+ .w-weather-head{font-size:8px}
+ .w-weather-main{flex-wrap:wrap;gap:3px}
+ .w-weather-main b{font-size:21px}
+ .w-clock{padding:5px}
+ .w-clock-time{font-size:22px;letter-spacing:-.07em}
+ .w-image figcaption{left:5px;right:5px;bottom:5px;padding:4px 6px}
+ .wf-row strong,.wf-cat b{white-space:normal;overflow-wrap:anywhere}
+ .wy-head>span{font-size:9px}
+}
+</style>
 </head>
 <body>
 
