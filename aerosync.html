@@ -8105,7 +8105,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             layout.hidden = layout.hidden.filter(id => ids.includes(id));
             // Use the real number of CSS grid tracks. A 4-column span on a 3-track phone
             // creates implicit columns and pushes later widgets beyond the viewport.
-            const gridTracks = getComputedStyle(homeEl).gridTemplateColumns.trim().split(/\\s+/).filter(Boolean);
+            const gridTracks = getComputedStyle(homeEl).gridTemplateColumns.trim().split(/\s+/).filter(Boolean);
             const maxGridCols = Math.max(1, gridTracks.length || 1);
             layout.order.forEach(id => homeEl.appendChild(sectionEl(id)));
             layout.order.forEach((id, i) => {
@@ -8309,7 +8309,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             setResizeSelection(sec);
             const id=sec.dataset.section,[rawCols,rows]=String(layout.sizes[id]||defaultSizeOf(id)).split('x').map(Number);
             const gridStyle=getComputedStyle(homeEl),gapX=parseFloat(gridStyle.columnGap)||8,gapY=parseFloat(gridStyle.rowGap)||12;
-            const tracks=gridStyle.gridTemplateColumns.trim().split(/\\s+/).filter(Boolean);
+            const tracks=gridStyle.gridTemplateColumns.trim().split(/\s+/).filter(Boolean);
             const maxCols=Math.max(1,tracks.length||1),trackWidth=parseFloat(tracks[0])||((homeEl.clientWidth-gapX*(maxCols-1))/maxCols);
             const colStep=trackWidth+gapX;
             const rowTracks=gridStyle.gridTemplateRows.split(' ').map(v=>parseFloat(v)).filter(Number.isFinite);const rowStep=Math.max(48,(rowTracks[0]||78)+gapY);
