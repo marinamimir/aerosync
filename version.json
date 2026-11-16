@@ -1,10 +1,9 @@
 {
-  "version": "2026.11.16.34",
-  "build": 2026111634,
+  "version": "2026.11.16.35",
+  "build": 2026111635,
   "releasedAt": "2026-11-16",
   "releaseNotes": [
-    "Corrigido o bloqueio de eventos de toque nas alças de redimensionamento no modo Organizar.",
-    "Restaurada a captura de gestos nas alças para evitar que o Android interprete o arrasto como rolagem da página.",
-    "Preservados o layout original, o efeito Glass e as áreas de toque ampliadas."
+    "Seleção de widgets no modo Organizar iniciada no pointerdown para melhorar a resposta ao toque no Android.",
+    "Mantidos os controles de redimensionamento, o layout original e a escala atual da interface."
   ]
 }
