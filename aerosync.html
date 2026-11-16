@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#FFF8FB">
-    <meta name="aero-build" content="2026111649">
+    <meta name="aero-build" content="2026111650">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <!-- Aplica escuro/simples antes de desenhar (evita "piscar" branco) -->
@@ -11133,6 +11133,122 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 }
 #home-sections > .widget-section .w-body :is(#date-main,#time-today,#timer-display) {
   max-width:100%; font-variant-numeric:tabular-nums;
+}
+
+
+/* Build 50 — compact cards keep their content readable inside the measured card box.
+   This layer changes inner composition only; grid tracks and saved spans remain untouched. */
+#home-sections > [data-section="progress"] #progress-widget > div:first-child {
+  display:flex!important; align-items:center!important; justify-content:space-between!important;
+  gap:6px!important; min-width:0!important;
+}
+#home-sections > [data-section="progress"] #progress-widget > div:first-child > span:first-child {
+  flex:1 1 auto!important; min-width:0!important;
+  font-size:clamp(8px,3.4cqi,11px)!important; line-height:1.15!important;
+  white-space:normal!important; overflow-wrap:normal!important;
+}
+#home-sections > [data-section="progress"] #progress-widget > div:first-child > span:last-child {
+  display:inline-flex!important; align-items:center!important; flex:0 0 auto!important;
+  white-space:nowrap!important; word-break:keep-all!important;
+  font-size:clamp(9px,3.5cqi,11px)!important; line-height:1!important;
+}
+#home-sections > [data-section="progress"] #done-count,
+#home-sections > [data-section="progress"] #total-count {
+  display:inline!important; white-space:nowrap!important; font-size:inherit!important;
+}
+
+/* Finance heading: reserve a fixed slot for the add button; let the title wrap cleanly. */
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-head {
+  display:grid!important; grid-template-columns:minmax(0,1fr) 28px!important;
+  align-items:start!important; gap:6px!important; min-width:0!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wf-kicker {
+  display:flex!important; align-items:flex-start!important; min-width:0!important;
+  font-size:clamp(8px,min(3.6cqi,5cqb),11px)!important;
+  line-height:1.16!important; letter-spacing:.045em!important;
+  white-space:normal!important; overflow:visible!important;
+  text-overflow:clip!important; overflow-wrap:normal!important; word-break:normal!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wf-kicker i {
+  flex:0 0 auto!important; margin-top:1px;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-add {
+  width:28px!important; height:28px!important; flex:0 0 28px!important;
+  justify-self:end; margin:0!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-stats {
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:clamp(4px,1.8cqi,7px)!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-stats>div {
+  min-width:0!important; padding:clamp(4px,2.2cqi,8px)!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-stats small {
+  font-size:clamp(8px,min(3.2cqi,4.5cqb),10px)!important;
+  line-height:1.15!important; overflow-wrap:anywhere!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-stats b {
+  font-size:clamp(10px,min(4.1cqi,5.5cqb),14px)!important;
+  line-height:1.12!important; white-space:normal!important;
+  overflow:visible!important; text-overflow:clip!important; overflow-wrap:anywhere!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-bars {
+  flex:0 1 auto!important; height:clamp(38px,18cqb,86px)!important;
+  min-height:38px!important; max-height:86px!important;
+}
+#home-sections > .widget-section .w-body .w-finance-overview .wfo-pie {
+  width:clamp(38px,min(22cqi,18cqb),92px)!important;
+  height:clamp(38px,min(22cqi,18cqb),92px)!important;
+  margin:clamp(3px,1.5cqb,8px) auto!important;
+}
+@container al-widget (max-width: 190px) {
+  #home-sections > .widget-section .w-body .w-finance-overview .wfo-stats {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
+
+/* Weather: prevent the condition label from being cut off in short cards. */
+#home-sections > [data-widget="weather"] .w-weather {
+  justify-content:space-evenly!important; min-width:0!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-head {
+  display:flex!important; align-items:center!important; gap:4px!important;
+  min-width:0!important; line-height:1.12!important;
+  font-size:clamp(8px,min(3.5cqi,4.5cqb),10px)!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-head > span {
+  flex:1 1 auto; min-width:0; overflow-wrap:normal; word-break:normal;
+}
+#home-sections > [data-widget="weather"] .w-weather-refresh {
+  flex:0 0 auto; padding:4px 6px!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-main {
+  flex:0 0 auto; min-width:0; gap:clamp(4px,2.5cqi,9px)!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-main i {
+  font-size:clamp(14px,min(9cqi,12cqb),24px)!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-main b {
+  font-size:clamp(17px,min(11cqi,15cqb),29px)!important;
+}
+#home-sections > [data-widget="weather"] .w-weather-desc {
+  flex:0 1 auto; min-width:0; max-width:100%;
+  font-size:clamp(8px,min(3.8cqi,5cqb),11px)!important;
+  line-height:1.18!important; white-space:normal!important;
+  overflow:visible!important; text-overflow:clip!important; overflow-wrap:anywhere!important;
+}
+#home-sections > [data-widget="weather"] .w-weather > small {
+  flex:0 0 auto; font-size:clamp(7px,min(3cqi,4cqb),9px)!important;
+  line-height:1.12!important;
+}
+
+/* Tall focus cards distribute their two controls without inflating their type. */
+#home-sections > [data-section="focus"] > div:not(.section-tools) {
+  justify-content:space-evenly!important;
+}
+#home-sections > [data-section="focus"] #timer-display {
+  font-size:clamp(16px,min(10cqi,14cqb),30px)!important;
+  line-height:1.05!important; white-space:nowrap!important;
 }
 
 </style></body>
