@@ -8099,7 +8099,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             if (b.dataset.st === 'prev' && i > 0) [o[i - 1], o[i]] = [o[i], o[i - 1]];
             if (b.dataset.st === 'next' && i < o.length - 1) [o[i + 1], o[i]] = [o[i], o[i + 1]];
             if (b.dataset.st === 'size' && !FIXED_FULL.includes(id)) {
-                const choices=sec.dataset.widget==='youtube'?['3x2','3x3','3x4','4x4']:['1x1','2x1','2x2','3x2','4x2','4x3','4x4'];
+                const choices=sec.dataset.widget?(sec.dataset.widget==='youtube'?['3x2','3x3','3x4','4x4']:['1x1','2x1','2x2','3x2','4x2','4x3','4x4']):id==='tasks'?['4x1','4x2','4x3','4x4']:['2x2','4x2'];
                 const current=layout.sizes[id]||defaultSizeOf(id);layout.sizes[id]=choices[(choices.indexOf(current)+1)%choices.length];
             }
             if (b.dataset.st === 'hide') layout.hidden = layout.hidden.includes(id) ? layout.hidden.filter(x => x !== id) : [...layout.hidden, id];
