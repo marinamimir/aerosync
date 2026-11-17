@@ -57,9 +57,14 @@
     --ui-surface: var(--surface, #FFF8FB); --ui-page: var(--page, #FDEAF3); --ui-soft-surface: var(--theme-soft, #FFEAF4);
     --ui-text: #374151; --ui-muted: #6b7280; --ui-subtle: #9ca3af; --ui-border: #e5e7eb; --ui-icon: var(--user-icon-color, #64748b); --ui-success: #16a34a; --ui-warning: #b45309; --ui-danger: #dc2626; --ui-info: #2563eb;
     --ui-font-body: 'Nunito', sans-serif; --ui-font-display: 'Nunito', sans-serif; --ui-font-mono: 'VT323', monospace;
-    --ui-type-2xs: .625rem; --ui-type-xs: .75rem; --ui-type-sm: .875rem; --ui-type-base: 1rem; --ui-type-lg: 1.125rem; --ui-type-xl: 1.25rem; --ui-type-2xl: 1.5rem;
+    --ui-type-2xs: .625rem; --ui-type-caption: .6875rem; --ui-type-xs: .75rem; --ui-type-compact: .8125rem; --ui-type-sm: .875rem; --ui-type-base: 1rem; --ui-type-lg: 1.125rem; --ui-type-xl: 1.25rem; --ui-type-2xl: 1.5rem; --ui-type-3xl: 1.875rem; --ui-type-4xl: 2.25rem;
     --ui-leading-tight: 1.25; --ui-leading-normal: 1.5; --ui-leading-relaxed: 1.65;
 }
+/* Escala tipográfica semântica: centraliza tamanhos comuns sem tocar na geometria. */
+.modal-label, .theme-preview-caption, .custom-theme-title, .category-editor-grid label { font-size:var(--ui-type-caption); line-height:var(--ui-leading-normal); }
+.date-input, .step-text, .lib-text, .preset-select { font-size:var(--ui-type-compact); line-height:var(--ui-leading-normal); }
+.hub-title { font-family:var(--ui-font-display, 'Nunito', sans-serif); line-height:var(--ui-leading-tight); }
+.timer-font, .lcd, .lcd-label, .lcd-big, .lcd-ghost, .w-clock-digital .w-clock-time, .w-clock-retro .w-clock-time { font-family:var(--ui-font-mono, 'VT323', monospace); }
 html.dark { --ui-text:#eef0f6; --ui-muted:#c0c5d2; --ui-subtle:#9299ad; --ui-border:#2b2f42; --ui-success:#86efac; --ui-warning:#fbbf24; --ui-danger:#fca5a5; --ui-info:#93c5fd; }
 /* Ícones seguem a paleta, exceto controles com cor semântica própria. */
 html:root i:not([style*="color:"]):not(#fin-body i):not(#app-status-bar i) { color: var(--ui-icon) !important; }
