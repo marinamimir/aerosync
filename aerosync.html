@@ -4033,7 +4033,26 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             syncSemanticTokens();
             syncMetaTheme();
         }
-        const saveTheme = () => store.set(STORAGE_KEYS.theme, Object.fromEntries([['id', currentTheme.id], ...THEME_VARS.filter(([,k])=>k!=='iconColor').map(([, k]) => [k, currentTheme[k]]), ['iconColor', currentTheme.iconColor || currentTheme.accent]]));
+        const saveTheme = () => !!currentTheme && store.set(STORAGE_KEYS.theme, Object.fromEntries([['id', currentTheme.id], ...THEME_VARS.filter(([,k])=>k!=='iconColor').map(([, k]) => [k, currentTheme[k]]), ['iconColor', currentTheme.iconColor || currentTheme.accent]]));
+        // Mantém a prévia ligada à paleta efetiva, inclusive ao reabrir Ajustes ou alternar rapidamente de tema.
+        function syncThemePreview() {
+            const card = document.getElementById('theme-preview-card');
+            if (!card) return;
+            const read = (id, key, fallback) => document.getElementById(id)?.value || currentTheme?.[key] || fallback;
+            const accent = read('custom-accent', 'accent', '#F06AAE');
+            const accent2 = read('custom-accent2', 'accent2', '#FFC2E0');
+            const surface = read('custom-surface', 'surface', '#FFF8FB');
+            const soft = read('custom-soft', 'soft', '#FFEAF4');
+            const icon = read('custom-icons', 'iconColor', currentTheme?.accent || '#D94F98');
+            const dark = document.documentElement.classList.contains('dark');
+            card.style.setProperty('--preview-accent', accent);
+            card.style.setProperty('--preview-accent-2', accent2);
+            card.style.setProperty('--preview-surface', surface);
+            card.style.setProperty('--preview-soft', soft);
+            card.style.setProperty('--preview-icon', icon);
+            card.style.setProperty('--preview-on', accessibleForeground(accent, currentTheme?.on));
+            card.style.setProperty('--preview-ink', dark ? '#eef0f6' : '#374151');
+        }
         // Bolinha de amostra de uma paleta (fundo + 2 cores)
         const paletteDot = (p) => `background: radial-gradient(circle at 50% 50%, ${p.surface} 0 34%, transparent 35%), linear-gradient(135deg, ${p.accent2} 0 50%, ${p.accent} 50% 100%)`;
 
@@ -6497,7 +6516,9 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                     <button data-act="reset-layout" class="pill-btn ghost w-full">Restaurar ordem padrão da tela inicial</button>
                     <button data-act="reboot" class="pill-btn ghost w-full mt-2">Rever a Boot Screen</button>
                     <button data-act="wipe" class="pill-btn danger w-full mt-2">Apagar todas as tarefas</button>
-                </div>`;            const ti = document.getElementById('pf-title');
+                </div>`;
+            syncThemePreview();
+            const ti = document.getElementById('pf-title');
             ti.addEventListener('input', () => {
                 profile.title = ti.value.slice(0, 30);
                 store.set(STORAGE_KEYS.profile, profile);
@@ -6532,7 +6553,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const next=pref.checked?[...new Set([...selected,pref.dataset.overduePref])]:selected.filter(x=>x!==pref.dataset.overduePref);
             store.set(STORAGE_KEYS.overdueIndicators,next); renderTasks();
         });
-        sheetBody.addEventListener('input', e => { if (!e.target.matches('#custom-accent,#custom-accent2,#custom-surface,#custom-page,#custom-soft,#custom-icons') || currentView !== 'profile') return; const val=id=>document.getElementById(id)?.value||'#F06AAE'; const card=document.getElementById('theme-preview-card'); if(!card)return; card.style.setProperty('--preview-accent',val('custom-accent')); card.style.setProperty('--preview-surface',val('custom-surface')); card.style.setProperty('--preview-soft',val('custom-soft')); card.style.setProperty('--preview-icon',val('custom-icons')); card.style.setProperty('--preview-on',accessibleForeground(val('custom-accent'))); card.style.setProperty('--preview-ink',document.documentElement.classList.contains('dark')?'#f1f3f8':'#374151'); });
+        sheetBody.addEventListener('input', e => { if (!e.target.matches('#custom-accent,#custom-accent2,#custom-surface,#custom-page,#custom-soft,#custom-icons') || currentView !== 'profile') return; syncThemePreview(); });
         function handleProfileAction(act, data = {}) {
             if (act === 'setting') {
                 if (data.key === 'sound') {
@@ -6558,29 +6579,39 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 const p = THEMES.find(x => x.id === data.id);
                 if (!p) return;
                 const root = document.documentElement;
+                const previousTheme = currentTheme || THEMES.find(t => t.id === 'grafite') || THEMES[0];
                 root.classList.add('theme-anim'); // troca de cores suave
                 applyTheme(p);
-                saveTheme();
+                if (!saveTheme()) { applyTheme(previousTheme); root.classList.remove('theme-anim'); toast('Não foi possível salvar o tema. Suas configurações anteriores foram mantidas.'); renderSheet(); return; }
                 setTimeout(() => root.classList.remove('theme-anim'), 450);
                 playClick(); renderSheet();
             } else if (act === 'save-custom-theme') {
                 const val = id => document.getElementById(id)?.value || '#F06AAE';
                 const accent=val('custom-accent'), accent2=val('custom-accent2'), surface=val('custom-surface'), page=val('custom-page'), soft=val('custom-soft'), iconColor=val('custom-icons');
                 const t={id:'custom_'+Date.now().toString(36),name:'Minha paleta '+(customThemes.length+1),accent,accent2,surface,page,soft,glow:accent+'55',on:accessibleForeground(accent),iconColor};
-                customThemes.push(t); store.set('aerosync.customThemes',customThemes); THEMES.push(t); applyTheme(t); saveTheme();
+                const previousTheme = currentTheme || THEMES.find(x => x.id === 'grafite') || THEMES[0];
+                const nextCustomThemes = [...customThemes, t];
+                if (!store.set('aerosync.customThemes', nextCustomThemes)) { toast('Não foi possível salvar sua paleta. Verifique o espaço disponível no dispositivo.'); return; }
+                customThemes.push(t); THEMES.push(t); applyTheme(t);
+                if (!saveTheme()) { customThemes.pop(); THEMES.pop(); store.set('aerosync.customThemes', customThemes); applyTheme(previousTheme); toast('A paleta foi criada, mas não foi possível ativá-la. As configurações anteriores foram restauradas.'); renderSheet(); return; }
                 playSuccess(); toast('Paleta personalizada salva!'); renderSheet();
             } else if (act === 'delete-custom-theme') {
                 const idx = customThemes.findIndex(t => t.id === data.id);
                 if (idx < 0) return;
                 const deletingActive = currentTheme && currentTheme.id === data.id;
-                customThemes.splice(idx, 1);
-                store.set('aerosync.customThemes', customThemes);
-                const themeIdx = THEMES.findIndex(t => t.id === data.id);
-                if (themeIdx >= 0) THEMES.splice(themeIdx, 1);
+                const previousTheme = currentTheme;
                 if (deletingActive) {
                     applyTheme(THEMES.find(t => !/^custom_/.test(t.id)) || THEMES[0]);
-                    saveTheme();
+                    if (!saveTheme()) { applyTheme(previousTheme); toast('Não foi possível atualizar o tema ativo. A paleta não foi excluída.'); return; }
                 }
+                const nextCustomThemes = customThemes.filter(t => t.id !== data.id);
+                if (!store.set('aerosync.customThemes', nextCustomThemes)) {
+                    if (deletingActive) { applyTheme(previousTheme); saveTheme(); }
+                    toast('Não foi possível excluir a paleta. Verifique o armazenamento do dispositivo.'); return;
+                }
+                customThemes.splice(idx, 1);
+                const themeIdx = THEMES.findIndex(t => t.id === data.id);
+                if (themeIdx >= 0) THEMES.splice(themeIdx, 1);
                 playClick(); toast('Tema personalizado excluído'); renderSheet();
             } else if (act === 'open-widgets') {
                 openSheet('widgets');
