@@ -575,7 +575,7 @@ html.dark[data-fundo="custom-grid"] .app-bg-canvas, html.dark[data-fundo="custom
         .pill-btn:active { transform: translateY(2px) scale(0.98); }
         .pill-btn.ghost { background: rgba(241,245,249,0.9); color: #6b7280; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.06); }
         .pill-btn.primary {
-            color: #fff;
+            color: var(--ui-accent-foreground, var(--on-accent, #fff));
             background: linear-gradient(160deg, var(--accent-2), var(--accent) 70%);
             box-shadow: inset 0 3px 6px rgba(255,255,255,0.55), inset 0 -4px 8px rgba(0,0,0,0.18), 0 8px 18px var(--accent-glow);
         }
@@ -3954,12 +3954,43 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         // A paleta colore botões, destaques, ícones e o fundo
         const THEME_VARS = [['--theme-accent', 'accent'], ['--theme-accent-2', 'accent2'], ['--theme-soft', 'soft'], ['--theme-glow', 'glow'],
             ['--on-accent', 'on'], ['--surface', 'surface'], ['--page', 'page'], ['--theme-icon','iconColor']];
+        // Contraste WCAG: escolhe texto legível para a cor de destaque.
+        function colorLuminance(color) {
+            if (typeof color !== 'string' || !/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(color)) return null;
+            let hex = color.slice(1);
+            if (hex.length === 3) hex = hex.split('').map(ch => ch + ch).join('');
+            const rgb = hex.match(/.{2}/g).map(v => parseInt(v, 16) / 255);
+            const linear = rgb.map(v => v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+            return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+        }
+        function contrastRatio(a, b) {
+            const la = colorLuminance(a), lb = colorLuminance(b);
+            if (la === null || lb === null) return 0;
+            return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+        }
+        function accessibleForeground(background, preferred) {
+            if (preferred && contrastRatio(background, preferred) >= 4.5) return preferred;
+            return contrastRatio(background, '#111827') >= contrastRatio(background, '#FFFFFF') ? '#111827' : '#FFFFFF';
+        }
+        // Tokens semânticos centralizados; aliases antigos continuam ativos durante a migração.
         function applyTheme(t) {
-            currentTheme = { ...t };
+            const iconColor = t.iconColor || t.accent || '#64748b';
+            const on = accessibleForeground(t.accent, t.on);
+            currentTheme = { ...t, on, iconColor };
             const root = document.documentElement.style;
-            THEME_VARS.forEach(([v, k]) => root.setProperty(v, t[k]));
-            root.setProperty('--user-icon-color', t.iconColor || t.accent || '#64748b');
-            root.setProperty('--theme-icon', t.iconColor || t.accent || '#64748b');
+            THEME_VARS.forEach(([v, k]) => root.setProperty(v, currentTheme[k] || t[k]));
+            root.setProperty('--user-icon-color', iconColor);
+            root.setProperty('--theme-icon', iconColor);
+            root.setProperty('--ui-accent', t.accent);
+            root.setProperty('--ui-accent-foreground', on);
+            root.setProperty('--ui-accent-secondary', t.accent2);
+            root.setProperty('--ui-surface', t.surface);
+            root.setProperty('--ui-page', t.page);
+            root.setProperty('--ui-soft-surface', t.soft);
+            root.setProperty('--ui-icon', iconColor);
+            root.setProperty('--ui-text', document.documentElement.classList.contains('dark') ? '#eef0f6' : '#374151');
+            root.setProperty('--ui-muted', document.documentElement.classList.contains('dark') ? '#a3a9bb' : '#6b7280');
+            root.setProperty('--ui-border', document.documentElement.classList.contains('dark') ? '#2b2f42' : '#e5e7eb');
             syncMetaTheme();
         }
         const saveTheme = () => store.set(STORAGE_KEYS.theme, Object.fromEntries([['id', currentTheme.id], ...THEME_VARS.filter(([,k])=>k!=='iconColor').map(([, k]) => [k, currentTheme[k]]), ['iconColor', currentTheme.iconColor || currentTheme.accent]]));
@@ -6461,7 +6492,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const next=pref.checked?[...new Set([...selected,pref.dataset.overduePref])]:selected.filter(x=>x!==pref.dataset.overduePref);
             store.set(STORAGE_KEYS.overdueIndicators,next); renderTasks();
         });
-        sheetBody.addEventListener('input', e => { if (!e.target.matches('#custom-accent,#custom-accent2,#custom-surface,#custom-page,#custom-soft,#custom-icons') || currentView !== 'profile') return; const val=id=>document.getElementById(id)?.value||'#F06AAE'; const card=document.getElementById('theme-preview-card'); if(!card)return; card.style.setProperty('--preview-accent',val('custom-accent')); card.style.setProperty('--preview-surface',val('custom-surface')); card.style.setProperty('--preview-soft',val('custom-soft')); card.style.setProperty('--preview-icon',val('custom-icons')); card.style.setProperty('--preview-ink',document.documentElement.classList.contains('dark')?'#f1f3f8':'#374151'); });
+        sheetBody.addEventListener('input', e => { if (!e.target.matches('#custom-accent,#custom-accent2,#custom-surface,#custom-page,#custom-soft,#custom-icons') || currentView !== 'profile') return; const val=id=>document.getElementById(id)?.value||'#F06AAE'; const card=document.getElementById('theme-preview-card'); if(!card)return; card.style.setProperty('--preview-accent',val('custom-accent')); card.style.setProperty('--preview-surface',val('custom-surface')); card.style.setProperty('--preview-soft',val('custom-soft')); card.style.setProperty('--preview-icon',val('custom-icons')); card.style.setProperty('--preview-on',accessibleForeground(val('custom-accent'))); card.style.setProperty('--preview-ink',document.documentElement.classList.contains('dark')?'#f1f3f8':'#374151'); });
         function handleProfileAction(act, data = {}) {
             if (act === 'setting') {
                 if (data.key === 'sound') {
@@ -6495,7 +6526,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             } else if (act === 'save-custom-theme') {
                 const val = id => document.getElementById(id)?.value || '#F06AAE';
                 const accent=val('custom-accent'), accent2=val('custom-accent2'), surface=val('custom-surface'), page=val('custom-page'), soft=val('custom-soft'), iconColor=val('custom-icons');
-                const t={id:'custom_'+Date.now().toString(36),name:'Minha paleta '+(customThemes.length+1),accent,accent2,surface,page,soft,glow:accent+'55',on:'#FFFFFF',iconColor};
+                const t={id:'custom_'+Date.now().toString(36),name:'Minha paleta '+(customThemes.length+1),accent,accent2,surface,page,soft,glow:accent+'55',on:accessibleForeground(accent),iconColor};
                 customThemes.push(t); store.set('aerosync.customThemes',customThemes); THEMES.push(t); applyTheme(t); saveTheme();
                 playSuccess(); toast('Paleta personalizada salva!'); renderSheet();
             } else if (act === 'delete-custom-theme') {
