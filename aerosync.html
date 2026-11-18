@@ -6445,7 +6445,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             const seg = (key, opts, cur) => `<div class="seg" role="radiogroup">${opts.map(([v, label]) =>
                 `<button data-act="setting" data-key="${key}" data-value="${v}" class="${cur === v ? 'selected' : ''}" role="radio" aria-checked="${cur === v}">${label}</button>`).join('')}</div>`;
             sheetBody.innerHTML = `
-                <span class="modal-label">Avatar</span>
+                <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-4">Personalize sua experiência, organize a tela inicial e cuide dos seus dados. As alterações são aplicadas automaticamente.</p>
+                <span class="modal-label">Perfil</span>
                 <div class="avatar-row mb-5">
                     <div class="avatar-preview profile-avatar" aria-hidden="true">${avatarInner()}</div>
                     <div class="avatar-actions">
@@ -6502,15 +6503,18 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 <span class="modal-label mt-6">Tarefas atrasadas</span>
                 <p class="text-xs text-gray-400 font-semibold mb-2">Indicadores com a cor do tema, compatíveis com os modos claro e escuro. Todos começam desligados.</p>
                 ${[['label','Etiqueta “Atrasada”'],['icon','Ícone de alerta'],['outline','Contorno da tarefa'],['stripe','Faixa lateral']].map(([v,l])=>`<label class="deadline-toggle"><input type="checkbox" data-overdue-pref="${v}" ${store.get(STORAGE_KEYS.overdueIndicators,[]).includes(v)?'checked':''}> <span>${l}</span></label>`).join('')}
-                <span class="modal-label mt-6">Backup</span>
-                <div class="grid grid-cols-2 gap-2">
-                    <button data-act="export" class="pill-btn ghost"><i class="fas fa-download mr-1"></i>Exportar</button>
-                    <button data-act="import" class="pill-btn ghost"><i class="fas fa-upload mr-1"></i>Importar</button>
+                <span class="modal-label mt-6">Backup e restauração</span>
+                <div class="st-card">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3">Exporte seus dados para guardar uma cópia ou restaure um arquivo anterior. O backup inclui finanças, notas, temas personalizados, widgets e preferências deste dispositivo.</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button data-act="export" class="pill-btn ghost"><i class="fas fa-download mr-1"></i>Exportar backup</button>
+                        <button data-act="import" class="pill-btn ghost"><i class="fas fa-upload mr-1"></i>Restaurar backup</button>
+                    </div>
+                    <input id="import-file" type="file" accept="application/json,.json" class="hidden" aria-label="Arquivo de backup">
+                    <p class="text-[11px] text-gray-400 font-semibold mt-2">A restauração substitui os dados atuais do ALife. Mantenha uma cópia atualizada antes de importar.</p>
                 </div>
-                <input id="import-file" type="file" accept="application/json,.json" class="hidden" aria-label="Arquivo de backup">
-                <p class="text-xs text-gray-400 font-semibold mt-1.5">Salve uma cópia de tudo (missões, notas, tempos e ajustes) num arquivo.</p>
 
-                <span class="modal-label mt-6">Gerenciamento de dados</span>
+                <span class="modal-label mt-6">Dados e privacidade</span>
                 <div class="st-card">
                     <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Apague permanentemente as informações salvas neste dispositivo: tarefas, finanças, notas, categorias, widgets, temas, perfil e preferências.</p>
                     <button data-act="wipe-all" class="pill-btn danger w-full mt-3"><i class="fas fa-trash-can mr-1"></i>Apagar todos os dados do ALife</button>
@@ -6519,7 +6523,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
 
                 <p class="text-xs text-gray-400 font-semibold mt-6">Atalhos de teclado: <b>N</b> nova missão · <b>Esc</b> fecha painéis e janelas</p>
                 <div class="mt-6">
-                    <span class="modal-label">Outros</span>
+                    <span class="modal-label">Manutenção</span>
                     <button data-act="reset-layout" class="pill-btn ghost w-full">Restaurar ordem padrão da tela inicial</button>
                     <button data-act="reboot" class="pill-btn ghost w-full mt-2">Rever a Boot Screen</button>
                 </div>`;
@@ -6675,31 +6679,73 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             }
         }
 
-        // Backup: baixa um .json com todos os dados / restaura a partir dele
+        // Backup v2: inclui todas as chaves do ALife, inclusive preferências adicionadas fora de STORAGE_KEYS.
+        const isALifeStorageKey = key => typeof key === 'string' && (/^(aerosync\\.|alife\\.)/i.test(key) || Object.values(STORAGE_KEYS).includes(key));
+        function collectALifeStorageKeys() {
+            const keys = new Set(Object.values(STORAGE_KEYS));
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (isALifeStorageKey(key)) keys.add(key);
+            }
+            return [...keys];
+        }
         function exportBackup() {
-            const data = {};
-            Object.values(STORAGE_KEYS).forEach(k => { const v = store.get(k, undefined); if (v !== undefined) data[k] = v; });
-            const json = JSON.stringify({ app: 'ALife', version: 1, exported: new Date().toISOString(), data }, null, 2);
             try {
+                const data = {};
+                collectALifeStorageKeys().forEach(key => {
+                    const raw = localStorage.getItem(key);
+                    if (raw === null) return;
+                    try { data[key] = JSON.parse(raw); } catch (err) { data[key] = raw; }
+                });
+                const json = JSON.stringify({ app: 'ALife', version: 2, exported: new Date().toISOString(), data }, null, 2);
                 const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
                 const a = document.createElement('a');
-                a.href = url; a.download = `aerosync-backup-${todayISO()}.json`;
+                a.href = url; a.download = `alife-backup-${todayISO()}.json`;
                 document.body.appendChild(a); a.click(); a.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-                toast('Backup exportado');
-            } catch (err) { toast('Não foi possível exportar'); }
+                setTimeout(() => URL.revokeObjectURL(url), 1500);
+                toast(`Backup exportado · ${Object.keys(data).length} itens`);
+            } catch (err) {
+                console.error('Falha ao exportar backup do ALife', err);
+                toast('Não foi possível exportar o backup');
+            }
         }
         function importBackup(file) {
+            if (!file) return;
+            if (file.size > 25 * 1024 * 1024) { toast('O backup é muito grande (limite: 25 MB)'); return; }
             const r = new FileReader();
+            r.onerror = () => toast('Não foi possível ler esse arquivo');
             r.onload = () => {
                 let j;
                 try { j = JSON.parse(r.result); } catch (err) { j = null; }
-                if (!j || !['ALife','AeroSync'].includes(j.app) || !j.data || typeof j.data !== 'object') { toast('Arquivo de backup inválido'); return; }
-                if (!confirm('Importar este backup? Os dados atuais serão substituídos.')) return;
-                const keys = Object.values(STORAGE_KEYS);
-                keys.forEach(k => store.remove(k));
-                Object.entries(j.data).forEach(([k, v]) => { if (keys.includes(k)) store.set(k, v); });
-                location.reload();
+                if (!j || !['ALife', 'AeroSync'].includes(j.app) || !j.data || typeof j.data !== 'object' || Array.isArray(j.data)) {
+                    toast('Arquivo de backup inválido'); return;
+                }
+                const entries = Object.entries(j.data).filter(([key]) => isALifeStorageKey(key));
+                if (!entries.length) { toast('Esse backup não contém dados reconhecidos do ALife'); return; }
+                if (!confirm(`Restaurar ${entries.length} itens deste backup? Os dados atuais do ALife neste dispositivo serão substituídos. Esta ação não pode ser desfeita.`)) return;
+                const keys = collectALifeStorageKeys();
+                const previous = new Map();
+                try {
+                    keys.forEach(key => previous.set(key, localStorage.getItem(key)));
+                    keys.forEach(key => localStorage.removeItem(key));
+                    entries.forEach(([key, value]) => {
+                        const serialized = JSON.stringify(value);
+                        if (serialized === undefined) throw new Error('Valor de backup inválido');
+                        localStorage.setItem(key, serialized);
+                    });
+                    toast('Backup restaurado. Reabrindo o ALife…');
+                    location.reload();
+                } catch (err) {
+                    // Reverte a tentativa para não deixar o app parcialmente restaurado.
+                    try {
+                        collectALifeStorageKeys().forEach(key => localStorage.removeItem(key));
+                        previous.forEach((value, key) => { if (value !== null) localStorage.setItem(key, value); });
+                    } catch (rollbackError) {
+                        console.error('Falha ao reverter restauração de backup', rollbackError);
+                    }
+                    console.error('Falha ao importar backup do ALife', err);
+                    toast('Não foi possível restaurar o backup. Os dados anteriores foram preservados quando possível.');
+                }
             };
             r.readAsText(file);
         }
