@@ -6536,7 +6536,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
             });
             ti.addEventListener('keydown', (e) => { if (e.key === 'Enter') ti.blur(); });
             const fi = document.getElementById('import-file');
-            fi.addEventListener('change', () => { if (fi.files && fi.files[0]) importBackup(fi.files[0]); });
+            fi.addEventListener('change', () => { const file = fi.files && fi.files[0]; fi.value = ''; if (file) importBackup(file); });
             // Avatar: escolher imagem (Enter/Espaço também abrem, pelo teclado)
             const af = document.getElementById('avatar-file');
             const pick = sheetBody.querySelector('[data-avatar-pick]');
