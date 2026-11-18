@@ -1,11 +1,12 @@
 {
-  "version": "2026.11.16.50",
-  "build": 2026111650,
-  "releasedAt": "2026-11-16",
+  "version": "2026.11.18.51",
+  "build": 2026111851,
+  "releasedAt": "2026-11-18",
   "releaseNotes": [
     "Ajustado o contador do widget Progresso para manter 10/10 em uma única linha.",
     "Corrigido o cabeçalho do Overview Financeiro para impedir que o botão de adicionar cubra o título.",
     "Refinados os cards de finanças e clima em dimensões estreitas ou baixas, reduzindo cortes de texto e gráficos desproporcionais.",
-    "Ajustada a distribuição do conteúdo do widget Foco em cards altos sem ampliar a tipografia."
+    "Ajustada a distribuição do conteúdo do widget Foco em cards altos sem ampliar a tipografia.",
+    "Adicionada opção de apagar todos os dados locais do ALife com confirmação em duas etapas e limpeza restrita às chaves do aplicativo."
   ]
 }
