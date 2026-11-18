@@ -6680,7 +6680,7 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
         }
 
         // Backup v2: inclui todas as chaves do ALife, inclusive preferências adicionadas fora de STORAGE_KEYS.
-        const isALifeStorageKey = key => typeof key === 'string' && (/^(aerosync\\.|alife\\.)/i.test(key) || Object.values(STORAGE_KEYS).includes(key));
+        const isALifeStorageKey = key => typeof key === 'string' && (key.toLowerCase().startsWith('aerosync.') || key.toLowerCase().startsWith('alife.') || Object.values(STORAGE_KEYS).includes(key));
         function collectALifeStorageKeys() {
             const keys = new Set(Object.values(STORAGE_KEYS));
             for (let i = 0; i < localStorage.length; i++) {
