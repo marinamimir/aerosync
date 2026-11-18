@@ -6510,12 +6510,18 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 <input id="import-file" type="file" accept="application/json,.json" class="hidden" aria-label="Arquivo de backup">
                 <p class="text-xs text-gray-400 font-semibold mt-1.5">Salve uma cópia de tudo (missões, notas, tempos e ajustes) num arquivo.</p>
 
+                <span class="modal-label mt-6">Gerenciamento de dados</span>
+                <div class="st-card">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Apague permanentemente as informações salvas neste dispositivo: tarefas, finanças, notas, categorias, widgets, temas, perfil e preferências.</p>
+                    <button data-act="wipe-all" class="pill-btn danger w-full mt-3"><i class="fas fa-trash-can mr-1"></i>Apagar todos os dados do ALife</button>
+                    <p class="text-[11px] text-gray-400 font-semibold mt-2">Esta ação não pode ser desfeita. Exporte um backup antes, se quiser guardar suas informações. O aplicativo continuará instalado.</p>
+                </div>
+
                 <p class="text-xs text-gray-400 font-semibold mt-6">Atalhos de teclado: <b>N</b> nova missão · <b>Esc</b> fecha painéis e janelas</p>
                 <div class="mt-6">
                     <span class="modal-label">Outros</span>
                     <button data-act="reset-layout" class="pill-btn ghost w-full">Restaurar ordem padrão da tela inicial</button>
                     <button data-act="reboot" class="pill-btn ghost w-full mt-2">Rever a Boot Screen</button>
-                    <button data-act="wipe" class="pill-btn danger w-full mt-2">Apagar todas as tarefas</button>
                 </div>`;
             syncThemePreview();
             const ti = document.getElementById('pf-title');
@@ -6625,6 +6631,8 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 exportBackup();
             } else if (act === 'import') {
                 document.getElementById('import-file').click();
+            } else if (act === 'wipe-all') {
+                wipeAllAppData();
             } else if (act === 'wipe') {
                 if (!tasks.length) { toast('Já está tudo limpo'); return; }
                 if (confirm('Apagar TODAS as tarefas? Isso não pode ser desfeito.')) {
@@ -6632,6 +6640,38 @@ body { align-items:stretch !important; justify-content:stretch !important; backg
                 }
             } else if (act === 'reboot') {
                 store.remove(STORAGE_KEYS.theme); location.reload();
+            }
+        }
+
+        // Apaga somente dados pertencentes ao ALife, sem tocar no armazenamento de outros sites.
+        // O prefixo também captura chaves adicionadas por versões futuras do app.
+        function wipeAllAppData() {
+            if (!confirm('Apagar TODOS os dados do ALife neste dispositivo? Tarefas, finanças, notas, categorias, widgets, temas e configurações serão removidos permanentemente. Exporte um backup antes, se quiser guardar suas informações.')) return;
+            const confirmation = prompt('Esta ação não pode ser desfeita. Digite APAGAR para confirmar:');
+            if (confirmation !== 'APAGAR') {
+                if (confirmation !== null) toast('Confirmação não corresponde. Nenhum dado foi apagado.');
+                return;
+            }
+            try {
+                const isAppKey = key => typeof key === 'string' && /^(aerosync\.|alife\.)/i.test(key);
+                const keys = new Set(Object.values(STORAGE_KEYS));
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (isAppKey(key)) keys.add(key);
+                }
+                keys.forEach(key => localStorage.removeItem(key));
+                const remaining = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (isAppKey(key)) remaining.push(key);
+                }
+                if (remaining.length) {
+                    alert('Alguns dados não puderam ser removidos. Feche outras abas do ALife e tente novamente.');
+                    return;
+                }
+                location.reload();
+            } catch (error) {
+                alert('Não foi possível concluir a limpeza do armazenamento. Nenhum outro site foi afetado. Tente novamente.');
             }
         }
 
